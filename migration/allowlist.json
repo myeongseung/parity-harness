@@ -6,6 +6,12 @@
       "reason": "Spring Security CSRF 토큰. 레거시에는 방어가 없었고 이관하며 켰다. 사용자에게 보이지 않으며 form 마다 렌더링 시점에 붙는다. 근거: migration/design/00-decisions.md D-013",
       "owner": "myeongseung",
       "added": "2026-08-11"
+    },
+    {
+      "key": "text:static|답글|",
+      "reason": "레거시는 이 글자를 스크립틀릿에서 out.println(\"답글 : \") 로 찍는다. 전처리가 <% %> 를 지우므로 추출기가 정답 쪽에서 보지 못하고, 신규 구현이 충실히 재현하면 오히려 발명으로 잡힌다. 사각지대가 양방향으로 작동하는 사례다. 근거: migration/design/00-decisions.md D-023",
+      "owner": "myeongseung",
+      "added": "2026-08-11"
     }
   ]
 }

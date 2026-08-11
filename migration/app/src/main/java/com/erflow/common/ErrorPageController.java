@@ -56,4 +56,19 @@ public class ErrorPageController {
         model.addAttribute("screenName", "관리자");
         return "scaffold/not-migrated";
     }
+
+    /**
+     * 프로필. 레거시 {@code profile.jsp} 가 이관되면 이 매핑을 지운다.
+     *
+     * <p>게시판 목록의 작성자 이름이 여기로 걸린다. 링크를 빼면 레거시에 있던
+     * 것이 사라지므로, 발판을 두고 링크는 살려 둔다.
+     *
+     * @param model 뷰 모델
+     * @return 이관 전 안내 발판
+     */
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("screenName", "프로필");
+        return "scaffold/not-migrated";
+    }
 }

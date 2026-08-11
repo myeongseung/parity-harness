@@ -530,6 +530,78 @@ JSTL, 커스텀 태그, JS DOM 조작도 같은 문제다. 자바를 해석하�
 
 ---
 
+## D-024 · 목록과 개수가 다른 조건으로 분기한다
+
+`PostServiceImpl` 의 두 메서드가 같은 검색을 서로 다르게 판단한다.
+
+```java
+getPostViews : if (keyfield != null && !keyfield.trim().equals(""))  // keyfield 기준
+getTotalCount: if (keyword  != null && !keyword.trim().equals(""))   // keyword  기준
+```
+
+검색 항목만 고르고 검색어를 비운 채 조회하면 이렇게 갈린다.
+
+| | 조건 | 결과 |
+|---|---|---|
+| 목록 | `subject like '%%' and board_id = ?` | `subject` 가 `NULL` 인 글이 빠진다 |
+| 개수 | `board_id = ?` | 전부 센다 |
+
+`like` 는 `NULL` 에 대해 `NULL` 을 돌려주므로 목록에서만 빠진다. 페이지 수는 있는데
+그 페이지가 비는 상황이 된다.
+
+**실데이터에는 `subject` 가 `NULL` 인 글이 없다.** 확인했다(0행). 그래서 지금은
+드러나지 않는다.
+
+**결정:** 그대로 옮긴다. `PostSearch.activeForList()` 와 `activeForCount()` 를 따로
+두고 각각 레거시 조건을 담는다. 하나로 합치면 검색 결과 건수가 레거시와 달라질 수
+있고, 그러면 "레거시와 같은가"를 판정할 수 없다.
+
+`PostSearchTest.listAndCountDisagree` 가 이 불일치를 못으로 박아 둔다. 나중에
+"버그 같으니 고치자"는 사람이 나오면 시험이 먼저 말을 건다.
+
+---
+
+## D-025 · 게시판 목록의 페이징이 동작하지 않는다
+
+`boardList.jsp` 는 `start` 를 계산해 두고 쓰지 않는다.
+
+```jsp
+int start = (nowPage - 1) * numPerPage;      // 계산은 한다
+Vector<BoardBean> boardList = activityCon.getBoards(keyword);   // LIMIT 없음
+for (int i = 0; i < numPerPage; ++i) {
+    BoardBean board = boardList.get(i);       // 언제나 0번부터
+```
+
+`getBoards` 의 SQL 은 `select * from board_tbl [where subject like ?]` 로 `ORDER BY`
+도 `LIMIT` 도 없다. 2페이지를 눌러도 1페이지와 같은 목록이 나온다.
+
+**게시판이 4개뿐이라 페이지 번호가 하나만 그려져 드러나지 않는다.**
+
+**결정:** 그대로 옮긴다. `BoardService.list` 가 `pagination.start()` 를 쓰지 않고
+0번부터 자른다 — 의도적이며 주석으로 남겼다. 고치면 게시판이 15개를 넘는 순간
+레거시와 다른 화면이 된다.
+
+정렬도 넣지 않는다. `ORDER BY` 를 더하면 지금 당장 화면에 뜨는 순서가 달라진다.
+
+---
+
+## D-026 · 같은 앱 안에서 날짜 형식이 화면마다 다르다
+
+`WebHelper.getDate` 가 `yyyy년 MM월 dd일` 로 바꿔 주지만 **게시판은 이 헬퍼를 쓰지
+않는다.** `ResultSetExtractHelper.extractViewPostBean` 이 `rs.getString("created_at")`
+으로 읽어 그대로 찍는다. 화면에는 `2023-11-10 17:29:23` 이 뜬다.
+
+설비·협력업체 화면은 `yyyy년 MM월 dd일` 이다(D-020). 같은 앱인데 다르다.
+
+**결정:** 화면마다 레거시 그대로 간다. 통일하지 않는다.
+
+**게이트는 이 자리를 못 본다.** 날짜는 서버가 채우므로 signature 가 `«dyn»` 이고,
+형식이 무엇이든 통과한다. 처음에 `yyyy년 MM월 dd일` 로 썼다가 원본을 읽고 고쳤다 —
+게이트는 끝까지 아무 말도 하지 않았다. D-020 과 같은 사각지대이며, 잡는 방법도
+같다(실화면 대조).
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

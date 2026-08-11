@@ -51,7 +51,10 @@ def classify(signature: Signature, counterparts: list[Signature]) -> tuple[str, 
     """짝을 찾지 못한 요소가 왜 그런지 가른다.
 
     @param signature 짝이 없는 요소
-    @param counterparts 반대편 목록
+    @param counterparts 반대편에서 **짝을 찾지 못한** 요소들. 전체 목록을 넘기면
+        안 된다 — 이미 짝이 맞은 요소가 힌트로 잡혀 사람을 엉뚱한 곳으로 보낸다.
+        실제로 게시글 목록에서 «dyn» 라벨 링크가 셋인데, 그중 짝이 맞은 것을
+        가리켜 "대상이 (없음)으로 바뀌었다"고 보고했다. 진짜 짝은 다른 링크였다.
     @return (사유, 힌트). 힌트는 가장 가까운 반대편 값
     """
     same_role = [

@@ -65,12 +65,15 @@ def detect(
     findings: list[Finding] = []
     waived: list[Signature] = []
 
+    # 힌트가 이미 짝이 맞은 요소를 가리키지 않도록, 반대편도 짝 없는 것만 넘긴다.
+    unmatched = surplus(new, golden)
+
     for signature in surplus(golden, new):
         if signature.key in approved:
             waived.append(signature)
             continue
 
-        reason, hint = classify(signature, new)
+        reason, hint = classify(signature, unmatched)
         if reason == NONE and signature.kind in _HIGH_IMPACT_KINDS:
             severity = "HIGH"
         else:

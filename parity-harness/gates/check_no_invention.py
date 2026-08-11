@@ -23,7 +23,7 @@ from pathlib import Path
 
 from . import EXIT_ERROR, EXIT_ESCALATE, EXIT_FAIL, EXIT_PASS
 from .allowlist import AllowlistError, load_allowlist
-from .compare import DETAIL_CHANGE, LABEL_DRIFT, NONE, classify
+from .compare import DETAIL_CHANGE, LABEL_DRIFT, NONE, classify, surplus
 from .extract import extract_file
 from .model import ManifestError, Signature, load_manifest
 
@@ -63,6 +63,9 @@ def detect(
     findings: list[Finding] = []
     waived: list[Signature] = []
 
+    # 힌트가 이미 짝이 맞은 요소를 가리키지 않도록, 반대편도 짝 없는 것만 넘긴다.
+    unmatched = surplus(golden, new)
+
     for signature in new:
         if budget[signature.key] > 0:
             budget[signature.key] -= 1
@@ -71,7 +74,7 @@ def detect(
             waived.append(signature)
             continue
 
-        reason, hint = classify(signature, golden)
+        reason, hint = classify(signature, unmatched)
         if reason == NONE and signature.kind in _HIGH_IMPACT_KINDS:
             severity = "HIGH"
         else:

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/PostServiceImpl.java
+         legacy/ERFlow/src/main/java/service/implementation/PostFileServiceImpl.java
+-->
+<mapper namespace="com.erflow.post.PostMapper">
+
+    <sql id="postColumns">
+        id, board_id AS boardId, user_id AS userId, name, ref_id AS refId,
+        subject, content, depth, pos, count, created_at AS createdAt
+    </sql>
+
+    <!--
+      레거시 getPostViews:
+        select * from post_view where [<col> like ? and] board_id = ?
+        order by depth desc, pos limit ?, ?
+
+      depth 는 스레드 그룹, pos 는 들여쓰기 깊이다(PostRow 설명 참조).
+      정렬을 "고쳐" 놓으면 목록 순서가 달라진다.
+    -->
+    <select id="findPage" resultType="com.erflow.post.PostRow">
+        SELECT <include refid="postColumns"/>
+          FROM post_view
+         WHERE
+        <if test="search != null and search.activeForList">
+            <choose>
+                <when test="search.column == 'subject'">subject</when>
+                <when test="search.column == 'name'">name</when>
+            </choose>
+            LIKE #{search.pattern} AND
+        </if>
+               board_id = #{boardId}
+         ORDER BY depth DESC, pos
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!--
+      레거시 getTotalCount 는 keyword 를 보고 분기한다. 목록(keyfield 기준)과
+      다르다 — 결함이지만 그대로 옮긴다. PostSearch 설명과 D-024 참조.
+    -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM post_view
+         WHERE
+        <if test="search != null and search.activeForCount">
+            <choose>
+                <when test="search.column == 'subject'">subject</when>
+                <when test="search.column == 'name'">name</when>
+            </choose>
+            LIKE #{search.pattern} AND
+        </if>
+               board_id = #{boardId}
+    </select>
+
+    <!-- 레거시: select * from post_view where id = ? -->
+    <select id="findById" resultType="com.erflow.post.PostRow">
+        SELECT <include refid="postColumns"/>
+          FROM post_view
+         WHERE id = #{id}
+    </select>
+
+    <!-- 레거시 getTotalCommentCount: select count(*) from comment_tbl where post_tbl_id = ? -->
+    <select id="countComments" resultType="int">
+        SELECT COUNT(*)
+          FROM comment_tbl
+         WHERE post_tbl_id = #{postId}
+    </select>
+
+    <!--
+      레거시 getFileByPostId 는 한 건만 읽어 첨부 아이콘 표시에 쓴다.
+      목록은 "첨부가 있는가"만 필요하므로 이름 하나만 가져온다.
+    -->
+    <select id="findFirstAttachmentName" resultType="string">
+        SELECT original_name
+          FROM post_file_tbl
+         WHERE post_tbl_id = #{postId}
+         ORDER BY id
+         LIMIT 1
+    </select>
+
+</mapper>
