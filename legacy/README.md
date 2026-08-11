@@ -24,8 +24,21 @@ ERFlow/src/main/java/      134 파일 / 16,844 LOC
   model/                   22  Bean
   driver/                   7  자체 커넥션 풀, 암호화, ID 생성
 ERFlow/src/main/webapp/    145 JSP
-ERFlow-DB.sql              47 테이블 (SP/트리거 사실상 없음 — 1건)
+ERFlow-DB.sql              47 테이블. **저장소에 없다** — 아래 참조
 ```
+
+## 저장소에 없는 것
+
+`ERFlow-DB.sql` 은 커밋하지 않는다. 사용자 55명의 이름·주민등록번호·주소·휴대전화·
+이메일이 들어 있다. "레거시는 수정하지 않는다"는 이 프로젝트의 원칙이지만, 그 원칙이
+개인정보를 공개하는 근거가 될 수는 없다.
+
+이관에 필요한 것은 권한 프로그램 20건뿐이고 거기에는 개인정보가 없다.
+`migration/tools/extract_programs.py` 가 뽑아 `migration/seed/programs.json` 으로
+커밋한다. 스키마와 데이터는 라이브 DB 에서 복제한다(`clone_legacy_schema.py`).
+
+메일 발송 코드의 자격증명과 인프라 호스트명도 가렸다
+(`migration/tools/redact_legacy.py`). 정합성 게이트가 보는 화면 마크업은 그대로다.
 
 ## 구조상 알아둘 것
 

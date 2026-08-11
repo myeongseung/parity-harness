@@ -4,7 +4,7 @@
   "sources": {
     "SIDE": "migration/golden/layout/menu.json",
     "HEADER": "migration/golden/layout/header.json",
-    "programs": "legacy/ERFlow-DB.sql"
+    "programs": "migration/seed/programs.json"
   },
   "programs": [
     {

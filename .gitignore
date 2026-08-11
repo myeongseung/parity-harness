@@ -41,3 +41,9 @@ Thumbs.db
 ### 레거시 기동 산출물 ###
 migration/legacy-runtime/.gradle/
 migration/legacy-runtime/build/
+
+### 레거시 DB 덤프 — 개인정보가 있어 커밋하지 않는다 ###
+# 사용자 55명의 이름·주민등록번호·주소·휴대전화·이메일이 들어 있다.
+# 이관에 필요한 권한 프로그램 20건은 migration/tools/extract_programs.py 가
+# migration/seed/programs.json 으로 뽑아 두며, 그것만 커밋한다.
+legacy/ERFlow-DB.sql

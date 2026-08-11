@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "parity-harness"))
 from gates.extract_menu import flatten, prune_chrome  # noqa: E402
 
 WEBAPP = ROOT / "legacy" / "ERFlow" / "src" / "main" / "webapp"
-DB_SQL = ROOT / "legacy" / "ERFlow-DB.sql"
+PROGRAMS = ROOT / "migration" / "seed" / "programs.json"
 GOLDEN = ROOT / "migration" / "golden" / "layout"
 OUT_JSON = ROOT / "migration" / "seed" / "menu-seed.json"
 OUT_SQL = ROOT / "migration" / "seed" / "V2__layout_and_permission.sql"
@@ -79,23 +79,17 @@ PROGRAM_EXEMPT = {
 
 
 def load_programs() -> dict[str, dict]:
-    """permission_program_tbl 의 INSERT 문에서 프로그램 목록을 읽는다."""
-    sql = DB_SQL.read_text(encoding="utf-8", errors="replace")
-    block = re.search(r"INSERT INTO `permission_program_tbl`.*?;", sql, re.S)
-    if block is None:
-        raise SystemExit("permission_program_tbl INSERT 문을 찾지 못했다")
-    rows = re.findall(
-        r"\(\d+,\s*'([0-9A-F]+)',\s*'([^']+)',\s*(-?\d+),\s*(-?\d+)\)", block.group(0)
-    )
-    return {
-        pid: {
-            "program_id": pid,
-            "name": name,
-            "dept_level": int(dept),
-            "job_level": int(job),
-        }
-        for pid, name, dept, job in rows
-    }
+    """권한 프로그램 목록을 읽는다.
+
+    레거시 DB 덤프에서 뽑아 둔 것이다(`extract_programs.py`). 덤프 자체는 저장소에
+    두지 않는다 — 사용자 55명의 개인정보(주민등록번호 포함)가 들어 있다.
+    """
+    if not PROGRAMS.is_file():
+        raise SystemExit(
+            f"{PROGRAMS.relative_to(ROOT)} 가 없다. "
+            "migration/tools/extract_programs.py 를 먼저 돌린다")
+    data = json.loads(PROGRAMS.read_text(encoding="utf-8"))
+    return {entry["program_id"]: entry for entry in data["programs"]}
 
 
 def program_code_of(href: str) -> str | None:
@@ -274,7 +268,7 @@ def build() -> dict:
             placement: str(path.relative_to(ROOT)).replace("\\", "/")
             for placement, path in SOURCES
         }
-        | {"programs": str(DB_SQL.relative_to(ROOT)).replace("\\", "/")},
+        | {"programs": str(PROGRAMS.relative_to(ROOT)).replace("\\", "/")},
         "programs": sorted(programs.values(), key=lambda p: p["name"]),
         "screens": screens,
         "menus": rows,
