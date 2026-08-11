@@ -1,0 +1,39 @@
+### 빌드 산출물 ###
+build/
+.gradle/
+out/
+bin/
+target/
+
+### 접속 정보 — 절대 커밋하지 않는다 ###
+**/application-local.yml
+**/application-*-local.yml
+.env
+*.pem
+*.key
+
+### 생성물 중 재생성 가능한 것 ###
+# golden/ 과 seed/ 는 커밋한다. 정답과 그 파생물이므로 이력이 남아야 한다.
+**/build/rendered/
+
+### 도구 ###
+__pycache__/
+*.pyc
+.pytest_cache/
+
+### IDE ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### 세션 상태 ###
+.bkit/
