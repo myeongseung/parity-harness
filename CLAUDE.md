@@ -77,6 +77,7 @@ python -m gates.check_menu_parity --golden ../migration/golden/layout/menu.json 
 | **동적 값은 못 본다** | 날짜 형식처럼 서버가 채우는 자리는 `«dyn»` 이라 게이트를 통과한다. 실화면 대조(D-020)로만 잡힌다 |
 | **CI 커버리지** | 앱 테스트 53건 중 CI 에서 도는 것은 24건. DB 를 상대로 하는 29건은 로컬에서만 돈다 |
 | **게이트는 두 방향** | 발명(없던 게 생김)과 누락(있던 게 사라짐)은 별개 게이트다. `run_gates.py` 가 둘 다 돌린다 |
+| **비밀은 눈으로 못 막는다** | 소스에서 지우고, 마스킹 스크립트에 원문을 적어 다시 새고, 그 이야기를 쓴 글에 또 적었다. 세 번 다 육안 확인이었다. `check_no_secrets.py` 가 `run_gates` 에서 매번 돈다 |
 | **실행 권한** | Windows 에서 커밋한 셸 스크립트는 실행 비트가 빠져 리눅스 러너에서 `Permission denied`(126) 가 난다. `git update-index --chmod=+x <파일>` 로 기록한다 |
 
 ## 접속 정보

@@ -10,6 +10,7 @@ CI 와 로컬이 같은 것을 돌려야 한다. 손으로 하나씩 돌리면 �
 2. **메뉴 정합성** — 레거시 메뉴 트리와 seed 를 대조한다.
 3. **발명 차단** — 레거시에 없던 요소가 끼어들었는지 본다.
 4. **누락 차단** — 레거시에 있던 요소가 사라졌는지 본다.
+5. **비밀 잔존 검사** — 가려야 할 것이 추적 파일에 남아 있는지 본다.
 
 3과 4는 방향만 다른 한 쌍이다. 한쪽만 보면 "레거시와 같다"고 말할 수 없다.
 
@@ -110,6 +111,24 @@ def check_golden_is_reproducible() -> int:
     return worst
 
 
+def check_secrets() -> int:
+    """가려야 할 것이 남아 있는지 본다.
+
+    사람이 눈으로 확인하다 세 번 놓쳤다. 매번 돌게 해 둔다.
+    검사 대상 목록이 없는 환경(클론 직후 등)에서는 건너뛴다.
+    """
+    print("== 비밀 잔존 ==")
+    checker = ROOT / "migration" / "tools" / "check_no_secrets.py"
+    result = subprocess.run(
+        [sys.executable, str(checker)], cwd=ROOT, capture_output=True,
+        text=True, encoding="utf-8", errors="replace")
+    output = (result.stdout + result.stderr).strip()
+    print("  " + output.replace("\n", "\n  "))
+    # 대상 목록이 없으면(exit 2) 검사할 수 없다. 그것을 실패로 보지는 않는다 —
+    # 이미 가려진 저장소를 클론한 사람에게는 목록이 없는 것이 정상이다.
+    return 0 if result.returncode in (0, 2) else result.returncode
+
+
 def check_menus() -> int:
     print("\n== 메뉴 정합성 ==")
     worst = 0
@@ -153,6 +172,7 @@ def check_screens(module: str, title: str) -> int:
 
 def main() -> int:
     worst = max(
+        check_secrets(),
         check_golden_is_reproducible(),
         check_menus(),
         check_screens("gates.check_no_invention", "발명 차단"),

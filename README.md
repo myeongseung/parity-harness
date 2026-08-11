@@ -17,6 +17,9 @@ legacy/           이관 대상 원본 = 정답 (ERFlow, MIT / jUqItEr)
 migration/        실제 이관 — 하네스가 실전에서 통하는지의 증거
 ```
 
+> 코드를 읽기 전에 맥락이 필요하다면 — [**변환은 쉽고, 증명이 어렵다**](docs/%EB%B3%80%ED%99%98%EC%9D%80-%EC%89%BD%EA%B3%A0-%EC%A6%9D%EB%AA%85%EC%9D%B4-%EC%96%B4%EB%A0%B5%EB%8B%A4.md)
+> 왜 만들었고, 무엇을 잘못했고, **이 방법으로 못 잡는 것은 무엇인지**를 글로 정리했다.
+
 ---
 
 ## 무엇을 막는가
@@ -189,7 +192,7 @@ python -m gates.check_no_invention --golden /tmp/golden.json \
 ```
 
 ```bash
-# 모든 게이트를 한 번에 — 정답 재생산 + 메뉴 정합성 + 발명 차단
+# 모든 게이트를 한 번에 — 비밀 잔존 + 정답 재생산 + 메뉴 + 발명 + 누락
 python migration/tools/run_gates.py
 ```
 
@@ -202,7 +205,7 @@ python migration/tools/run_gates.py
 | | |
 |---|---|
 | 하네스 테스트 | 45건 |
-| 정합성 게이트 | 정답 재생산 · 메뉴 · 발명 차단 (`run_gates.py`) |
+| 정합성 게이트 | 비밀 잔존 · 정답 재생산 · 메뉴 · 발명 차단 · 누락 차단 (`run_gates.py`) |
 | 앱 빌드 | 컴파일 + Checkstyle + 테스트 |
 
 **정답 재생산 검사**가 이 CI 의 핵심이다. 레거시에서 정답을 다시 뽑아 저장소의 것과
@@ -221,6 +224,7 @@ python migration/tools/run_gates.py
 | [migration/README.md](migration/README.md) | 이관 현황과 슬라이스별 결과 |
 | [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~020) + 미결 안건 |
 | [migration/design/01-menu-layout.md](migration/design/01-menu-layout.md) | 레이아웃·권한 설계 |
+| [docs/변환은-쉽고-증명이-어렵다.md](docs/%EB%B3%80%ED%99%98%EC%9D%80-%EC%89%BD%EA%B3%A0-%EC%A6%9D%EB%AA%85%EC%9D%B4-%EC%96%B4%EB%A0%B5%EB%8B%A4.md) | **이 프로젝트를 왜, 어떻게 만들었는지** — 글로 읽는 버전 |
 
 ## 라이선스와 출처
 
