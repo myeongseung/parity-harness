@@ -82,5 +82,6 @@ python -m gates.check_menu_parity --golden ../migration/golden/layout/menu.json 
 
 ## 접속 정보
 
-`migration/app/src/main/resources/application-local.yml` 에만 둔다. gitignore 되어 있다.
+`migration/app/src/main/resources/application-local.yml` 에만 둔다. gitignore 되어 있고,
+옆의 `.example` 을 복사해 만든다. `.example` 에는 값을 적지 않는다 — 그것은 커밋된다.
 문서·주석·테스트에 비밀번호나 호스트명을 쓰지 않는다.

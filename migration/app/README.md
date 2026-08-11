@@ -37,8 +37,20 @@ Gradle 은 설치할 필요 없다. wrapper 를 쓴다.
 | 신규 | `erflow_mig` |
 | 레거시 | `erflow` — **읽기 전용.** 앱 계정에 SELECT 권한만 있다 |
 
-접속 정보는 `src/main/resources/application-local.yml` 에 있고 **`.gitignore` 로
-제외돼 있다.** 커밋하지 않는다. 프로필을 켜서 쓴다.
+접속 정보는 `src/main/resources/application-local.yml` 에 두고 **`.gitignore` 로
+제외한다.** 커밋하지 않는다. 템플릿을 복사해 값을 채운다.
+
+```bash
+cd src/main/resources
+cp application-local.yml.example application-local.yml   # 값을 채운다
+```
+
+`.example` 쪽에는 값을 적지 않는다 — 그 파일은 커밋된다. 실수로 올라가는 것은
+`check_no_secrets.py` 가 막는다(`run_gates.py` 가 매번 돌린다). 문자열 대조와
+별개로 **파일 자체가 추적되는지**도 본다. `git add -f` 는 `.gitignore` 를
+무시하기 때문이다.
+
+프로필을 켜서 쓴다.
 
 ```bash
 ./gradlew bootRun --args='--spring.profiles.active=local'

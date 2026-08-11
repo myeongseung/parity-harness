@@ -28,6 +28,15 @@ PATTERNS = ROOT / "migration" / "tools" / "redact-patterns.local.json"
 SKIP_DIRS = {".git", "build", ".gradle", "node_modules", "__pycache__", ".bkit"}
 SKIP_SUFFIX = {".png", ".jpg", ".gif", ".ico", ".ttf", ".woff", ".woff2", ".jar", ".zip", ".map"}
 
+#: 절대 추적되면 안 되는 파일. 문자열 검사와 별개의 그물이다 —
+#: 목록에 없는 비밀이 들어 있어도 파일 자체가 올라간 것은 잡아야 한다.
+#: `git add -f` 는 .gitignore 를 무시하므로 gitignore 만으로는 부족하다.
+NEVER_TRACKED = (
+    "application-local.yml",
+    "redact-patterns.local.json",
+    "legacy/ERFlow-DB.sql",
+)
+
 
 def needles() -> list[str] | None:
     """가려야 할 문자열을 읽는다.
@@ -48,6 +57,21 @@ def tracked_files() -> list[Path]:
     return [ROOT / line for line in result.stdout.splitlines() if line.strip()]
 
 
+def leaked_files(tracked: list[Path]) -> list[str]:
+    """올라가면 안 되는 파일이 추적되고 있는지 본다.
+
+    `.example` 로 끝나는 템플릿은 대상이 아니다 — 값이 없으니 올라가야 한다.
+    """
+    leaked = []
+    for path in tracked:
+        name = path.as_posix()
+        if name.endswith(".example"):
+            continue
+        if any(name.endswith(marker) for marker in NEVER_TRACKED):
+            leaked.append(path.name)
+    return leaked
+
+
 def main() -> int:
     patterns = needles()
     if patterns is None:
@@ -58,9 +82,18 @@ def main() -> int:
               file=sys.stderr)
         return 2
 
-    hits: list[tuple[str, str]] = []
+    hits: list[tuple[str, int]] = []
+    tracked = tracked_files()
 
-    for path in tracked_files():
+    leaked = leaked_files(tracked)
+    if leaked:
+        print("FAIL  올라가면 안 되는 파일이 추적되고 있다")
+        for name in leaked:
+            print(f"        {name}")
+        print("      git rm --cached <파일> 로 추적을 끊는다. 이미 푸시했다면 이력도 지운다.")
+        return 1
+
+    for path in tracked:
         if not path.is_file() or any(part in SKIP_DIRS for part in path.parts):
             continue
         if path.suffix.lower() in SKIP_SUFFIX:
@@ -81,7 +114,8 @@ def main() -> int:
             print(f"        {name}  (목록 #{index})")
         return 1
 
-    print(f"PASS  추적 중인 파일에 남은 것 없음 (대상 {len(patterns)}종)")
+    print(f"PASS  추적 파일 {len(tracked)}개에 남은 것 없음 "
+          f"(문자열 {len(patterns)}종 · 금지 파일 {len(NEVER_TRACKED)}종)")
     return 0
 
 
