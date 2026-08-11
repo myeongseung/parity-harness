@@ -125,7 +125,8 @@ class TestNoInvention(unittest.TestCase):
         이관에서 라우트를 새로 설계하면(D-005) 모든 메뉴 링크가 여기 걸린다.
         이걸 "표기가 틀어졌다"고 보고하면 사람이 멀쩡한 라벨을 건드리게 된다.
         """
-        from gates.check_no_invention import DETAIL_CHANGE, detect
+        from gates.check_no_invention import detect
+        from gates.compare import DETAIL_CHANGE
         from gates.extract import extract
 
         golden = extract('<a href="/ERFlow/unit/unitList.jsp">생산 설비 관리</a>')
@@ -138,14 +139,15 @@ class TestNoInvention(unittest.TestCase):
 
     def test_invented_link_is_still_high(self) -> None:
         """대상이 바뀐 것과 없던 것을 만든 것은 구분되어야 한다."""
-        from gates.check_no_invention import INVENTION, detect
+        from gates.check_no_invention import detect
+        from gates.compare import NONE
         from gates.extract import extract
 
         golden = extract('<a href="/ERFlow/unit/unitList.jsp">생산 설비 관리</a>')
         new = extract('<a href="/unit/stats">생산 통계</a>')
         findings, _ = detect(golden, new, {})
 
-        self.assertEqual(INVENTION, findings[0].reason)
+        self.assertEqual(NONE, findings[0].reason)
         self.assertEqual("HIGH", findings[0].severity)
 
     def test_strict_promotes_medium_to_blocking(self) -> None:

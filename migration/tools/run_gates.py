@@ -8,7 +8,10 @@ CI 와 로컬이 같은 것을 돌려야 한다. 손으로 하나씩 돌리면 �
 1. **정답이 재생산되는가** — 레거시에서 정답을 다시 뽑아 저장소의 것과 대조한다.
    추출 규칙을 고치고 정답을 다시 뽑지 않았다면 여기서 걸린다.
 2. **메뉴 정합성** — 레거시 메뉴 트리와 seed 를 대조한다.
-3. **발명 차단** — 화면별로 레거시에 없던 요소가 끼어들었는지 본다.
+3. **발명 차단** — 레거시에 없던 요소가 끼어들었는지 본다.
+4. **누락 차단** — 레거시에 있던 요소가 사라졌는지 본다.
+
+3과 4는 방향만 다른 한 쌍이다. 한쪽만 보면 "레거시와 같다"고 말할 수 없다.
 
 사용법::
 
@@ -122,17 +125,25 @@ def check_menus() -> int:
     return worst
 
 
-def check_screens() -> int:
-    print("\n== 발명 차단 ==")
+def check_screens(module: str, title: str) -> int:
+    """화면별 정합성 게이트를 돌린다.
+
+    @param module 하네스 모듈 이름
+    @param title 출력에 쓸 제목
+    @return 가장 나쁜 exit code
+    """
+    print(f"\n== {title} ==")
     worst = 0
     for domain, jsp, template in SCREENS:
         code, output = run([
-            "gates.check_no_invention",
+            module,
             "--golden", str(GOLDEN / domain / f"{jsp}.json"),
             "--new", str(TEMPLATES / domain / f"{template}.html"),
             "--allowlist", str(ALLOWLIST),
         ])
         head = output.strip().splitlines()[0] if output.strip() else "(출력 없음)"
+        # 경로가 길어 첫 줄이 지저분해진다. 파일명만 남긴다.
+        head = head.replace(str(TEMPLATES), "").replace("\\", "/")
         print(f"  [{code}] {domain}/{template}.html  {head}")
         if code != 0:
             print("      " + output.strip().replace("\n", "\n      "))
@@ -141,7 +152,12 @@ def check_screens() -> int:
 
 
 def main() -> int:
-    worst = max(check_golden_is_reproducible(), check_menus(), check_screens())
+    worst = max(
+        check_golden_is_reproducible(),
+        check_menus(),
+        check_screens("gates.check_no_invention", "발명 차단"),
+        check_screens("gates.check_completeness", "누락 차단"),
+    )
     verdict = {0: "PASS", 1: "FAIL", 2: "ERROR", 3: "ESCALATE"}.get(worst, "?")
     print(f"\n결과: {verdict} (exit {worst})")
     return worst
