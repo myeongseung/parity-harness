@@ -39,11 +39,25 @@ import java.util.List;
  *
  * <p>글쓴이 본인이 열면 이 판단 자체를 하지 않는다 — 레거시가
  * {@code isCreatedUser} 로 먼저 걸러낸다.
+ *
+ * <h2>구분자만 바꾼다</h2>
+ *
+ * <p>레거시는 번호를 {@code ;} 로 이어 붙이는데 그 글자는 쿠키 값에 들어갈 수 없다.
+ * Tomcat 이 거부해서 <b>이미 본 글을 다시 열면 500 이 난다.</b> 실화면 대조로
+ * 찾았다. 세는 규칙은 그대로 두고 구분자만 바꾼다 — D-033 참조.
  */
 public final class PostViewCounter {
 
     /** 레거시가 쓰던 쿠키 이름. */
     public static final String COOKIE_NAME = "postId";
+
+    /**
+     * 번호를 잇는 글자.
+     *
+     * <p>레거시는 {@code ;} 를 썼다. 쿠키 값에 넣을 수 없는 글자라 붙이는 순간
+     * 500 이 난다. 밑줄은 허용된다. 값의 뜻은 달라지지 않는다.
+     */
+    static final String SEPARATOR = "_";
 
     private PostViewCounter() {
     }
@@ -76,11 +90,13 @@ public final class PostViewCounter {
             return String.valueOf(postId);
         }
         return seen(cookieValue).contains(String.valueOf(postId))
-                ? cookieValue + ";" + postId
+                ? cookieValue + SEPARATOR + postId
                 : cookieValue;
     }
 
     private static List<String> seen(String cookieValue) {
-        return Arrays.asList(cookieValue.split(";"));
+        // 레거시가 남긴 `;` 짜리 값도 읽을 수 있어야 한다 — 실제로는 만들어지지
+        // 못하고 500 이 났지만, 다른 Tomcat 설정에서는 남아 있을 수 있다.
+        return Arrays.asList(cookieValue.split("[;_]"));
     }
 }
