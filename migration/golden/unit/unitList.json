@@ -1,0 +1,211 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 2,
+  "screen": "unit-List",
+  "source": "../legacy/ERFlow/src/main/webapp/unit/unitList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 생산관리 > 생산 설비 관리",
+      "detail": "",
+      "raw": "사용자 > 생산관리 > 생산 설비 관리"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "button",
+      "raw": "삭제"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "추가",
+      "detail": "button",
+      "raw": "추가"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체조회",
+      "detail": "",
+      "raw": "전체조회"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "장비id",
+      "detail": "",
+      "raw": "장비ID"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "장비명",
+      "detail": "",
+      "raw": "장비명"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "관리자명",
+      "detail": "",
+      "raw": "관리자명"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "문서명",
+      "detail": "",
+      "raw": "문서명"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "장비 상태",
+      "detail": "",
+      "raw": "장비 상태"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "장비 제조일자",
+      "detail": "",
+      "raw": "장비 제조일자"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkall",
+      "detail": "checkbox",
+      "raw": "chkAll"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "장비id",
+      "detail": "",
+      "raw": "장비ID"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "장비명",
+      "detail": "",
+      "raw": "장비명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "관리자",
+      "detail": "",
+      "raw": "관리자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "장비 상태",
+      "detail": "",
+      "raw": "장비 상태"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "장비 제조일자",
+      "detail": "",
+      "raw": "장비 제조일자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "unitid",
+      "detail": "checkbox",
+      "raw": "unitId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정",
+      "detail": "button",
+      "raw": "수정"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    }
+  ]
+}

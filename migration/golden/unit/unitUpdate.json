@@ -1,0 +1,78 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 2,
+  "screen": "unit-Update",
+  "source": "../legacy/ERFlow/src/main/webapp/unit/unitUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "관리자 사번",
+      "detail": "text",
+      "raw": "관리자 사번"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "관리자 선택",
+      "detail": "button",
+      "raw": "관리자 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "문서번호",
+      "detail": "text",
+      "raw": "문서번호"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "문서 선택",
+      "detail": "button",
+      "raw": "문서 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "장비명",
+      "detail": "text",
+      "raw": "장비명"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": ".form-select-sm example",
+      "detail": "",
+      "raw": ".form-select-sm example"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "멈춤",
+      "detail": "",
+      "raw": "멈춤"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "가동중",
+      "detail": "",
+      "raw": "가동중"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제출",
+      "detail": "submit",
+      "raw": "제출"
+    }
+  ]
+}

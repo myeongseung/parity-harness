@@ -1,0 +1,11 @@
+{
+  "schema": "parity-harness/allowlist@1",
+  "entries": [
+    {
+      "key": "control:hidden|_csrf|hidden",
+      "reason": "Spring Security CSRF 토큰. 레거시에는 방어가 없었고 이관하며 켰다. 사용자에게 보이지 않으며 form 마다 렌더링 시점에 붙는다. 근거: migration/design/00-decisions.md D-013",
+      "owner": "myeongseung",
+      "added": "2026-08-11"
+    }
+  ]
+}

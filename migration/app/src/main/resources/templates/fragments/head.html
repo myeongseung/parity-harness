@@ -1,0 +1,33 @@
+<!--/*
+  공통 <head>.
+
+  레거시는 화면마다 같은 <link>/<script> 목록을 복사해 뒀다(unitList.jsp 참조).
+  순서와 목록을 그대로 유지한다. 순서를 바꾸면 CSS 우선순위가 달라져 화면이 틀어진다.
+
+  페이지 고유 자산은 인자로 받는다.
+    pageCss  예: ['/css/main/unitList.css']
+    pageJs   예: ['/js/main/unitList.js']
+*/-->
+<head th:fragment="head(title, pageCss, pageJs)" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">ERFlow</title>
+
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
+            integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/bootcss/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/common/page.css}">
+    <link rel="stylesheet" th:href="@{/css/main/header.css}">
+    <link rel="stylesheet" th:href="@{/css/main/aside.css}">
+    <link rel="stylesheet" th:each="css : ${pageCss}" th:href="@{${css}}">
+
+    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
+    <script th:src="@{/js/main/index.js}"></script>
+    <script th:each="js : ${pageJs}" th:src="@{${js}}"></script>
+</head>

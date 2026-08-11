@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처
+    UserServiceImpl.getUser          select * from user_tbl where id = ?
+    PermissionServiceImpl            select permission from permission_dept_tbl where dept_tbl_id = ?
+                                     select permission from permission_job_tbl  where job_tbl_id  = ?
+
+  레거시는 세 번 나눠 조회했다. 한 번에 읽되 **값만** 가져온다.
+  비트 연산을 SQL 로 옮기면 안 된다 — MariaDB 의 비트 연산은 부호가 없어서
+  관리자 판정이 뒤집힌다. Permissions 클래스 주석 참조.
+-->
+<mapper namespace="com.erflow.auth.AuthMapper">
+
+    <!--
+      부서·직급 행이 없어도 사용자는 조회되어야 한다. 레거시는 권한 조회가 따로였고
+      결과가 없으면 0 이었다. INNER JOIN 으로 바꾸면 그런 사용자가 통째로 사라져
+      "없는 사용자" 가 되어 버린다.
+    -->
+    <select id="findAuthUser" resultType="com.erflow.auth.AuthUser">
+        SELECT u.id,
+               u.name,
+               u.password,
+               COALESCE(d.permission, 0) AS deptPermission,
+               COALESCE(j.permission, 0) AS jobPermission
+          FROM user_tbl u
+          LEFT JOIN permission_dept_tbl d ON u.dept_tbl_id = d.dept_tbl_id
+          LEFT JOIN permission_job_tbl  j ON u.job_tbl_id  = j.job_tbl_id
+         WHERE u.id = #{id}
+    </select>
+
+    <select id="findScreenAccess" resultType="com.erflow.auth.ScreenAccess">
+        SELECT s.route,
+               p.name       AS programName,
+               p.dept_level AS deptLevel,
+               p.job_level  AS jobLevel
+          FROM screen s
+          JOIN program p ON s.program_id = p.program_id
+         WHERE s.route = #{route}
+    </select>
+
+    <update id="updatePassword">
+        UPDATE user_tbl
+           SET password = #{password}
+         WHERE id = #{id}
+    </update>
+
+</mapper>

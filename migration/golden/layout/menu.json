@@ -1,0 +1,173 @@
+{
+  "schema": "parity-harness/menu-manifest@1",
+  "source": "../legacy/ERFlow/src/main/webapp/indexSide.jsp",
+  "items": [
+    {
+      "label": "문서 관리",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "기안 작성",
+          "href": "/ERFlow/document/documentRegister.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "문서 리스트",
+          "href": "/ERFlow/document/documentList.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "전자결재",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "결재 리스트",
+          "href": "/ERFlow/proposal/proposalList.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "결재라인 관리",
+          "href": "/ERFlow/proposal/proposalRouteList.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "생산관리",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "생산 설비 관리",
+          "href": "/ERFlow/unit/unitList.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "공정 관리",
+          "href": "/ERFlow/process/processList.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "구매",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "협력업체 관리",
+          "href": "/ERFlow/company/companyList.jsp?flag=1",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "원재료 관리",
+          "href": "/ERFlow/product/ingredientProduct.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "가공품 관리",
+          "href": "/ERFlow/product/processedProduct.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "발주 관리",
+          "href": "/ERFlow/task/purchaseTask.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "입고 제품 관리",
+          "href": "/ERFlow/bound/inbound.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "영업",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "협력업체 관리",
+          "href": "/ERFlow/company/companyList.jsp?flag=0",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "수주 관리",
+          "href": "/ERFlow/task/sellTask.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "출고 제품 관리",
+          "href": "/ERFlow/bound/outbound.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "완제품 재고 관리",
+          "href": "/ERFlow/product/productedProduct.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "근태 관리",
+      "href": null,
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "근태 확인",
+          "href": "/ERFlow/work/work.jsp",
+          "icon": null,
+          "separator_before": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "게시판",
+      "href": "/ERFlow/post/boardList.jsp",
+      "icon": null,
+      "separator_before": false,
+      "children": []
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "parity-harness/menu-manifest@1",
+  "source": "../legacy/ERFlow/src/main/webapp/indexHeader.jsp",
+  "items": [
+    {
+      "label": "«dyn» «dyn»",
+      "href": "#",
+      "icon": null,
+      "separator_before": false,
+      "children": [
+        {
+          "label": "설정",
+          "href": "/ERFlow/admin/admin.jsp",
+          "icon": "fa-solid fa-gear",
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "쪽지",
+          "href": "/ERFlow/message/index.jsp",
+          "icon": "fa-regular fa-envelope fa-lg",
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "프로필",
+          "href": "/ERFlow/profile.jsp?id=«dyn»",
+          "icon": "fa-solid fa-user-tie fa-lg",
+          "separator_before": false,
+          "children": []
+        },
+        {
+          "label": "로그아웃",
+          "href": "/ERFlow/login/logoutProc.jsp",
+          "icon": null,
+          "separator_before": true,
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "",
+      "href": "#",
+      "icon": "fa-regular fa-bell fa-lg",
+      "separator_before": false,
+      "children": []
+    }
+  ]
+}
