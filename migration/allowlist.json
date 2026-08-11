@@ -12,6 +12,24 @@
       "reason": "레거시는 이 글자를 스크립틀릿에서 out.println(\"답글 : \") 로 찍는다. 전처리가 <% %> 를 지우므로 추출기가 정답 쪽에서 보지 못하고, 신규 구현이 충실히 재현하면 오히려 발명으로 잡힌다. 사각지대가 양방향으로 작동하는 사례다. 근거: migration/design/00-decisions.md D-023",
       "owner": "myeongseung",
       "added": "2026-08-11"
+    },
+    {
+      "key": "control:hidden|boardid|hidden",
+      "reason": "게시글 보기의 댓글 삭제 폼이 쓰는 게시판 번호 이다. 레거시는 댓글 삭제가 링크(GET)였고, 이관하며 CSRF 방어를 켰으므로(D-013) GET 삭제만 방어를 비켜 간다. POST 로 바꾸면서 숨은 입력 셋이 늘었다. 화면에 보이는 것은 달라지지 않는다. 근거: migration/design/00-decisions.md D-031",
+      "owner": "myeongseung",
+      "added": "2026-08-11"
+    },
+    {
+      "key": "control:hidden|postid|hidden",
+      "reason": "게시글 보기의 댓글 삭제 폼이 쓰는 글번호 이다. 레거시는 댓글 삭제가 링크(GET)였고, 이관하며 CSRF 방어를 켰으므로(D-013) GET 삭제만 방어를 비켜 간다. POST 로 바꾸면서 숨은 입력 셋이 늘었다. 화면에 보이는 것은 달라지지 않는다. 근거: migration/design/00-decisions.md D-031",
+      "owner": "myeongseung",
+      "added": "2026-08-11"
+    },
+    {
+      "key": "control:hidden|id|hidden",
+      "reason": "게시글 보기의 댓글 삭제 폼이 쓰는 댓글 번호 이다. 레거시는 댓글 삭제가 링크(GET)였고, 이관하며 CSRF 방어를 켰으므로(D-013) GET 삭제만 방어를 비켜 간다. POST 로 바꾸면서 숨은 입력 셋이 늘었다. 화면에 보이는 것은 달라지지 않는다. 근거: migration/design/00-decisions.md D-031",
+      "owner": "myeongseung",
+      "added": "2026-08-11"
     }
   ]
 }

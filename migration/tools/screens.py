@@ -35,10 +35,10 @@ SCREENS = (
     ("company", "companyUpdate", "update", True),
     ("post", "boardList", "board-list", True),
     ("post", "postList", "list", True),
-    ("post", "postView", "view", False),
-    ("post", "postRegister", "register", False),
-    ("post", "postReply", "reply", False),
-    ("post", "postUpdate", "update", False),
+    ("post", "postView", "view", True),
+    ("post", "postRegister", "register", True),
+    ("post", "postReply", "reply", True),
+    ("post", "postUpdate", "update", True),
 )
 
 #: 대조까지 끝난 화면만.

@@ -42,6 +42,12 @@ class PostScreenTest {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private PostFileService postFileService;
+
     @BeforeAll
     static void requireLocalConfig() {
         assumeTrue(
@@ -124,5 +130,102 @@ class PostScreenTest {
     void listWithoutBoardIdGoesToAccessError() throws Exception {
         mockMvc.perform(get("/post/list").with(user(TestUsers.admin())))
                 .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    @DisplayName("게시글 보기가 댓글과 첨부를 함께 그린다")
+    void viewShowsCommentsAndAttachments() throws Exception {
+        PostListRow target = anyPost();
+        assumeTrue(target != null, "글이 있는 게시판이 없어 건너뛴다");
+
+        int boardId = target.post().boardId();
+        int postId = target.post().id();
+        String html = render("/post/view?boardId=" + boardId + "&id=" + postId,
+                "post-view.html");
+
+        assertThat(html).contains(target.post().subject());
+        assertThat(html).contains("작성자:").contains("작성일:")
+                .contains("댓글수:").contains("조회수:");
+        for (CommentRow comment : commentService.list(postId)) {
+            assertThat(html).contains(comment.comment());
+        }
+        for (PostAttachment file : postFileService.list(postId)) {
+            assertThat(html).contains(file.displayName());
+        }
+    }
+
+    @Test
+    @DisplayName("댓글이 없으면 없다고 말한다")
+    void viewSaysWhenThereAreNoComments() throws Exception {
+        PostListRow empty = postsOf(anyBoardWithPosts()).stream()
+                .filter(row -> row.commentCount() == 0).findFirst().orElse(null);
+        assumeTrue(empty != null, "댓글 없는 글이 없어 건너뛴다");
+
+        String html = render("/post/view?boardId=" + empty.post().boardId()
+                + "&id=" + empty.post().id(), "post-view-no-comment.html");
+
+        assertThat(html).contains("등록된 댓글이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("쓰기 권한이 있어야 글쓰기 화면이 열린다")
+    void registerNeedsWritePermission() throws Exception {
+        int boardId = anyBoardWithPosts();
+
+        mockMvc.perform(get("/post/register?boardId=" + boardId)
+                        .with(user(TestUsers.noPermission())))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    @DisplayName("글쓰기 화면은 게시판 이름을 자유게시판으로 고정해 그린다")
+    void registerHardcodesBoardName() throws Exception {
+        // 레거시 결함을 그대로 옮긴 것이다. D-032 참조.
+        String html = render("/post/register?boardId=" + anyBoardWithPosts(),
+                "post-register.html");
+
+        assertThat(html).contains("value=\"자유게시판\"");
+    }
+
+    @Test
+    @DisplayName("답변 화면은 실제 게시판 이름을 그린다")
+    void replyShowsRealBoardName() throws Exception {
+        int boardId = anyBoardWithPosts();
+        Board board = boardService.get(boardId);
+
+        String html = render("/post/reply?boardId=" + boardId + "&postId="
+                + anyPost().post().id(), "post-reply.html");
+
+        assertThat(html).contains(board.subject());
+    }
+
+    @Test
+    @DisplayName("글수정 화면이 기존 제목과 본문을 채워 그린다")
+    void updatePrefillsExistingValues() throws Exception {
+        PostListRow target = anyPost();
+        assumeTrue(target != null, "글이 있는 게시판이 없어 건너뛴다");
+
+        String html = render("/post/update?boardId=" + target.post().boardId()
+                + "&id=" + target.post().id(), "post-update.html");
+
+        assertThat(html).contains(target.post().subject());
+    }
+
+    private int anyBoardWithPosts() {
+        return boardService.list(null, 1).rows().stream()
+                .filter(b -> b.postCount() > 0)
+                .map(BoardRow::id)
+                .findFirst()
+                .orElse(-1);
+    }
+
+    private List<PostListRow> postsOf(int boardId) {
+        return boardId == -1 ? List.of()
+                : postService.list(boardId, PostSearch.none(), 1).rows();
+    }
+
+    private PostListRow anyPost() {
+        List<PostListRow> rows = postsOf(anyBoardWithPosts());
+        return rows.isEmpty() ? null : rows.get(0);
     }
 }

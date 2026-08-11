@@ -67,6 +67,112 @@ public class PostService {
     }
 
     /**
+     * 조회수를 하나 올린다.
+     *
+     * <p>올릴지 말지는 {@link PostViewCounter} 가 정한다. 레거시의 판단이 뒤집혀
+     * 있어 그 규칙을 따로 떼어 시험할 수 있게 했다.
+     *
+     * @param postId 글번호
+     * @return 올렸으면 {@code true}
+     */
+    @Transactional
+    public boolean incrementView(int postId) {
+        return postMapper.incrementCount(postId) == 1;
+    }
+
+    /**
+     * 새 글을 등록한다.
+     *
+     * <p>레거시 {@code createPost} 를 그대로 옮겼다. 게시판에서 가장 큰 스레드
+     * 그룹 번호에 1 을 더해 새 그룹을 만들고, 등록 직후 자기 자신을 뿌리로
+     * 가리키게 한다.
+     *
+     * @param boardId 게시판 번호
+     * @param userId 작성자 사번
+     * @param subject 제목
+     * @param content 본문
+     * @return 등록된 글번호. 실패하면 -1
+     */
+    @Transactional
+    public int register(int boardId, String userId, String subject, String content) {
+        Integer maxDepth = postMapper.findMaxDepth(boardId);
+        int depth = (maxDepth == null ? 0 : maxDepth) + 1;
+
+        PostWrite write = new PostWrite(userId, boardId, null, subject, content, depth, 0);
+        if (postMapper.insert(write) != 1) {
+            return -1;
+        }
+        postMapper.pointToSelf(write.getId());
+        return write.getId();
+    }
+
+    /**
+     * 답변글을 등록한다.
+     *
+     * <p>같은 스레드에서 뒤에 오는 글들을 한 칸씩 밀고 그 자리에 넣는다.
+     *
+     * <h2>레거시는 게시판 번호를 버린다</h2>
+     *
+     * <pre>
+     * int boardId = 2; // 외래키오류때문에 임시
+     * </pre>
+     *
+     * <p>{@code postReplyProc.jsp} 가 올바른 번호를 담아 넘기는데 서비스가 이 줄로
+     * 덮어쓴다. 어느 게시판에 답변을 달든 자유게시판(2번)에 쌓인다. 옮기면서
+     * 되살리지 않았다 — 넘어온 값을 쓴다. D-030 참조.
+     *
+     * @param parent 부모 글
+     * @param userId 작성자 사번
+     * @param subject 제목
+     * @param content 본문
+     * @return 등록되었으면 {@code true}
+     */
+    @Transactional
+    public boolean reply(PostRow parent, String userId, String subject, String content) {
+        if (parent == null) {
+            return false;
+        }
+        int refId = parent.refId() == null ? parent.id() : parent.refId();
+        postMapper.shiftPositions(refId, parent.pos());
+
+        PostWrite write = new PostWrite(userId, parent.boardId(), refId,
+                subject, content, parent.depth(), parent.pos() + 1);
+        return postMapper.insertReply(write) == 1;
+    }
+
+    /**
+     * 제목과 본문을 고친다.
+     *
+     * @param id 글번호
+     * @param subject 제목
+     * @param content 본문
+     * @return 고쳐졌으면 {@code true}
+     */
+    @Transactional
+    public boolean modify(int id, String subject, String content) {
+        return postMapper.update(id, subject, content) == 1;
+    }
+
+    /**
+     * 글을 지운다.
+     *
+     * <p>답변글이 달린 글은 지우지 않고 제목·본문을 «삭제된 글입니다.» 로 바꾸고
+     * {@code delete} 를 1 로 세운다. 지우면 답변글이 스레드 뿌리를 잃는다.
+     *
+     * <p>스레드 건수에 자기 자신이 포함되므로 레거시는 1 이하일 때 진짜 삭제로
+     * 본다. 그 경계를 그대로 쓴다.
+     *
+     * @param id 글번호
+     * @return 처리되었으면 {@code true}
+     */
+    @Transactional
+    public boolean remove(int id) {
+        return postMapper.countInThread(id) <= 1
+                ? postMapper.delete(id) == 1
+                : postMapper.markDeleted(id) == 1;
+    }
+
+    /**
      * 게시글 목록 한 페이지.
      *
      * @param rows 게시글 줄

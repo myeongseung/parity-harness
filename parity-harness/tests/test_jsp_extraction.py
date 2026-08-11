@@ -300,3 +300,24 @@ class TestAnchorWithoutHref(unittest.TestCase):
     def test_real_link_without_label_is_still_kept(self) -> None:
         """대상이 있으면 정보가 있다. 라벨이 없다고 버리지 않는다."""
         self.assertIn("nav:link||/unit/list", keys('<a href="/unit/list"></a>'))
+
+
+class TestDynamicTextScope(unittest.TestCase):
+    """`th:text` 가 라벨을 가리는 범위. 게시글 보기 화면에서 드러났다."""
+
+    def test_textarea_keeps_placeholder_label(self) -> None:
+        """textarea 의 안쪽 글자는 기본값이지 라벨이 아니다."""
+        legacy = '<textarea name="comment" placeholder="댓글수정"><%=comment%></textarea>'
+        new = '<textarea name="comment" placeholder="댓글수정" th:text="${c.comment}"></textarea>'
+        self.assertEqual(keys(legacy), keys(new))
+        self.assertIn("control:textarea|댓글수정|", keys(new))
+
+    def test_select_keeps_its_own_label(self) -> None:
+        """select 의 안쪽은 option 들이다. 각각 별도 signature 를 낸다."""
+        self.assertIn("control:select|keyfield|",
+                      keys('<select name="keyfield" th:text="${x}"></select>'))
+
+    def test_text_carrying_element_still_becomes_dynamic(self) -> None:
+        """안쪽 글자가 라벨인 요소는 그대로 «dyn» 이어야 한다."""
+        self.assertIn(f"control:button|{DYNAMIC}|submit",
+                      keys('<button type="submit" th:text="${label}">시안</button>'))

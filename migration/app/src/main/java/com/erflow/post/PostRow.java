@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
  * @param pos 들여쓰기 깊이
  * @param count 조회수
  * @param createdAt 작성일
+ * @param deleted 삭제 표시. 답변글이 달린 글을 지우면 1 이 된다
  */
 public record PostRow(
         int id,
@@ -39,7 +40,8 @@ public record PostRow(
         int depth,
         int pos,
         int count,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        int deleted) {
 
     /**
      * 답글인지 여부.
@@ -48,5 +50,17 @@ public record PostRow(
      */
     public boolean reply() {
         return pos > 0;
+    }
+
+    /**
+     * 삭제 표시된 글인지 여부.
+     *
+     * <p>레거시 {@code postView.jsp} 의 {@code isDeleted} 와 같다. 답변글이 달린
+     * 글은 지워지지 않고 제목·본문이 «삭제된 글입니다.» 로 바뀐 채 남는다.
+     *
+     * @return 삭제 표시된 글이면 {@code true}
+     */
+    public boolean removed() {
+        return deleted == 1;
     }
 }

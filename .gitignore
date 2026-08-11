@@ -50,3 +50,4 @@ legacy/ERFlow-DB.sql
 
 ### 마스킹 대상 목록 — 원문이 적히므로 커밋하지 않는다 ###
 migration/tools/redact-patterns.local.json
+data/

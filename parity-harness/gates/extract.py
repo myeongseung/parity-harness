@@ -172,7 +172,16 @@ def _label_for(
             `<input type="text" name="unitName" value="<%=name%>">` 를 value 로 읽으면
             수정 폼의 모든 입력이 «dyn» 이 되어 정답이 아무것도 말해주지 않는다.
     """
-    if any(attr in node.attrs for attr in _DYNAMIC_ATTRS):
+    # `th:text` 는 요소의 **안쪽 글자**를 서버가 채운다는 뜻이다. 그 글자가 라벨인
+    # 요소에서만 라벨을 알 수 없게 만든다.
+    #
+    # textarea 와 select 는 안쪽 글자가 라벨이 아니다(각각 기본값과 option 들이다).
+    # 레거시 `<textarea placeholder="댓글수정"><%=comment%></textarea>` 는 표현식이
+    # 텍스트 자리라 라벨이 placeholder 로 잡힌다. 신규가 같은 자리를 `th:text` 로
+    # 채웠다고 라벨까지 «dyn» 이 되면, 같은 요소가 서로 다른 signature 를 내
+    # 없던 차이가 보고된다.
+    if node.tag not in _TEXT_IS_NOT_LABEL and any(
+            attr in node.attrs for attr in _DYNAMIC_ATTRS):
         return DYNAMIC, DYNAMIC
 
     node_id = node.attrs.get("id", "")

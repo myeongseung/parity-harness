@@ -602,6 +602,141 @@ for (int i = 0; i < numPerPage; ++i) {
 
 ---
 
+## D-027 · 첨부 저장 위치를 바꾼다
+
+레거시는 배포된 WAR 안에 넣었다.
+
+```jsp
+final String SAVE_FOLDER = request.getServletContext().getRealPath("/upload");
+```
+
+실행 가능한 jar 에는 그런 경로가 없다. 있다 해도 재배포하면 첨부가 통째로
+사라진다.
+
+**결정:** 바깥 폴더를 설정으로 받는다 — `erflow.upload.dir`, 기본값 `./data/upload`.
+저장 이름은 레거시 그대로 확장자 없는 UUID 이고, 원본 이름과 확장자는 DB 에 따로
+넣는다. **화면에 보이는 것은 달라지지 않는다.**
+
+---
+
+## D-028 · 내려받기를 DB 등록분으로 제한한다
+
+레거시 `downloadFile.jsp` 는 요청에 실린 이름을 저장 폴더에 그대로 붙인다.
+
+```jsp
+File downloadFile = new File(SAVE_FOLDER + File.separator + filename);
+```
+
+이름만 알면 그 폴더의 아무 파일이나 가져갈 수 있다. 게시판 권한도 보지 않는다.
+
+**결정:** 바꾼다. `post_file_tbl` 에 등록된 이름만 받고, 그 첨부가 달린 글의
+게시판 읽기 권한을 확인한다. 등록되지 않은 이름은 파일이 있어도 내려가지 않는다.
+
+레거시가 정답이라는 원칙의 예외다. 근거는 D-013(CSRF)과 같다 — **없던 구멍을
+그대로 옮기는 것은 이관이 아니다.** 첨부를 정상적으로 받는 흐름은 달라지지 않는다.
+
+---
+
+## D-029 · 조회수 집계 조건이 뒤집혀 있다
+
+`postView.jsp` 는 `postId` 쿠키에 본 글 번호를 쌓아 중복을 막으려 했다. 조건이
+반대다.
+
+```jsp
+if (cookie == null) {
+    result = activityCon.updateCount(postId);          // 쿠키가 없으면 올린다
+} else {
+    if (cookiePostList.indexOf(postId + "") != -1) {   // 목록에 **있으면**
+        cookie.setValue(cookie.getValue() + ";" + postId);
+        result = activityCon.updateCount(postId);      // 또 올린다
+    }
+}
+```
+
+| 상황 | 동작 |
+|---|---|
+| 쿠키가 아예 없다 (첫 조회) | 올린다 |
+| 쿠키는 있는데 이 글은 처음 | **안 올린다** |
+| 이미 본 글을 또 연다 | **볼 때마다 올린다** |
+
+중복을 막으려던 장치가 정확히 중복만 세고 있다. 새 글은 세지 않고, 그 글은
+쿠키에 담기지도 않으므로 영원히 세지 않는다.
+
+**결정:** 그대로 옮긴다. 조회수는 화면에 뜨는 값이라 규칙을 고치면 레거시와 다른
+숫자가 된다. 판단을 `PostViewCounter` 로 떼어내 `PostViewCounterTest` 가 못을
+박는다 — 코드에 섞여 있으면 그대로 옮겼는지 확인할 수 없다.
+
+글쓴이 본인이 열면 이 판단 자체를 하지 않는 것도 레거시 그대로다.
+
+---
+
+## D-030 · 답변글의 게시판 번호를 되살린다
+
+`PostServiceImpl.replyPost` 에 이런 줄이 있다.
+
+```java
+int boardId = 2; // 외래키오류때문에 임시
+```
+
+`postReplyProc.jsp` 가 `bean.setBoardId(boardId)` 로 **올바른 번호를 담아 넘기는데
+서비스가 이 줄로 덮어쓴다.** 어느 게시판에 답변을 달든 자유게시판(2번)에 쌓인다.
+
+**결정:** 넘어온 값을 쓴다. 레거시 동작을 재현하지 않는다.
+
+지금까지의 결함들(D-024 검색 분기, D-025 페이징, D-029 조회수)은 **보이는 것이
+이상한** 결함이라 그대로 옮겼다. 이것은 다르다 — **틀린 데이터를 쓰는** 결함이고,
+호출부가 이미 올바른 값을 갖고 있으며, 원저자가 "임시"라고 적어 두었다.
+
+게이트도 실화면 대조도 이 선택을 검증하지 못한다. 둘 다 읽는 화면만 본다.
+그래서 판단이라는 것을 분명히 적어 둔다. 되돌리려면 이 항목을 뒤집으면 된다.
+
+---
+
+## D-031 · 댓글 삭제를 POST 로 받는다
+
+레거시는 링크였다.
+
+```jsp
+<a class="dropdown-item" href="commentDeleteProc.jsp?boardId=..&postId=..&id=..">삭제하기</a>
+```
+
+GET 으로 지워진다. 이관하며 CSRF 방어를 켰는데(D-013) 그 방어는 GET 을 보지
+않으므로, 댓글 삭제만 방어를 비켜 간다. `<img src="...comment/delete?id=5">` 한 줄로
+남의 댓글이 지워진다.
+
+**결정:** POST 로 받는다. 화면의 "삭제하기"는 그대로 링크이고 JS 가 숨은 폼을
+보낸다. 라벨도 위치도 달라지지 않는다.
+
+**대가가 있다.** 숨은 입력 셋(`boardId`·`postId`·`id`)이 늘어 발명 게이트에 걸린다.
+allowlist 에 사유와 함께 등록했다. 그 키들의 초과분이 이 화면에서 더는 검사되지
+않는다는 뜻이므로, 공짜가 아니라는 것을 적어 둔다.
+
+---
+
+## D-032 · 글쓰기 화면의 게시판 이름이 하드코딩이다
+
+`postRegister.jsp` 는 게시판 이름을 계산해 두고 쓰지 않는다.
+
+```jsp
+BoardBean board = activityCon.getBoard(boardId);
+String boardName = board.getSubject();          // 계산은 한다
+...
+<input type="text" class="write-header-type" value="자유게시판" readonly>   <!-- 그런데 -->
+```
+
+공지사항에 글을 써도 "자유게시판"이 뜬다. `postReply.jsp` 와 `postUpdate.jsp` 는
+같은 자리에 `<%=boardName%>` 을 쓴다. 같은 화면 셋 중 하나만 틀렸다.
+
+**결정:** 그대로 옮긴다. 읽기 전용 표시라 저장되는 값에 영향이 없고, 고치면 화면
+글자가 달라진다.
+
+**게이트는 이것을 보지 못한다.** `value` 는 버튼류가 아닌 입력에서 라벨이 아니므로
+(그 규칙 자체는 옳다), 정답에는 `control:input||text` 로만 남는다. 하드코딩이든
+동적이든 같은 signature 다. `PostScreenTest.registerHardcodesBoardName` 이 실제
+렌더링 결과에서 확인한다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |
@@ -613,4 +748,6 @@ for (int i = 0; i < numPerPage; ++i) {
 | O-005 | 한글 정렬 순서 차이 (D-006 관련) | ✅ **해소** — 레거시 라이브 DB 도 `general_ci`. 실측 확인 |
 | O-006 | 약한 비밀번호 해시 (D-014 관련) — 로그인 시 재해시로 점진 교체 | 이관 후 결정 |
 | O-007 | 사용자 55명 중 **42명이 비밀번호 = 사번** 상태. 데이터 문제이며 코드 문제가 아니다 | 운영 판단 |
+| O-009 | 게시글을 지워도 첨부 파일이 디스크에 남는다. 레거시가 DB 행만 지운다 | 이관 후 결정 |
+| O-010 | 게시글 본문이 `th:utext` 로 나간다. 레거시 `out.print(content)` 와 같다 — 저장된 HTML 이 그대로 실행된다 | 이관 후 결정 |
 | O-008 | `index.jsp` / `admin.jsp` 이관 전이라 로그인 후 갈 곳이 발판 화면이다 | 해당 도메인 이관 시 해소 |
