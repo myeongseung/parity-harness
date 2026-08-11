@@ -33,6 +33,9 @@ migration/       ERFlow 이관 (프로젝트 전용)
 ## 자주 쓰는 명령
 
 ```bash
+# 게이트 전부 — 커밋 전에 이것부터 돌린다. CI 가 돌리는 것과 같다
+python migration/tools/run_gates.py
+
 # 앱
 cd migration/app
 ./gradlew build                                          # 컴파일 + Checkstyle + 테스트
@@ -67,6 +70,8 @@ python -m gates.check_menu_parity --golden ../migration/golden/layout/menu.json 
 | **런타임 주입** | CSRF 처럼 렌더링 시점에 붙는 요소는 템플릿 대조로 안 보인다. 반복 없는 화면만 렌더링 대조 |
 | **`value` 는 라벨이 아니다** | `<button value="delete">삭제</button>`. 버튼류 input 만 예외 |
 | **`*Proc.jsp`** | 화면이 아니라 액션이다. 화면 게이트 대상이 아니다 |
+| **게이트의 한계** | 게이트는 "정답 대비 다른가"만 본다. 정답 추출이 원본의 일부만 보고 있으면 조용히 통과한다. 실제로 한 번 당했다(D-008 철회) |
+| **CI 커버리지** | 앱 테스트 53건 중 CI 에서 도는 것은 24건. DB 를 상대로 하는 29건은 로컬에서만 돈다 |
 
 ## 접속 정보
 

@@ -1,5 +1,7 @@
 # parity-harness
 
+[![CI](https://github.com/myeongseung/parity-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/myeongseung/parity-harness/actions/workflows/ci.yml)
+
 **레거시를 정답(golden)으로 삼아, 이관 결과가 원본과 같은지를 기계적으로 증명하는 마이그레이션 하네스.**
 
 시중의 AI 마이그레이션 도구는 대부분 *변환*에서 멈춘다. 변환 결과가 맞는지는 사람이 눈으로 본다.
@@ -156,7 +158,30 @@ python -m gates.check_no_invention --golden /tmp/golden.json \
     --new ../migration/app/src/main/resources/templates/unit/list.html
 ```
 
+```bash
+# 모든 게이트를 한 번에 — 정답 재생산 + 메뉴 정합성 + 발명 차단
+python migration/tools/run_gates.py
+```
+
 앱을 돌리려면 DB 접속이 필요하다. `migration/app/README.md` 참조.
+
+## CI 가 무엇을 보는가
+
+푸시마다 세 가지를 돌린다.
+
+| | |
+|---|---|
+| 하네스 테스트 | 36건 |
+| 정합성 게이트 | 정답 재생산 · 메뉴 · 발명 차단 (`run_gates.py`) |
+| 앱 빌드 | 컴파일 + Checkstyle + 테스트 |
+
+**정답 재생산 검사**가 이 CI 의 핵심이다. 레거시에서 정답을 다시 뽑아 저장소의 것과
+견준다 — 추출 규칙을 고치고 정답을 갱신하지 않았거나 정답을 손으로 고쳤다면 여기서
+걸린다. 그런 정답으로 내린 판정은 믿을 수 없기 때문이다.
+
+**한계도 적어 둔다.** 앱 테스트 53건 중 CI 에서 실제로 도는 것은 **24건**이다. 나머지
+29건은 연결된 DB 를 상대로 하므로 접속 정보가 없는 CI 에서는 스스로 건너뛴다
+(접속 정보는 커밋하지 않는다). 배지가 초록이어도 DB 대조는 로컬에서 돌려야 한다.
 
 ## 문서
 

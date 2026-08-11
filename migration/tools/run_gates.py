@@ -1,0 +1,151 @@
+"""모든 정합성 게이트를 한 번에 돌린다.
+
+CI 와 로컬이 같은 것을 돌려야 한다. 손으로 하나씩 돌리면 빠뜨린 게이트가 생기고,
+빠뜨린 줄도 모른다.
+
+검사 순서
+
+1. **정답이 재생산되는가** — 레거시에서 정답을 다시 뽑아 저장소의 것과 대조한다.
+   추출 규칙을 고치고 정답을 다시 뽑지 않았다면 여기서 걸린다.
+2. **메뉴 정합성** — 레거시 메뉴 트리와 seed 를 대조한다.
+3. **발명 차단** — 화면별로 레거시에 없던 요소가 끼어들었는지 본다.
+
+사용법::
+
+    python migration/tools/run_gates.py
+
+exit code 는 게이트 규약을 따른다(0 PASS / 1 FAIL / 2 ERROR / 3 ESCALATE).
+여러 게이트 중 가장 나쁜 값을 돌려준다.
+"""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+HARNESS = ROOT / "parity-harness"
+LEGACY = ROOT / "legacy" / "ERFlow" / "src" / "main" / "webapp"
+GOLDEN = ROOT / "migration" / "golden"
+TEMPLATES = ROOT / "migration" / "app" / "src" / "main" / "resources" / "templates"
+ALLOWLIST = ROOT / "migration" / "allowlist.json"
+
+#: (도메인, 레거시 JSP 이름, 신규 템플릿 이름)
+SCREENS = (
+    ("unit", "unitList", "list"),
+    ("unit", "unitRegister", "register"),
+    ("unit", "unitUpdate", "update"),
+    ("company", "companyList", "list"),
+    ("company", "companyRegister", "register"),
+    ("company", "companyUpdate", "update"),
+)
+
+#: (레이아웃 정답, 위치)
+LAYOUTS = (("menu", "SIDE"), ("header", "HEADER"))
+
+
+def run(args: list[str]) -> tuple[int, str]:
+    """하네스 모듈을 돌린다."""
+    result = subprocess.run(
+        [sys.executable, "-m", *args],
+        cwd=HARNESS,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return result.returncode, (result.stdout or "") + (result.stderr or "")
+
+
+def check_golden_is_reproducible() -> int:
+    """저장소의 정답이 레거시에서 다시 뽑은 것과 같은지 본다.
+
+    정답은 생성물이다. 원본에서 다시 뽑았을 때 달라진다면 둘 중 하나다 —
+    추출 규칙이 바뀌었는데 정답을 갱신하지 않았거나, 정답을 손으로 고쳤거나.
+    어느 쪽이든 그 정답으로 내린 판정을 믿을 수 없다.
+
+    비교는 **판정에 쓰이는 것**만 한다 — 추출기 버전과 signature 목록. `screen` 라벨과
+    `source` 경로는 뽑을 때 넘긴 값이라 호출 방식에 따라 달라지며, 그것까지 견주면
+    내용이 같은데도 실패한다.
+    """
+    print("== 정답 재생산 ==")
+    worst = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        for domain, jsp, _ in SCREENS:
+            fresh = Path(tmp) / f"{jsp}.json"
+            code, output = run([
+                "gates.extract_golden",
+                "--legacy", str(LEGACY / domain / f"{jsp}.jsp"),
+                "--screen", f"{domain}-{jsp}",
+                "-o", str(fresh),
+            ])
+            if code != 0:
+                print(f"  ERROR {jsp}\n{output}")
+                worst = max(worst, 2)
+                continue
+
+            committed = GOLDEN / domain / f"{jsp}.json"
+            if not committed.is_file():
+                print(f"  MISSING {domain}/{jsp}.json")
+                worst = max(worst, 3)
+                continue
+
+            before = json.loads(committed.read_text(encoding="utf-8"))
+            after = json.loads(fresh.read_text(encoding="utf-8"))
+            same = (before.get("extractor") == after.get("extractor")
+                    and before.get("signatures") == after.get("signatures"))
+
+            print(f"  {'OK   ' if same else 'DRIFT'} {domain}/{jsp}.json")
+            if not same:
+                print(f"        저장소 {len(before.get('signatures', []))}건 / "
+                      f"재생성 {len(after.get('signatures', []))}건")
+                print("        extract_golden 을 다시 돌려 정답을 갱신해야 한다")
+                worst = max(worst, 3)
+    return worst
+
+
+def check_menus() -> int:
+    print("\n== 메뉴 정합성 ==")
+    worst = 0
+    for golden, placement in LAYOUTS:
+        code, output = run([
+            "gates.check_menu_parity",
+            "--golden", str(GOLDEN / "layout" / f"{golden}.json"),
+            "--seed", str(ROOT / "migration" / "seed" / "menu-seed.json"),
+            "--placement", placement,
+        ])
+        print("  " + output.strip().replace("\n", "\n  "))
+        worst = max(worst, code)
+    return worst
+
+
+def check_screens() -> int:
+    print("\n== 발명 차단 ==")
+    worst = 0
+    for domain, jsp, template in SCREENS:
+        code, output = run([
+            "gates.check_no_invention",
+            "--golden", str(GOLDEN / domain / f"{jsp}.json"),
+            "--new", str(TEMPLATES / domain / f"{template}.html"),
+            "--allowlist", str(ALLOWLIST),
+        ])
+        head = output.strip().splitlines()[0] if output.strip() else "(출력 없음)"
+        print(f"  [{code}] {domain}/{template}.html  {head}")
+        if code != 0:
+            print("      " + output.strip().replace("\n", "\n      "))
+        worst = max(worst, code)
+    return worst
+
+
+def main() -> int:
+    worst = max(check_golden_is_reproducible(), check_menus(), check_screens())
+    verdict = {0: "PASS", 1: "FAIL", 2: "ERROR", 3: "ESCALATE"}.get(worst, "?")
+    print(f"\n결과: {verdict} (exit {worst})")
+    return worst
+
+
+if __name__ == "__main__":
+    sys.exit(main())
