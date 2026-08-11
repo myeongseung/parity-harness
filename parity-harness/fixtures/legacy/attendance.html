@@ -1,0 +1,39 @@
+<!-- 레거시 화면 (정답 golden). 구형 테이블 레이아웃 + 서버 컨트롤 스타일. -->
+<html>
+<body>
+<form id="frmMain" method="post">
+  <table class="tbl-search">
+    <tr>
+      <td><label for="txtEmpNo">사원번호 *</label></td>
+      <td><input type="text" id="txtEmpNo" name="empNo" /></td>
+      <td><label for="ddlDept">부서</label></td>
+      <td>
+        <select id="ddlDept" name="deptCd">
+          <option value="">전체</option>
+          <option value="10">경영지원</option>
+          <option value="20">개발</option>
+        </select>
+      </td>
+      <td><input type="submit" value="조회" /></td>
+    </tr>
+  </table>
+
+  <div class="grid-area">
+    <table id="grdAttendance">
+      <tr>
+        <th>사원번호</th>
+        <th>성명</th>
+        <th>부서</th>
+        <th>출근시각</th>
+        <th>퇴근시각</th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="btn-area">
+    <input type="button" value="저장" id="btnSave" />
+    <input type="button" value="삭제" id="btnDelete" />
+  </div>
+</form>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!-- 충실한 이관. DOM 구조는 전혀 다르지만(테이블 -> flex) 의미 있는 요소는 1:1. -->
+<div class="page">
+  <form id="searchForm" method="post">
+    <div class="filter-row">
+      <div class="dx-field">
+        <label for="empNo">사원번호</label>
+        <input type="text" id="empNo" name="empNo" class="dx-texteditor-input" />
+      </div>
+      <div class="dx-field">
+        <label for="deptCd">부서</label>
+        <select id="deptCd" name="deptCd" class="dx-selectbox">
+          <option value="">전체</option>
+          <option value="10">경영지원</option>
+          <option value="20">개발</option>
+        </select>
+      </div>
+      <button type="submit" class="dx-button">조회</button>
+    </div>
+
+    <div class="grid-wrap">
+      <table class="dx-datagrid">
+        <thead>
+          <tr>
+            <th>사원번호</th>
+            <th>성명</th>
+            <th>부서</th>
+            <th>출근시각</th>
+            <th>퇴근시각</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="dx-button">저장</button>
+      <button type="button" class="dx-button">삭제</button>
+    </div>
+  </form>
+</div>

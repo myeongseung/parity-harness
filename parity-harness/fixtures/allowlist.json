@@ -1,0 +1,11 @@
+{
+  "schema": "parity-harness/allowlist@1",
+  "entries": [
+    {
+      "key": "control:hidden|_csrf|hidden",
+      "reason": "Spring Security CSRF 토큰. 레거시에는 없던 요소이나 프레임워크 필수이며 사용자에게 보이지 않는다.",
+      "owner": "myeongseung",
+      "added": "2026-08-10"
+    }
+  ]
+}

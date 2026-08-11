@@ -1,0 +1,40 @@
+<!-- 발명이 아니라 라벨 드리프트. "경영지원" 을 "경영지원부" 로 임의 수정했다.
+     조치가 다르므로(원문 복원 vs 요소 제거) 심각도를 분리해야 한다. -->
+<div class="page">
+  <form id="searchForm" method="post">
+    <div class="filter-row">
+      <div class="dx-field">
+        <label for="empNo">사원번호</label>
+        <input type="text" id="empNo" name="empNo" />
+      </div>
+      <div class="dx-field">
+        <label for="deptCd">부서</label>
+        <select id="deptCd" name="deptCd">
+          <option value="">전체</option>
+          <option value="10">경영지원부</option>
+          <option value="20">개발</option>
+        </select>
+      </div>
+      <button type="submit">조회</button>
+    </div>
+
+    <div class="grid-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>사원번호</th>
+            <th>성명</th>
+            <th>부서</th>
+            <th>출근시각</th>
+            <th>퇴근시각</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button type="button">저장</button>
+      <button type="button">삭제</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,40 @@
+<!-- 레거시에 없지만 프레임워크상 필요한 요소(CSRF 토큰). allowlist 승인 대상. -->
+<div class="page">
+  <form id="searchForm" method="post">
+    <input type="hidden" name="_csrf" value="8f3a1c92-7b40-4d1e-9a55-2ce0b7d41f88" />
+    <div class="filter-row">
+      <div class="dx-field">
+        <label for="empNo">사원번호</label>
+        <input type="text" id="empNo" name="empNo" />
+      </div>
+      <div class="dx-field">
+        <label for="deptCd">부서</label>
+        <select id="deptCd" name="deptCd">
+          <option value="">전체</option>
+          <option value="10">경영지원</option>
+          <option value="20">개발</option>
+        </select>
+      </div>
+      <button type="submit">조회</button>
+    </div>
+
+    <div class="grid-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>사원번호</th>
+            <th>성명</th>
+            <th>부서</th>
+            <th>출근시각</th>
+            <th>퇴근시각</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button type="button">저장</button>
+      <button type="button">삭제</button>
+    </div>
+  </form>
+</div>

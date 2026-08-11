@@ -1,0 +1,44 @@
+<!-- 친절한 이관. 레거시에 없던 것을 셋 추가했다. 코드 리뷰로는 잘 안 걸린다.
+     1) 엑셀 다운로드 버튼   2) 부서 콤보에 없던 항목   3) 없던 건수 안내문구 -->
+<div class="page">
+  <form id="searchForm" method="post">
+    <div class="filter-row">
+      <div class="dx-field">
+        <label for="empNo">사원번호</label>
+        <input type="text" id="empNo" name="empNo" />
+      </div>
+      <div class="dx-field">
+        <label for="deptCd">부서</label>
+        <select id="deptCd" name="deptCd">
+          <option value="">전체</option>
+          <option value="10">경영지원</option>
+          <option value="20">개발</option>
+          <option value="30">인사</option>
+        </select>
+      </div>
+      <button type="submit">조회</button>
+      <button type="button">엑셀 다운로드</button>
+    </div>
+
+    <div class="summary">총 3건이 조회되었습니다.</div>
+
+    <div class="grid-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>사원번호</th>
+            <th>성명</th>
+            <th>부서</th>
+            <th>출근시각</th>
+            <th>퇴근시각</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button type="button">저장</button>
+      <button type="button">삭제</button>
+    </div>
+  </form>
+</div>
