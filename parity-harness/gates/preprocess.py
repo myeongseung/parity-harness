@@ -32,6 +32,10 @@ _TH_ATTR = re.compile(
     r'\bth:(href|src|value|field|action|placeholder|title|alt)\s*=\s*"[|@]?\{?([^"}]*?)\}?\|?"'
 )
 
+#: `@{/path(a=b)}` 의 괄호는 쿼리 파라미터를 적는 Thymeleaf 문법이다.
+#: 링크 대상을 견줄 때 쿼리는 어차피 떼어내므로 여기서도 뗀다.
+_TH_LINK_PARAMS = re.compile(r'\b(href|src|action)="([^"(]*)\([^"]*\)"')
+
 # 순서가 중요하다. 포괄적인 <% ... %> 를 마지막에 둔다.
 _RULES: tuple[tuple[re.Pattern, str], ...] = (
     (re.compile(r"<%--.*?--%>", re.S), ""),        # JSP 주석
@@ -53,4 +57,5 @@ def preprocess(markup: str) -> str:
     for pattern, replacement in _RULES:
         markup = pattern.sub(replacement, markup)
     # 표현식이 이미 자리표시자로 바뀐 뒤에 속성 이름을 정규화한다.
-    return _TH_ATTR.sub(r'\1="\2"', markup)
+    markup = _TH_ATTR.sub(r'\1="\2"', markup)
+    return _TH_LINK_PARAMS.sub(r'\1="\2"', markup)

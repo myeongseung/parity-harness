@@ -1,4 +1,4 @@
-package com.erflow.unit;
+package com.erflow.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

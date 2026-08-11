@@ -44,6 +44,32 @@ _DYNAMIC = "«dyn»"
 #: 근거: legacy/ERFlow/src/main/webapp/indexHeader.jsp:44
 ADMIN_ONLY = {"/ERFlow/admin/admin.jsp"}
 
+#: 한 화면이 요청 파라미터에 따라 서로 다른 권한을 요구하는 경우.
+#:
+#: 레거시는 화면 안에서 `switch (paramFlag)` 로 PROGRAM_CODE 를 골랐다. 10개 화면이
+#: 그렇다. 파일에서 첫 코드만 읽으면 절반이 엉뚱한 권한으로 매핑되므로, 판별 규칙을
+#: 확인해 여기 고정한다. 분기 조건은 자바 코드 안에 있어 기계로 뽑을 수 없다.
+#:
+#: 형식: 레거시 경로 -> (파라미터명, {값: 프로그램명})
+CONDITIONAL_PROGRAMS = {
+    # company/*.jsp: switch (paramFlag) { case "0": OUT; case "1": IN; }
+    "/ERFlow/company/companyList.jsp": ("flag", {"1": "구매 협력업체 관리", "0": "영업 협력업체 관리"}),
+    "/ERFlow/company/companyRegister.jsp": ("flag", {"1": "구매 협력업체 관리", "0": "영업 협력업체 관리"}),
+    "/ERFlow/company/companyUpdate.jsp": ("flag", {"1": "구매 협력업체 관리", "0": "영업 협력업체 관리"}),
+    # task/*.jsp: isSell ? SELL : (isPurchase ? PURCHASE : "")
+    "/ERFlow/task/taskRegister.jsp": ("flag", {"sell": "수주 관리", "purchase": "발주 관리"}),
+    "/ERFlow/task/taskUpdate.jsp": ("flag", {"sell": "수주 관리", "purchase": "발주 관리"}),
+    # bound/*.jsp: isInbound ? INBOUND : OUTBOUND
+    # 주의: 레거시는 이 화면들에서 입고·출고 권한을 **둘 다** 요구한 뒤 flag 별로 한 번 더
+    # 검사한다. 아래 매핑은 두 번째 검사만 담는다. 첫 번째 조건은 bound 도메인을
+    # 이관할 때 함께 옮긴다 — 그때까지 이 경로들은 404 라 영향이 없다.
+    "/ERFlow/bound/boundRegister.jsp": ("flag", {"inbound": "입고 관리", "outbound": "출고 관리"}),
+    "/ERFlow/bound/boundRegisterProc.jsp": ("flag", {"inbound": "입고 관리", "outbound": "출고 관리"}),
+    "/ERFlow/bound/boundUpdate.jsp": ("flag", {"inbound": "입고 관리", "outbound": "출고 관리"}),
+    "/ERFlow/bound/boundUpdateProc.jsp": ("flag", {"inbound": "입고 관리", "outbound": "출고 관리"}),
+    "/ERFlow/bound/boundDeleteProc.jsp": ("flag", {"inbound": "입고 관리", "outbound": "출고 관리"}),
+}
+
 #: 화면이지만 program 권한을 갖지 않는 것들. 사유를 남겨야 게이트가 통과시킨다.
 #: 사유 없이 비워두는 것과 근거를 대고 비워두는 것은 다르다.
 PROGRAM_EXEMPT = {
@@ -137,43 +163,89 @@ def scan_screens(programs: dict[str, dict]) -> list[dict]:
     그래서 화면 단위 매핑을 별도 테이블로 둔다. 레거시가 각 JSP 상단에
     PROGRAM_CODE 를 박아둔 구조와 정확히 대응한다.
     """
+    by_name = {entry["name"]: pid for pid, entry in programs.items()}
     rows: list[dict] = []
+
     for path in sorted(WEBAPP.rglob("*.jsp")):
-        found = _PROGRAM_CODE.search(path.read_text(encoding="utf-8", errors="replace"))
-        if found is None:
+        codes = [
+            code.upper()
+            for code in _PROGRAM_CODE.findall(path.read_text(encoding="utf-8", errors="replace"))
+        ]
+        codes = [code for code in dict.fromkeys(codes) if code in programs]
+        if not codes:
             continue
-        program_id = found.group(1).upper()
-        if program_id not in programs:
-            continue
+
         legacy = _CONTEXT + path.relative_to(WEBAPP).as_posix()
-        rows.append(
-            {
-                "screen_id": len(rows) + 1,
-                "route": to_route(legacy),
-                "legacy_jsp": legacy,
-                "program_id": program_id,
-            }
-        )
+        route = to_route(legacy).split("?")[0]
+
+        if len(codes) == 1:
+            rows.append(_screen(len(rows) + 1, route, legacy, codes[0], None, None))
+            continue
+
+        # 코드가 둘 이상이면 화면 안에서 조건으로 고른다. 규칙을 모르면 멈춘다 —
+        # 아무거나 고르면 절반이 엉뚱한 권한을 갖게 되고, 그 사실이 드러나지 않는다.
+        rule = CONDITIONAL_PROGRAMS.get(legacy)
+        if rule is None:
+            raise SystemExit(
+                f"{legacy} 는 PROGRAM_CODE 를 {len(codes)}개 쓴다. 어느 조건에서 무엇을 "
+                "쓰는지 확인해 CONDITIONAL_PROGRAMS 에 적어야 한다."
+            )
+        param, mapping = rule
+        for value, name in mapping.items():
+            program_id = by_name.get(name)
+            if program_id is None:
+                raise SystemExit(f"{legacy}: 프로그램 «{name}» 을 찾을 수 없다")
+            rows.append(_screen(len(rows) + 1, route, legacy, program_id, param, value))
     return rows
+
+
+def _screen(screen_id, route, legacy, program_id, param_name, param_value) -> dict:
+    return {
+        "screen_id": screen_id,
+        "route": route,
+        "legacy_jsp": legacy,
+        "param_name": param_name,
+        "param_value": param_value,
+        "program_id": program_id,
+    }
 
 
 def build() -> dict:
     programs = load_programs()
     screens = scan_screens(programs)
-    route_to_screen = {row["route"]: row["screen_id"] for row in screens}
     rows: list[dict] = []
     unresolved: list[str] = []
+
+    def screen_for(url: str | None) -> int | None:
+        """메뉴 링크가 가리키는 화면을 찾는다.
+
+        한 경로가 파라미터에 따라 서로 다른 권한을 갖는 경우가 있다
+        (`/company/list?flag=1` 구매 / `?flag=0` 영업). 경로만으로 고르면 절반이
+        엉뚱한 권한에 붙는다.
+        """
+        if not url:
+            return None
+        path, _, query = url.partition("?")
+        params = dict(part.split("=", 1) for part in query.split("&") if "=" in part)
+        candidates = [row for row in screens if row["route"] == path]
+        for row in candidates:
+            if row["param_name"] and params.get(row["param_name"]) == row["param_value"]:
+                return row["screen_id"]
+        for row in candidates:
+            if not row["param_name"]:
+                return row["screen_id"]
+        return None
 
     for placement, golden_path in SOURCES:
         stack: dict[int, int] = {}
         for item in _menu_items(placement, golden_path):
             menu_id = len(rows) + 1
-            program_id = None
-            if item["href"]:
-                program_id = program_code_of(item["href"])
-                if program_id is None or program_id not in programs:
-                    unresolved.append(f"{placement} / {item['path']}")
-                    program_id = None
+            # 권한은 화면에 붙는다. 메뉴는 화면을 가리킬 뿐이다.
+            screen_id = screen_for(to_route(item["href"]) if item["href"] else None)
+            program_id = next(
+                (row["program_id"] for row in screens if row["screen_id"] == screen_id), None)
+            if item["href"] and program_id is None:
+                unresolved.append(f"{placement} / {item['path']}")
 
             stack[item["depth"]] = menu_id
             rows.append(
@@ -188,9 +260,7 @@ def build() -> dict:
                     "separator_before": bool(item.get("separator_before")),
                     "legacy_url": item["href"],
                     "url": to_route(item["href"]) if item["href"] else None,
-                    "screen_id": route_to_screen.get(
-                        to_route(item["href"]).split("?")[0] if item["href"] else ""
-                    ),
+                    "screen_id": screen_id,
                     "program_id": program_id,
                     "program_exempt_reason": PROGRAM_EXEMPT.get(item["href"] or ""),
                 }
@@ -245,10 +315,12 @@ def to_sql(seed: dict) -> str:
         "CREATE TABLE IF NOT EXISTS `screen` (",
         "  `screen_id`  INT           NOT NULL,",
         "  `route`      VARCHAR(512)  NOT NULL COMMENT '권한 매칭 대상 경로. 쿼리 제외',",
+        "  `param_name`  VARCHAR(64)  NULL COMMENT '같은 경로가 파라미터로 권한이 갈릴 때',",
+        "  `param_value` VARCHAR(64)  NULL COMMENT '그 파라미터의 값',",
         "  `legacy_jsp` VARCHAR(512)  NOT NULL COMMENT '출처. 추적용',",
         "  `program_id` VARCHAR(128)  NOT NULL,",
         "  PRIMARY KEY (`screen_id`),",
-        "  UNIQUE KEY `ux_screen_route` (`route`),",
+        "  UNIQUE KEY `ux_screen_route` (`route`, `param_name`, `param_value`),",
         "  CONSTRAINT `fk_screen_program` FOREIGN KEY (`program_id`) REFERENCES `program` (`program_id`)",
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
         "",
@@ -279,10 +351,15 @@ def to_sql(seed: dict) -> str:
         )
         + ";"
     )
-    lines += ["", "INSERT INTO `screen` (`screen_id`, `route`, `legacy_jsp`, `program_id`) VALUES"]
+    lines += [
+        "",
+        "INSERT INTO `screen` (`screen_id`, `route`, `param_name`, `param_value`, "
+        "`legacy_jsp`, `program_id`) VALUES",
+    ]
     lines.append(
         ",\n".join(
             f"  ({s['screen_id']}, {_sql_str(s['route'])}, "
+            f"{_sql_str(s['param_name'])}, {_sql_str(s['param_value'])}, "
             f"{_sql_str(s['legacy_jsp'])}, {_sql_str(s['program_id'])})"
             for s in seed["screens"]
         )

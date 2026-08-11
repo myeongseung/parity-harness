@@ -1,5 +1,6 @@
 package com.erflow.auth;
 
+import java.util.List;
 import java.util.function.Supplier;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -62,11 +63,30 @@ public class ScreenAuthorizationManager
             return new AuthorizationDecision(false);
         }
 
-        ScreenAccess access = authMapper.findScreenAccess(context.getRequest().getRequestURI());
-        if (access == null) {
+        List<ScreenAccess> rules =
+                authMapper.findScreenAccess(context.getRequest().getRequestURI());
+        if (rules.isEmpty()) {
             // screen 에 없는 경로는 권한 대상이 아니다. 로그인만 되어 있으면 통과한다.
             // 레거시에서 PROGRAM_CODE 가 없던 화면들이 여기 해당한다.
             return new AuthorizationDecision(true);
+        }
+
+        // 같은 경로가 파라미터로 권한이 갈리는 경우가 있다. 협력업체 관리는
+        // flag=1 이면 구매, flag=0 이면 영업 권한을 요구한다.
+        ScreenAccess access = null;
+        for (ScreenAccess rule : rules) {
+            String actual = rule.paramName() == null
+                    ? null
+                    : context.getRequest().getParameter(rule.paramName());
+            if (rule.matches(actual)) {
+                access = rule;
+                break;
+            }
+        }
+        if (access == null) {
+            // 갈림 규칙이 있는데 어느 것에도 걸리지 않았다. 레거시는 이런 요청에
+            // 빈 programId 로 권한 검사를 돌려 통과시키지 못했다. 막는 쪽이 맞다.
+            return new AuthorizationDecision(false);
         }
         return new AuthorizationDecision(Permissions.hasProgramPermission(
                 user.deptPermission(), user.jobPermission(),

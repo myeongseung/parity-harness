@@ -1,4 +1,4 @@
-package com.erflow.unit;
+package com.erflow.common;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -6,10 +6,12 @@ import java.util.stream.IntStream;
 /**
  * 목록 페이징.
  *
- * <p>레거시는 이 계산을 {@code unitList.jsp} 스크립틀릿 안에서 했다. 화면마다 같은
- * 식을 복사해 뒀고, 틀려도 드러나지 않았다. 계산을 밖으로 꺼내 시험할 수 있게 한다.
+ * <p>레거시는 이 계산을 목록 화면 스크립틀릿 안에서 했다. 화면마다 같은 식을 복사해
+ * 뒀고, 틀려도 드러나지 않았다. 계산을 밖으로 꺼내 시험할 수 있게 한다.
  *
  * <p>숫자와 경계 조건은 레거시 그대로다. 페이지당 15건, 블록당 5페이지.
+ * {@code unitList.jsp} 와 {@code companyList.jsp} 가 같은 상수와 같은 식을 쓴다 —
+ * 목록 화면을 옮길 때마다 이것을 다시 쓰지 않는다.
  *
  * @param nowPage 현재 페이지. 1부터
  * @param totalRecord 전체 건수

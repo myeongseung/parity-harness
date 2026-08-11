@@ -69,17 +69,21 @@ def _classify(signature: Signature, golden: list[Signature]) -> tuple[str, str |
     셋을 뭉뚱그리면 리포트가 엉뚱한 조치를 지시한다. 라벨이 같은데 "원문 표기로
     되돌리라"고 하면 사람이 멀쩡한 라벨을 건드리게 된다.
     """
-    if signature.label in ("", DYNAMIC):
-        return INVENTION, None
-
     same_role = [
         other
         for other in golden
         if other.kind == signature.kind and other.role == signature.role and other.label
     ]
+
+    # 라벨이 정확히 같으면 대상만 바뀐 것이다. 라벨을 서버가 채우는 경우(«dyn»)도
+    # 마찬가지다 — 값을 모를 뿐 같은 자리의 같은 요소다.
     for other in same_role:
         if other.label == signature.label:
             return DETAIL_CHANGE, other.detail or "(없음)"
+
+    # 닮은 라벨 찾기는 실제 글자가 있어야 뜻이 있다.
+    if signature.label in ("", DYNAMIC):
+        return INVENTION, None
 
     matches = difflib.get_close_matches(
         signature.raw or signature.label,

@@ -1,5 +1,6 @@
 package com.erflow.unit;
 
+import com.erflow.common.Pagination;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -33,12 +33,15 @@
 
     <select id="findScreenAccess" resultType="com.erflow.auth.ScreenAccess">
         SELECT s.route,
-               p.name       AS programName,
+               s.param_name  AS paramName,
+               s.param_value AS paramValue,
+               p.name        AS programName,
                p.dept_level AS deptLevel,
                p.job_level  AS jobLevel
           FROM screen s
           JOIN program p ON s.program_id = p.program_id
          WHERE s.route = #{route}
+         ORDER BY s.param_name IS NULL, s.screen_id
     </select>
 
     <update id="updatePassword">

@@ -58,7 +58,7 @@ class MenuSeedTest {
     @DisplayName("program / screen / menu seed 가 적재되어 있다")
     void seedIsLoaded() throws Exception {
         assertThat(count("SELECT COUNT(*) FROM program")).isEqualTo(20);
-        assertThat(count("SELECT COUNT(*) FROM screen")).isEqualTo(39);
+        assertThat(count("SELECT COUNT(*) FROM screen")).isEqualTo(49);
         assertThat(count("SELECT COUNT(*) FROM menu")).isEqualTo(27);
     }
 
@@ -72,6 +72,24 @@ class MenuSeedTest {
                  WHERE m.url = '/unit/list'
                 """);
         assertThat(program).isEqualTo("생산 설비 관리");
+    }
+
+    @Test
+    @DisplayName("한 화면이 파라미터에 따라 다른 권한을 요구한다")
+    void conditionalPermissionPerParameter() throws Exception {
+        // 레거시 companyList.jsp 는 switch (paramFlag) 로 PROGRAM_CODE 를 골랐다.
+        // 파일에서 첫 코드만 읽으면 절반이 엉뚱한 권한에 붙는다 (D-008 철회, D-016).
+        assertThat(one("""
+                SELECT p.name FROM screen s JOIN program p ON s.program_id = p.program_id
+                 WHERE s.route = '/company/list' AND s.param_name = 'flag' AND s.param_value = '1'
+                """)).isEqualTo("구매 협력업체 관리");
+        assertThat(one("""
+                SELECT p.name FROM screen s JOIN program p ON s.program_id = p.program_id
+                 WHERE s.route = '/company/list' AND s.param_name = 'flag' AND s.param_value = '0'
+                """)).isEqualTo("영업 협력업체 관리");
+        assertThat(count("SELECT COUNT(*) FROM screen WHERE param_name IS NOT NULL"))
+                .as("10개 화면 x 2가지 조건")
+                .isEqualTo(20);
     }
 
     @Test

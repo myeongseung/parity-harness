@@ -1,0 +1,148 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 2,
+  "screen": "company-Update",
+  "source": "../legacy/ERFlow/src/main/webapp/company/companyUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "회사명",
+      "detail": "text",
+      "raw": "회사명"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "status",
+      "detail": "",
+      "raw": "status"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "상청",
+      "detail": "",
+      "raw": "상청"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "하청",
+      "detail": "",
+      "raw": "하청"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "우편번호",
+      "detail": "text",
+      "raw": "우편번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "참고항목",
+      "detail": "text",
+      "raw": "참고항목"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편 찾기",
+      "detail": "button",
+      "raw": "우편 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "도로명 주소",
+      "detail": "text",
+      "raw": "도로명 주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "업체 전화번호",
+      "detail": "text",
+      "raw": "업체 전화번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "사업자 등록번호",
+      "detail": "text",
+      "raw": "사업자 등록번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "업체 종목 선택",
+      "detail": "text",
+      "raw": "업체 종목 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "업체명",
+      "detail": "text",
+      "raw": "업체명"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "업체 찾기",
+      "detail": "button",
+      "raw": "업체 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "은행 선택",
+      "detail": "text",
+      "raw": "은행 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "은행명",
+      "detail": "text",
+      "raw": "은행명"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "은행 찾기",
+      "detail": "button",
+      "raw": "은행 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "은행 계좌번호",
+      "detail": "text",
+      "raw": "은행 계좌번호"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제출",
+      "detail": "submit",
+      "raw": "제출"
+    }
+  ]
+}
