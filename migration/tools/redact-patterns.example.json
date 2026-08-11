@@ -1,0 +1,15 @@
+{
+  "_설명": [
+    "가릴 대상을 적는 파일. 이것을 redact-patterns.local.json 으로 복사해 채운다.",
+    "local 파일은 커밋하지 않는다 — 가려야 할 원문이 적히기 때문이다.",
+    "스크립트에 원문을 적으면 스크립트가 그것을 공개한다. 실제로 한 번 그렇게 샜다."
+  ],
+  "excluded": [
+    "legacy/개인정보가-들어있는-덤프.sql"
+  ],
+  "replacements": [
+    { "from": "실제-앱-비밀번호", "to": "[REDACTED_APP_PASSWORD]" },
+    { "from": "실제-계정@example.com", "to": "[REDACTED_MAIL_ADDRESS]" },
+    { "from": "실제-호스트명", "to": "[REDACTED_HOST]" }
+  ]
+}

@@ -47,3 +47,6 @@ migration/legacy-runtime/build/
 # 이관에 필요한 권한 프로그램 20건은 migration/tools/extract_programs.py 가
 # migration/seed/programs.json 으로 뽑아 두며, 그것만 커밋한다.
 legacy/ERFlow-DB.sql
+
+### 마스킹 대상 목록 — 원문이 적히므로 커밋하지 않는다 ###
+migration/tools/redact-patterns.local.json
