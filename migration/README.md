@@ -7,14 +7,16 @@ app/        신규 애플리케이션 (Spring Boot). ./gradlew build
 design/     결정 로그와 설계 문서
 golden/     레거시에서 기계 추출한 정답. 손으로 쓰지 않는다.
 seed/       생성물. 직접 고치지 말고 tools/ 를 고쳐 재생성한다.
-tools/      ERFlow 전용 생성기 (하네스는 범용, 여기는 프로젝트 전용)
+tools/      ERFlow 전용 생성기·검사기 (하네스는 범용, 여기는 프로젝트 전용)
+legacy-runtime/  레거시를 WAR 로 묶어 띄운다. 실화면 대조용
 ```
 
 | 문서 | 내용 |
 |---|---|
-| [design/00-decisions.md](design/00-decisions.md) | 결정 로그 (D-001~010) + 미결 안건 |
+| [design/00-decisions.md](design/00-decisions.md) | 결정 로그 (D-001~020) + 미결 안건 |
 | [design/01-menu-layout.md](design/01-menu-layout.md) | 레이아웃·권한 설계 (program / screen / menu) |
 | [app/README.md](app/README.md) | 스택·실행법·구성 규칙 |
+| [legacy-runtime/README.md](legacy-runtime/README.md) | 레거시 기동과 실화면 대조 |
 
 ## 슬라이스 현황
 
@@ -25,6 +27,7 @@ tools/      ERFlow 전용 생성기 (하네스는 범용, 여기는 프로젝트
 | 0.5 | **인증·권한** (횡단) | 4 | — | ✅ 구현 | ✅ 해시 42명 재현 / CSRF만 예외 |
 | 1 | `unit` (생산 설비 관리) | 3 | ✅ 47 요소 | ✅ 구현 | ✅ **3화면 PASS / 차이 0건** |
 | 2 | `company` (**대조군**) | 3 | ✅ 64 요소 | ✅ 구현 | ✅ **3화면 PASS / 차이 1건(라우트)** |
+| — | 실화면 대조 (레거시 기동) | 3 | 살아있는 레거시 | — | ✅ **45행 완전 일치** |
 
 ## 대조군 측정
 

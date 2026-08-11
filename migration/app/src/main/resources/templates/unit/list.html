@@ -71,7 +71,10 @@
                     <td th:text="${unit.unitName}">장비명</td>
                     <td th:text="${unit.userName}">관리자</td>
                     <td th:text="${unit.status}">0</td>
-                    <td th:text="${#temporals.format(unit.createdAt, 'yyyy-MM-dd')}">2023-01-01</td>
+                    <!--/* 레거시 WebHelper.getDate 는 "yyyy년 MM월 dd일" 로 찍었다.
+                           날짜는 동적 값이라 정합성 게이트가 «dyn» 으로 넘긴다 —
+                           실브라우저로 나란히 놓고서야 드러났다. */-->
+                    <td th:text="${#temporals.format(unit.createdAt, 'yyyy년 MM월 dd일')}">2023년 01월 01일</td>
                     <td>
                         <button type="button" id="update-button" th:data-id="${unit.id}">수정</button>
                     </td>

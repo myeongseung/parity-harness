@@ -85,6 +85,7 @@ JSP + Servlet(Model 1) ERP 를 Spring Boot 4 / MyBatis / MariaDB 로 이관하�
 | 레이아웃 | 메뉴를 테이블로 분리. 검증량 **145회 → 2회** |
 | 인증·권한 | Spring Security. 레거시 해시 1:1 재현, 화면별 권한 한 곳에서 판정 |
 | 화면 | `unit` 3화면 + `company` 3화면 — **게이트 PASS, 발명 0건** |
+| 실화면 대조 | 레거시를 띄워 3화면 45행 **완전 일치** 확인 |
 
 테스트: 하네스 36건 / 앱 53건.
 
@@ -114,6 +115,31 @@ JSP + Servlet(Model 1) ERP 를 Spring Boot 4 / MyBatis / MariaDB 로 이관하�
 | 4 | 수정 버튼이 «dyn» | 3번을 고치다 만든 과교정 |
 | 9 | 자식의 시안용 더미가 부모 링크 라벨로 | `deep_text` 가 자식의 `th:text` 를 모름 |
 | 11 | 낡은 정답으로 판정 | 추출기 버전 기록으로 ESCALATE |
+
+### 레거시를 띄워 실화면끼리 견준다
+
+레거시가 **동작하는 앱으로** 살아 있다. 소스는 손대지 않고, 빌드할 때 DB 접속
+자리표시자만 채워 WAR 로 묶는다(`migration/legacy-runtime/`). 두 앱을 같은 스키마에
+붙이고 같은 계정으로 로그인해 같은 화면을 받아 견준다.
+
+```
+$ python migration/tools/compare_live.py
+
+PASS  생산 설비 관리: 15행 일치
+PASS  협력업체 관리 (구매): 15행 일치
+PASS  협력업체 관리 (영업): 15행 일치
+```
+
+**이 단계에서 바로 하나 나왔다.** 게이트는 6화면 전부 PASS 였는데 날짜 형식이 달랐다.
+
+```
+레거시   2023년 06월 20일
+신규     2023-06-20
+```
+
+날짜는 서버가 채우는 자리라 signature 가 `«dyn»` 이다. 값을 모르는 것끼리 견주므로
+**형식이 달라도 게이트는 통과한다** — 원리상 못 잡는 자리다. 같은 이유로 CSS 가
+걸렸는지, JS 가 죽었는지도 못 본다.
 
 ### 게이트가 못 잡는 것
 
@@ -189,7 +215,7 @@ python migration/tools/run_gates.py
 |---|---|
 | [parity-harness/README.md](parity-harness/README.md) | 게이트 동작 원리, 오탐 제어, 한계 |
 | [migration/README.md](migration/README.md) | 이관 현황과 슬라이스별 결과 |
-| [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~015) + 미결 안건 |
+| [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~020) + 미결 안건 |
 | [migration/design/01-menu-layout.md](migration/design/01-menu-layout.md) | 레이아웃·권한 설계 |
 
 ## 라이선스와 출처

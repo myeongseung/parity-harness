@@ -37,3 +37,7 @@ Thumbs.db
 
 ### 세션 상태 ###
 .bkit/
+
+### 레거시 기동 산출물 ###
+migration/legacy-runtime/.gradle/
+migration/legacy-runtime/build/

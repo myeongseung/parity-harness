@@ -36,6 +36,9 @@ migration/       ERFlow 이관 (프로젝트 전용)
 # 게이트 전부 — 커밋 전에 이것부터 돌린다. CI 가 돌리는 것과 같다
 python migration/tools/run_gates.py
 
+# 레거시 대비 실화면 대조 (두 앱을 띄운 뒤)
+ERFLOW_TEST_ID=... ERFLOW_TEST_PASSWORD=... python migration/tools/compare_live.py
+
 # 앱
 cd migration/app
 ./gradlew build                                          # 컴파일 + Checkstyle + 테스트
@@ -71,6 +74,7 @@ python -m gates.check_menu_parity --golden ../migration/golden/layout/menu.json 
 | **`value` 는 라벨이 아니다** | `<button value="delete">삭제</button>`. 버튼류 input 만 예외 |
 | **`*Proc.jsp`** | 화면이 아니라 액션이다. 화면 게이트 대상이 아니다 |
 | **게이트의 한계** | 게이트는 "정답 대비 다른가"만 본다. 정답 추출이 원본의 일부만 보고 있으면 조용히 통과한다. 실제로 한 번 당했다(D-008 철회) |
+| **동적 값은 못 본다** | 날짜 형식처럼 서버가 채우는 자리는 `«dyn»` 이라 게이트를 통과한다. 실화면 대조(D-020)로만 잡힌다 |
 | **CI 커버리지** | 앱 테스트 53건 중 CI 에서 도는 것은 24건. DB 를 상대로 하는 29건은 로컬에서만 돈다 |
 | **실행 권한** | Windows 에서 커밋한 셸 스크립트는 실행 비트가 빠져 리눅스 러너에서 `Permission denied`(126) 가 난다. `git update-index --chmod=+x <파일>` 로 기록한다 |
 

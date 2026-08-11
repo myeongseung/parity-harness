@@ -1,0 +1,113 @@
+/*
+ * 레거시 ERFlow 를 WAR 로 묶는다.
+ *
+ * 왜 필요한가
+ *   정합성 게이트는 템플릿 원본까지만 본다. CSS 가 깨졌는지, JS 가 죽었는지, 화면이
+ *   실제로 같아 보이는지는 못 본다. 그것을 보려면 **레거시가 돌아야 한다** —
+ *   비교할 대상이 있어야 비교가 성립한다.
+ *
+ * legacy/ 를 고치지 않는다
+ *   레거시는 정답이다. 소스를 건드리면 판정 기준이 흔들린다. 그래서 원본을 읽어
+ *   build/patched-src 로 복사하면서 DB 접속 자리표시자만 채운다. 원본은 그대로다.
+ *
+ * 접속 정보는 환경변수로 받는다. 소스에도 이 파일에도 적지 않는다.
+ */
+plugins {
+    id 'war'
+}
+
+// 레거시는 Eclipse Dynamic Web Project 였다 (Java 17 / Tomcat 9 / javax.servlet).
+//
+// 여기서는 21 로 컴파일한다. 신규 앱과 같은 JDK 를 쓰면 설치를 하나만 두면 되고,
+// Tomcat 9 도 21 위에서 돈다. 레거시 코드는 17 문법을 넘지 않으므로 결과가 같다.
+// 이 프로젝트에서 레거시는 *비교 대상*이지 운영 배포물이 아니다.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    legacyRoot = file("${rootDir}/../../legacy/ERFlow/src/main")
+    patchedSrc = layout.buildDirectory.dir('patched-src')
+}
+
+dependencies {
+    // Tomcat 이 제공한다. WAR 에 넣으면 충돌한다.
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
+    providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
+
+    // 레거시가 실제로 쓰는 것만. WEB-INF/lib 이 비어 있어 import 로 찾아냈다.
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+
+    // 드라이버는 com.mysql.cj.jdbc.Driver 다. 서버는 MariaDB 지만 붙는다.
+    runtimeOnly 'com.mysql:mysql-connector-j:8.4.0'
+}
+
+/**
+ * 원본을 복사하면서 DB 접속 자리표시자를 채운다.
+ *
+ * 레거시 DBConnectionServiceImpl 은 접속 정보를 소스에 박아 두고 자리표시자를
+ * 남겨 뒀다. 그 세 줄만 바꾼다.
+ */
+tasks.register('patchSources', Copy) {
+    description = '레거시 소스를 복사하며 DB 접속 정보를 주입한다'
+
+    def dbUrl = System.getenv('ERFLOW_LEGACY_DB_URL')
+    def dbUser = System.getenv('ERFLOW_LEGACY_DB_USER')
+    def dbPassword = System.getenv('ERFLOW_LEGACY_DB_PASSWORD')
+
+    // 주입 값을 입력으로 선언한다. 안 하면 소스가 그대로일 때 Gradle 이 이 태스크를
+    // 건너뛰고, 접속 대상을 바꿨는데도 **예전 스키마를 보는 WAR** 가 나온다.
+    // 그런 WAR 로 비교하면 무엇을 비교했는지 알 수 없다.
+    inputs.property('dbUrl', dbUrl ?: '')
+    inputs.property('dbUser', dbUser ?: '')
+
+    doFirst {
+        if (!dbUrl || !dbUser || dbPassword == null) {
+            throw new GradleException(
+                    '환경변수가 필요하다: ERFLOW_LEGACY_DB_URL, ERFLOW_LEGACY_DB_USER, ' +
+                    'ERFLOW_LEGACY_DB_PASSWORD')
+        }
+    }
+
+    from("${legacyRoot}/java")
+    into(patchedSrc)
+    filter { line ->
+        line.replace('[YOUR_DB_REPOSITORY]', dbUrl)
+            .replace('[YOUR_USER_ID]', dbUser)
+            .replace('[YOUR_PASSWORD]', dbPassword)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [patchedSrc]
+        }
+        resources {
+            srcDirs = []
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn 'patchSources'
+    options.encoding = 'UTF-8'
+    // 레거시 코드에는 경고가 많다. 지금 고칠 것이 아니므로 조용히 넘긴다.
+    options.compilerArgs << '-nowarn'
+}
+
+war {
+    archiveFileName = 'ERFlow.war'
+    from("${legacyRoot}/webapp") {
+        exclude 'WEB-INF/**'
+    }
+    webXml = file("${legacyRoot}/webapp/WEB-INF/web.xml")
+}
