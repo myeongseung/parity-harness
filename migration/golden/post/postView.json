@@ -1,0 +1,260 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 4,
+  "screen": "post-postView",
+  "source": "legacy/ERFlow/src/main/webapp/post/postView.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "작성자",
+      "detail": "",
+      "raw": "작성자:"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "작성일",
+      "detail": "",
+      "raw": "작성일:"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "댓글수",
+      "detail": "",
+      "raw": "댓글수:"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "조회수",
+      "detail": "",
+      "raw": "조회수:"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "",
+      "detail": "button",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "수정하기",
+      "detail": "",
+      "raw": "수정하기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "postid",
+      "detail": "hidden",
+      "raw": "postId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "삭제하기",
+      "detail": "",
+      "raw": "삭제하기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "postid",
+      "detail": "hidden",
+      "raw": "postId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "답변하기",
+      "detail": "",
+      "raw": "답변하기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "첨부파일",
+      "detail": "button",
+      "raw": "첨부파일"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "downloadfile.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "postid",
+      "detail": "hidden",
+      "raw": "postId"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "댓글쓰기",
+      "detail": "",
+      "raw": "댓글쓰기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "입력",
+      "detail": "submit",
+      "raw": "입력"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "",
+      "detail": "button",
+      "raw": ""
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "수정하기",
+      "detail": "",
+      "raw": "수정하기"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "삭제하기",
+      "detail": "commentdeleteproc.jsp",
+      "raw": "삭제하기"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "답글달기",
+      "detail": "",
+      "raw": "답글달기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "postid",
+      "detail": "hidden",
+      "raw": "postId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "refid",
+      "detail": "hidden",
+      "raw": "refId"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "답글달기",
+      "detail": "",
+      "raw": "답글달기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "입력",
+      "detail": "submit",
+      "raw": "입력"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "postid",
+      "detail": "hidden",
+      "raw": "postId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "댓글수정",
+      "detail": "",
+      "raw": "댓글수정"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정",
+      "detail": "submit",
+      "raw": "수정"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "등록된 댓글이 없습니다.",
+      "detail": "",
+      "raw": "등록된 댓글이 없습니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "삭제된 게시물에는 댓글을 작성할 수 없습니다.",
+      "detail": "",
+      "raw": "삭제된 게시물에는 댓글을 작성할 수 없습니다."
+    }
+  ]
+}

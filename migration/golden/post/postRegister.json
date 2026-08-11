@@ -1,0 +1,64 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 4,
+  "screen": "post-postRegister",
+  "source": "legacy/ERFlow/src/main/webapp/post/postRegister.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "text",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제목을 입력해주세요",
+      "detail": "text",
+      "raw": "제목을 입력해주세요"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "content",
+      "detail": "",
+      "raw": "content"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "filename",
+      "detail": "file",
+      "raw": "filename"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "첨부파일",
+      "detail": "",
+      "raw": "첨부파일 :"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "게시하기",
+      "detail": "submit",
+      "raw": "게시하기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "돌아가기",
+      "detail": "button",
+      "raw": "돌아가기"
+    }
+  ]
+}

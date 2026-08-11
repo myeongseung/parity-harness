@@ -1,0 +1,141 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 4,
+  "screen": "post-boardList",
+  "source": "legacy/ERFlow/src/main/webapp/post/boardList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 게시판",
+      "detail": "",
+      "raw": "사용자 > 게시판"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "게시판 이름",
+      "detail": "",
+      "raw": "게시판 이름"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "번호",
+      "detail": "",
+      "raw": "번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "게시글 수",
+      "detail": "",
+      "raw": "게시글 수"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "최신글 제목",
+      "detail": "",
+      "raw": "최신글 제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "업로드 시간",
+      "detail": "",
+      "raw": "업로드 시간"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "postview.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "작성글 없음",
+      "detail": "",
+      "raw": "작성글 없음"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "선택",
+      "detail": "button",
+      "raw": "선택"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    }
+  ]
+}

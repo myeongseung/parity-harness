@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 3,
+  "extractor": 4,
   "screen": "company-companyUpdate",
   "source": "legacy/ERFlow/src/main/webapp/company/companyUpdate.jsp",
   "signatures": [

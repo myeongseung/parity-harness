@@ -1,0 +1,204 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 4,
+  "screen": "post-postList",
+  "source": "legacy/ERFlow/src/main/webapp/post/postList.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "글쓰기",
+      "detail": "submit",
+      "raw": "글쓰기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "글번호",
+      "detail": "",
+      "raw": "글번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성자",
+      "detail": "",
+      "raw": "작성자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성날짜",
+      "detail": "",
+      "raw": "작성날짜"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "조회수",
+      "detail": "",
+      "raw": "조회수"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "media",
+      "role": "image",
+      "label": "첨부파일",
+      "detail": "img/icon.gif",
+      "raw": "첨부파일"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "../profile.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체조회",
+      "detail": "",
+      "raw": "전체조회"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "작성자",
+      "detail": "",
+      "raw": "작성자"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boardid",
+      "detail": "hidden",
+      "raw": "boardId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    }
+  ]
+}

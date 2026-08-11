@@ -31,7 +31,7 @@ import tempfile
 from pathlib import Path
 
 from screens import (  # noqa: E402  경로 상수와 화면 목록의 단일 출처
-    ALLOWLIST, GOLDEN, HARNESS, LAYOUTS, ROOT, SCREENS, SEED, TEMPLATES,
+    ALLOWLIST, GOLDEN, HARNESS, LAYOUTS, MIGRATED, PENDING, ROOT, SCREENS, SEED, TEMPLATES,
     golden_path, legacy_path, template_path,
 )
 
@@ -63,7 +63,7 @@ def check_golden_is_reproducible() -> int:
     print("== 정답 재생산 ==")
     worst = 0
     with tempfile.TemporaryDirectory() as tmp:
-        for domain, jsp, _ in SCREENS:
+        for domain, jsp, _, _done in SCREENS:
             fresh = Path(tmp) / f"{jsp}.json"
             code, output = run([
                 "gates.extract_golden",
@@ -138,7 +138,7 @@ def check_screens(module: str, title: str) -> int:
     """
     print(f"\n== {title} ==")
     worst = 0
-    for domain, jsp, template in SCREENS:
+    for domain, jsp, template, _done in MIGRATED:
         code, output = run([
             module,
             "--golden", str(golden_path(domain, jsp)),
@@ -152,6 +152,11 @@ def check_screens(module: str, title: str) -> int:
         if code != 0:
             print("      " + output.strip().replace("\n", "\n      "))
         worst = max(worst, code)
+
+    if PENDING:
+        # 조용히 건너뛰지 않는다. 남은 것이 몇 개인지 매번 눈에 띄어야 한다.
+        left = ", ".join(f"{domain}/{template}" for domain, _, template, _ in PENDING)
+        print(f"  이관 전 {len(PENDING)}건 — 대조 안 함: {left}")
     return worst
 
 

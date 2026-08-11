@@ -243,9 +243,19 @@ def _signature_for(node: _Node, label_map: dict[str, str]) -> Signature | None:
     )
 
     if tag == "a":
-        if not node.attrs.get("href"):
+        href = node.attrs.get("href", "")
+        # href 없는 `<a>` 는 이동이 아니라 JS 로 동작하는 버튼이다. 레거시 댓글의
+        # "수정하기"·"답글달기" 가 그렇다 — 라벨이 있으면 화면에 보이고 눌린다.
+        # `href="#"` 짜리와 사용자에게 같은 것이고 detail 도 똑같이 비므로,
+        # 같은 signature 를 낸다. 둘 사이를 오가는 것은 차이가 아니다.
+        #
+        detail = _href_detail(href)
+        # 라벨도 대상도 없으면 `<a href="#comment"></a>` 같은 앵커 표적이다.
+        # 화면에 안 보이고, 아무것도 구별하지 못하면서, 신규 구현에는 빈 앵커를
+        # 만들라고 강요한다 — 정답이 발명을 요구하는 셈이 된다.
+        if not label and not detail:
             return None
-        return Signature("nav", "link", label, _href_detail(node.attrs["href"]), raw, node.line)
+        return Signature("nav", "link", label, detail, raw, node.line)
 
     if tag == "button":
         return Signature("control", "button", label, norm(node.attrs.get("type", "submit")), raw, node.line)

@@ -279,3 +279,24 @@ class TestKnownBlindSpot(unittest.TestCase):
         self.assertNotIn("답글", str(keys(markup)))
         # 그래도 링크 자체는 보인다 — 통째로 눈감는 것은 아니다
         self.assertIn("nav:link|제목|/x", keys(markup))
+
+
+class TestAnchorWithoutHref(unittest.TestCase):
+    """href 없는 `<a>`. postView.jsp 의 댓글 "수정하기"·"답글달기" 가 그렇다."""
+
+    def test_hrefless_anchor_with_label_is_captured(self) -> None:
+        """JS 로 동작하는 버튼이다. 사라지면 댓글을 고칠 수 없다."""
+        self.assertIn("nav:link|수정하기|", keys('<a class="edit-expand-button" data-id="1">수정하기</a>'))
+
+    def test_hash_href_and_no_href_are_the_same_thing(self) -> None:
+        """사용자에게 둘은 같다. 오가는 것을 차이로 보고하면 안 된다."""
+        self.assertEqual(keys('<a href="#">답글달기</a>'), keys("<a>답글달기</a>"))
+
+    def test_anchor_target_is_not_an_element(self) -> None:
+        """`<a href="#comment"></a>` 는 안 보인다. 정답에 남기면 신규 구현에
+        빈 앵커를 만들라고 강요하게 된다 — 정답이 발명을 요구하는 셈이다."""
+        self.assertEqual([], keys('<a href="#comment"></a>'))
+
+    def test_real_link_without_label_is_still_kept(self) -> None:
+        """대상이 있으면 정보가 있다. 라벨이 없다고 버리지 않는다."""
+        self.assertIn("nav:link||/unit/list", keys('<a href="/unit/list"></a>'))

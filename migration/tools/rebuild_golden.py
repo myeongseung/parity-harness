@@ -55,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
 
     changed, failed = [], []
     with tempfile.TemporaryDirectory() as tmp:
-        for domain, jsp, _ in SCREENS:
+        for domain, jsp, _, _done in SCREENS:
             fresh_path = Path(tmp) / f"{domain}-{jsp}.json"
             code, output = extract_one(domain, jsp, fresh_path)
             if code != 0:
