@@ -221,3 +221,61 @@ class TestAgainstRealLegacy(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestNonInteractiveLabels(unittest.TestCase):
+    """추출기가 아예 보지 않던 요소들.
+
+    게시판(post) 도메인을 시작하며 드러났다. `title` 붙은 돋보기 아이콘은
+    이미 이관한 두 화면에도 있었는데, 추출기가 한 번도 본 적이 없어 게이트가
+    눈감고 있었다. 결함이 나지는 않았지만 그것은 운이었다.
+    """
+
+    def test_icon_title_is_captured(self) -> None:
+        """`<i title="검색하기">` 의 글자는 툴팁으로 화면에 뜬다."""
+        self.assertIn("text:tooltip|검색하기|", keys('<i class="fa-solid" title="검색하기"></i>'))
+
+    def test_interactive_title_is_still_a_label_not_a_tooltip(self) -> None:
+        """상호작용 요소의 title 은 이미 라벨로 쓴다. 툴팁으로 또 세면 두 번 센다."""
+        found = extract('<a href="/x" title="검색하기"></a>')
+        self.assertEqual(1, len(found))
+        self.assertEqual(("nav", "link"), (found[0].kind, found[0].role))
+
+    def test_dynamic_title_is_not_a_tooltip(self) -> None:
+        """서버가 채우는 title 은 값을 모른다. 아는 척하지 않는다."""
+        self.assertEqual([], [k for k in keys('<i title="<%=msg%>"></i>')
+                              if k.startswith("text:tooltip")])
+
+    def test_image_with_alt_is_captured(self) -> None:
+        """첨부파일 아이콘이 사라지면 어떤 글에 첨부가 있는지 알 수 없다."""
+        self.assertIn("media:image|첨부파일|img/icon.gif",
+                      keys('<img src="img/icon.gif" alt="첨부파일">'))
+
+    def test_decorative_image_is_ignored(self) -> None:
+        """alt 가 비면 장식이다. 로고까지 세면 대조가 소음에 덮인다."""
+        self.assertEqual([], keys('<img src="logo.png" alt="">'))
+        self.assertEqual([], keys('<img src="spacer.gif">'))
+
+    def test_image_src_change_is_not_a_label_change(self) -> None:
+        """이관하며 경로가 바뀌는 것은 정상이다. 라벨은 그대로여야 한다."""
+        legacy = extract('<img src="img/icon.gif" alt="첨부파일">')[0]
+        new = extract('<img src="/images/attach.svg" alt="첨부파일">')[0]
+        self.assertEqual(legacy.label, new.label)
+        self.assertNotEqual(legacy.key, new.key)
+
+
+class TestKnownBlindSpot(unittest.TestCase):
+    """고치지 않기로 한 한계. 고쳐진 줄 알고 방심하지 않도록 박아 둔다."""
+
+    def test_scriptlet_output_is_invisible(self) -> None:
+        """`out.println("답글 : ")` 로 찍는 글자는 추출기가 못 본다.
+
+        전처리가 `<% %>` 를 통째로 지우기 때문이다. 자바 코드를 해석해야
+        보이는데, 그 길은 끝이 없다(변수·연결·JSTL·JS DOM 조작).
+
+        하네스의 답은 e2e 실화면 대조다(D-020). 날짜 형식 결함도 그렇게 잡았다.
+        """
+        markup = '<a href="/x"><% if (pos > 0) { out.println("답글 : "); } %>제목</a>'
+        self.assertNotIn("답글", str(keys(markup)))
+        # 그래도 링크 자체는 보인다 — 통째로 눈감는 것은 아니다
+        self.assertIn("nav:link|제목|/x", keys(markup))

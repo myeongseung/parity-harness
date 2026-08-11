@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 2,
-  "screen": "company-List",
-  "source": "../legacy/ERFlow/src/main/webapp/company/companyList.jsp",
+  "extractor": 3,
+  "screen": "company-companyList",
+  "source": "legacy/ERFlow/src/main/webapp/company/companyList.jsp",
   "signatures": [
     {
       "kind": "control",
@@ -59,6 +59,13 @@
       "label": "search",
       "detail": "search",
       "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
     },
     {
       "kind": "column",

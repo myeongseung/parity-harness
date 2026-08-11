@@ -265,9 +265,31 @@ def _signature_for(node: _Node, label_map: dict[str, str]) -> Signature | None:
     if tag == "th":
         return Signature("column", "header", label, "", raw, node.line)
 
+    if tag == "img":
+        # alt 가 비어 있으면 장식이다. 접근성 관례가 그렇고, 그 관례가 맞다 —
+        # 로고나 여백용 이미지까지 세면 대조가 소음으로 덮인다.
+        # alt 가 있으면 정보를 전달하는 이미지다. 첨부파일 아이콘이 그렇다.
+        alt = norm(node.attrs.get("alt", "")) or norm(node.attrs.get("title", ""))
+        if not alt:
+            return None
+        # detail 은 src 다. 이관하면서 경로가 바뀌는 것은 정상이며, 그때
+        # "라벨은 같고 대상만 다름"으로 분류돼 라벨을 건드리지 않게 된다.
+        src = node.attrs.get("src", "")
+        raw_alt = node.attrs.get("alt", "") or node.attrs.get("title", "")
+        return Signature("media", "image", alt, _href_detail(src), raw_alt, node.line)
+
     widget = _widget_name(node)
     if widget:
         return Signature("control", "widget", label, widget, raw, node.line)
+
+    # 어떤 signature 도 못 내는 요소인데 title 이 붙어 있으면, 그 글자는 화면에
+    # 뜬다(툴팁). 레거시의 돋보기 아이콘 `<i title="검색하기">` 이 그렇다 —
+    # 22개 화면에 있는데 추출기가 한 번도 본 적이 없었다.
+    #
+    # 상호작용 요소는 여기 오지 않는다. 그쪽은 title 을 이미 라벨로 쓴다.
+    tooltip = norm(node.attrs.get("title", ""))
+    if tooltip and not _is_dynamic(node):
+        return Signature("text", "tooltip", tooltip, "", node.attrs["title"], node.line)
 
     return None
 

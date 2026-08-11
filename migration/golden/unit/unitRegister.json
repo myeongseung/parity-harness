@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 2,
-  "screen": "unit-Register",
-  "source": "../legacy/ERFlow/src/main/webapp/unit/unitRegister.jsp",
+  "extractor": 3,
+  "screen": "unit-unitRegister",
+  "source": "legacy/ERFlow/src/main/webapp/unit/unitRegister.jsp",
   "signatures": [
     {
       "kind": "control",

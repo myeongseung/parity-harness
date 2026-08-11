@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 2,
-  "screen": "unit-List",
-  "source": "../legacy/ERFlow/src/main/webapp/unit/unitList.jsp",
+  "extractor": 3,
+  "screen": "unit-unitList",
+  "source": "legacy/ERFlow/src/main/webapp/unit/unitList.jsp",
   "signatures": [
     {
       "kind": "text",
@@ -87,6 +87,13 @@
       "label": "search",
       "detail": "search",
       "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
     },
     {
       "kind": "column",

@@ -30,25 +30,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-HARNESS = ROOT / "parity-harness"
-LEGACY = ROOT / "legacy" / "ERFlow" / "src" / "main" / "webapp"
-GOLDEN = ROOT / "migration" / "golden"
-TEMPLATES = ROOT / "migration" / "app" / "src" / "main" / "resources" / "templates"
-ALLOWLIST = ROOT / "migration" / "allowlist.json"
-
-#: (도메인, 레거시 JSP 이름, 신규 템플릿 이름)
-SCREENS = (
-    ("unit", "unitList", "list"),
-    ("unit", "unitRegister", "register"),
-    ("unit", "unitUpdate", "update"),
-    ("company", "companyList", "list"),
-    ("company", "companyRegister", "register"),
-    ("company", "companyUpdate", "update"),
+from screens import (  # noqa: E402  경로 상수와 화면 목록의 단일 출처
+    ALLOWLIST, GOLDEN, HARNESS, LAYOUTS, ROOT, SCREENS, SEED, TEMPLATES,
+    golden_path, legacy_path, template_path,
 )
-
-#: (레이아웃 정답, 위치)
-LAYOUTS = (("menu", "SIDE"), ("header", "HEADER"))
 
 
 def run(args: list[str]) -> tuple[int, str]:
@@ -82,7 +67,7 @@ def check_golden_is_reproducible() -> int:
             fresh = Path(tmp) / f"{jsp}.json"
             code, output = run([
                 "gates.extract_golden",
-                "--legacy", str(LEGACY / domain / f"{jsp}.jsp"),
+                "--legacy", str(legacy_path(domain, jsp)),
                 "--screen", f"{domain}-{jsp}",
                 "-o", str(fresh),
             ])
@@ -91,7 +76,7 @@ def check_golden_is_reproducible() -> int:
                 worst = max(worst, 2)
                 continue
 
-            committed = GOLDEN / domain / f"{jsp}.json"
+            committed = golden_path(domain, jsp)
             if not committed.is_file():
                 print(f"  MISSING {domain}/{jsp}.json")
                 worst = max(worst, 3)
@@ -136,7 +121,7 @@ def check_menus() -> int:
         code, output = run([
             "gates.check_menu_parity",
             "--golden", str(GOLDEN / "layout" / f"{golden}.json"),
-            "--seed", str(ROOT / "migration" / "seed" / "menu-seed.json"),
+            "--seed", str(SEED),
             "--placement", placement,
         ])
         print("  " + output.strip().replace("\n", "\n  "))
@@ -156,8 +141,8 @@ def check_screens(module: str, title: str) -> int:
     for domain, jsp, template in SCREENS:
         code, output = run([
             module,
-            "--golden", str(GOLDEN / domain / f"{jsp}.json"),
-            "--new", str(TEMPLATES / domain / f"{template}.html"),
+            "--golden", str(golden_path(domain, jsp)),
+            "--new", str(template_path(domain, template)),
             "--allowlist", str(ALLOWLIST),
         ])
         head = output.strip().splitlines()[0] if output.strip() else "(출력 없음)"
