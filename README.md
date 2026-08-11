@@ -1,0 +1,144 @@
+# parity-harness
+
+**레거시를 정답(golden)으로 삼아, 이관 결과가 원본과 같은지를 기계적으로 증명하는 마이그레이션 하네스.**
+
+시중의 AI 마이그레이션 도구는 대부분 *변환*에서 멈춘다. 변환 결과가 맞는지는 사람이 눈으로 본다.
+이 프로젝트의 전제는 반대다 — **변환은 쉽고, 정합성 증명이 어렵다.**
+
+```
+parity-harness/   정합성 게이트 (도메인 중립)
+legacy/           이관 대상 원본 = 정답 (ERFlow, MIT / jUqItEr)
+migration/        실제 이관 — 하네스가 실전에서 통하는지의 증거
+```
+
+---
+
+## 무엇을 막는가
+
+LLM 기반 마이그레이션의 최대 실패 모드는 버그가 아니라 **친절함**이다.
+
+레거시에 없던 엑셀 다운로드 버튼을 추가하고, 없던 안내 문구를 넣고, 콤보박스에 없던 항목을
+하나 더 만든다. 전부 그럴듯해서 **코드 리뷰에서 걸리지 않는다.** 컴파일러도 테스트도 못 잡는다.
+문법적으로 옳고 동작도 하기 때문이다.
+
+잡으려면 **레거시에 무엇이 있었는지를 정답으로 고정**해야 한다.
+
+```
+$ python -m gates.check_no_invention --golden golden/unitList.json --new templates/unit/list.html
+
+차이 3건  (HIGH 1 / MEDIUM 2)  [invention 1 / detail_change 2]
+
+  HIGH   list.html:31
+         control:button «엑셀 다운로드» [button]
+         레거시에 대응물 없음 — 없던 것을 만들어냈다
+         조치: 요소를 제거하거나, 의도적이면 allowlist 에 사유와 함께 등록
+```
+
+## 설계에서 중요한 것
+
+**모를 때 통과시키지 않는다.**
+
+```
+0  PASS      정합성 확인됨
+1  FAIL      위반 발견 (자동 보강 가능)
+2  ERROR     도구/설정 오류
+3  ESCALATE  정답 부재 또는 추출기 버전 불일치 -> 사람 판단
+```
+
+3을 1과 분리한 것이 핵심이다. 정답이 없으면 "위반 없음"이 아니라 "판정 불가"다.
+추출 규칙을 바꾸고 정답을 다시 뽑지 않아도 여기 걸린다 — **낡은 기준으로 통과시키는 것이
+가장 나쁜 실패**이기 때문이다.
+
+**차이를 세 갈래로 나눈다.** 조치가 완전히 다르기 때문이다.
+
+| 분류 | 조건 | 조치 |
+|---|---|---|
+| `invention` | 대응물이 없다 | 제거하거나 사유와 함께 예외 등록 |
+| `label_drift` | 닮은 라벨이 있다 | 레거시 원문 표기로 복원 |
+| `detail_change` | 라벨이 같고 대상만 다르다 | 라우트 변경이면 의도된 것. **라벨은 건드리지 않는다** |
+
+셋을 뭉뚱그리면 리포트가 엉뚱한 조치를 지시한다. 라우트를 새로 설계하는 이관에서는 모든
+링크가 `detail_change` 에 걸리는데, 이것을 "표기가 틀어졌다"고 보고하면 사람이 멀쩡한
+라벨을 고치게 된다.
+
+**예외는 허용하되 기록을 남긴다.** 사유 10자 미만이면 게이트 자체가 실패한다.
+
+---
+
+## 실전 검증: ERFlow
+
+JSP + Servlet(Model 1) ERP 를 Spring Boot 4 / MyBatis / MariaDB 로 이관하며 하네스를 검증했다.
+레거시가 **동작하는 DB 로 살아 있어** 실제 데이터로 대조할 수 있다.
+
+| 레거시 | |
+|---|---|
+| JSP | 145개 |
+| Java | 134개 / 16,844 LOC |
+| 테이블 | 32개 + 뷰 15개 (2,077행) |
+| 아키텍처 | Model 1. 라우팅 없음, raw JDBC, 화면에 권한 검사 39곳 |
+
+| 진행 | 상태 |
+|---|---|
+| 스키마 복제 | 32테이블·15뷰, 행수·한글 정렬 결과 일치 |
+| 레이아웃 | 메뉴를 테이블로 분리. 검증량 **145회 → 2회** |
+| 인증·권한 | Spring Security. 레거시 해시 1:1 재현, 화면별 권한 한 곳에서 판정 |
+| 화면 | `unit` 3화면 — **게이트 PASS, 발명 0건** |
+
+테스트: 하네스 36건 / 앱 40건.
+
+### 하네스는 실제 코드에 붙여야 완성된다
+
+가상 예제로는 통과하던 게 실제 JSP 에서 11번 깨졌다. 전부 회귀 테스트로 고정돼 있다.
+
+| | 증상 | 원인 |
+|---|---|---|
+| 1 | 자바 코드가 화면 텍스트로 | HTML 파서에게 `<%` 는 태그가 아니다 |
+| 2 | 라벨이 «>전체조회» | `%>` 의 `>` 가 태그를 조기 종료 |
+| 3 | 삭제 버튼 라벨이 «delete» | `value` 는 데이터지 라벨이 아니다 |
+| 4 | 수정 버튼이 «dyn» | 3번을 고치다 만든 과교정 |
+| 9 | 자식의 시안용 더미가 부모 링크 라벨로 | `deep_text` 가 자식의 `th:text` 를 모름 |
+| 11 | 낡은 정답으로 판정 | 추출기 버전 기록으로 ESCALATE |
+
+### 덤으로 찾은 레거시 결함
+
+정답을 추출하다 드러난 것들. **고치지 않고 그대로 재현**했다 — 이관 중에 동작을 바꾸면
+"레거시와 같은가"를 검증할 수 없게 된다. 전부 결정 로그에 기록돼 있다.
+
+- 영업 협력업체 관리 화면이 **구매 권한으로 접근 제어**된다. 권한 테이블의 "영업 협력업체 관리"는 아무도 참조하지 않는 데드 레코드
+- `program_id = SHA256(한글 프로그램명)` — 권한 테이블의 오타("결재관리 관리")를 고치면 권한이 통째로 깨진다
+- `aria-label=".form-select-sm example"` — Bootstrap 문서 예제 문구가 복사됨
+- 사용자 55명 중 42명이 비밀번호 = 사번
+
+---
+
+## 시작하기
+
+```bash
+# 하네스
+cd parity-harness
+python -m unittest discover -s tests -t .        # 의존성 없음. 표준 라이브러리만
+
+# 정답 추출 -> 게이트
+python -m gates.extract_golden --legacy ../legacy/ERFlow/src/main/webapp/unit/unitList.jsp \
+    --screen unit-list -o /tmp/golden.json
+python -m gates.check_no_invention --golden /tmp/golden.json \
+    --new ../migration/app/src/main/resources/templates/unit/list.html
+```
+
+앱을 돌리려면 DB 접속이 필요하다. `migration/app/README.md` 참조.
+
+## 문서
+
+| | |
+|---|---|
+| [parity-harness/README.md](parity-harness/README.md) | 게이트 동작 원리, 오탐 제어, 한계 |
+| [migration/README.md](migration/README.md) | 이관 현황과 슬라이스별 결과 |
+| [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~015) + 미결 안건 |
+| [migration/design/01-menu-layout.md](migration/design/01-menu-layout.md) | 레이아웃·권한 설계 |
+
+## 라이선스와 출처
+
+하네스와 이관 코드는 이 저장소의 것이다.
+
+`legacy/` 는 **이관 대상 원본**이며 이 저장소의 성과물이 아니다.
+ERFlow — 원저작자 [jUqItEr](https://github.com/jUqItEr), MIT (`legacy/LICENSE`).
