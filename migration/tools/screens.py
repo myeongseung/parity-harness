@@ -113,7 +113,7 @@ SCREENS = (
     _screen("find", "findMultiProduct", "multi-product", True,
             legacy="findMultiProduct.jsp"),
     _screen("find", "findEachUser", "each-user", True, legacy="findEachUser.jsp"),
-    _screen("find", "findProposalRoute", "proposal-route", False,
+    _screen("find", "findProposalRoute", "proposal-route", True,
             legacy="findProposalRoute.jsp"),
 
     _screen("unit", "unitList", "list", True),

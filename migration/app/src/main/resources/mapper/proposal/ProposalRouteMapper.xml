@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/ProposalRouteServiceImpl.java
+-->
+<mapper namespace="com.erflow.proposal.ProposalRouteMapper">
+
+    <!--
+      레거시 getProposalRoutes("", "", 0, 1000, userId):
+        select * from proposal_route_view where user_id = ? order by id limit 0, 1000
+
+      start·cnt 가 파라미터지만 팝업은 언제나 0, 1000 을 넘긴다. 그 값을 여기 박아
+      둔다 — 페이지를 넘기는 화면이 아니라 «1000건까지»라는 상한이다.
+
+      route 는 사번을 ; 로 이은 문자열이다. 레거시는 이것을 쪼개 사용자마다 조회한 뒤
+      다시 같은 문자열로 이어 붙였다. 컬럼을 그대로 읽는다 — D-041 참조.
+    -->
+    <select id="findByUser" resultType="com.erflow.proposal.ProposalRouteRow">
+        SELECT id, nickname, route
+          FROM proposal_route_view
+         WHERE user_id = #{userId}
+         ORDER BY id
+         LIMIT 0, 1000
+    </select>
+
+</mapper>

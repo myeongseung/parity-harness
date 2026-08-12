@@ -203,6 +203,54 @@ class FindPopupTest {
         assertThat(many).isNotEmpty().isEqualTo(one);
     }
 
+    @Test
+    @DisplayName("결재라인 찾기의 도움말은 협력업체 이야기다")
+    void proposalRoutePopupShowsCompanyTips() throws Exception {
+        // 레거시가 협력업체 찾기를 복사해 만들면서 도움말도 꼬리말도 고치지 않았다.
+        // 결재라인 화면인데 «협력업체 ID» 라고 안내한다. 그대로 옮겼다.
+        String html = open("/find/proposal-route", null);
+
+        assertThat(html).contains("<h3>tip</h3>").contains("협력업체 ID");
+        assertThat(html).contains("© 협력업체 찾기 서비스 제공");
+    }
+
+    @Test
+    @DisplayName("남이 만든 결재라인은 보이지 않는다")
+    void proposalRoutePopupShowsOnlyMine() throws Exception {
+        // 조회가 사번으로 좁혀져 있다. 결재라인이 하나도 없는 사람에게는 아무것도
+        // 나오지 않아야 한다 — 좁히지 않았다면 남의 것이 전부 나온다.
+        String nobody = mockMvc.perform(get("/find/proposal-route")
+                        .with(user(TestUsers.noPermission())).param("search", ""))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(pairs(nobody)).isEmpty();
+        // admin 계정에도 결재라인이 있다. 좁히는 것과 비어 있는 것은 다르다.
+        assertThat(pairs(open("/find/proposal-route", ""))).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("결재라인은 이름으로만 찾는다")
+    void proposalRoutePopupSearchesByNameOnly() throws Exception {
+        Map<String, String> all = pairs(open("/find/proposal-route", ""));
+        String id = all.keySet().stream()
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("결재라인이 없다"));
+
+        // 번호로 찾으면 나오지 않는다. 협력업체 팝업과 같다(D-039).
+        assertThat(pairs(open("/find/proposal-route", id))).doesNotContainKey(id);
+    }
+
+    @Test
+    @DisplayName("결재라인이 돌려주는 값은 사번을 이은 문자열이다")
+    void proposalRoutePopupHandsBackTheRouteString() throws Exception {
+        // 레거시는 이 문자열을 쪼개 사용자마다 조회한 뒤 다시 이어 붙였다. 컬럼을
+        // 그대로 읽으므로 빈 조각이 없는지 확인한다 — D-041 참조.
+        assertThat(pairs(open("/find/proposal-route", "")).values())
+                .isNotEmpty()
+                .allSatisfy(route -> assertThat(route).matches("[^;]+(;[^;]+)*"));
+    }
+
     /**
      * 사용자 찾기 팝업을 연다.
      *

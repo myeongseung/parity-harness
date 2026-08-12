@@ -5,6 +5,7 @@ import com.erflow.company.CompanyCodes;
 import com.erflow.company.CompanyFinder;
 import com.erflow.document.DocumentFinder;
 import com.erflow.product.ProductFinder;
+import com.erflow.proposal.ProposalRouteFinder;
 import com.erflow.user.UserFinder;
 import com.erflow.user.UserSearch;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * findMultiProduct.jsp  GET /find/multi-product
  * findUser.jsp          GET /find/user
  * findEachUser.jsp      GET /find/each-user
+ * findProposalRoute.jsp GET /find/proposal-route
  * </pre>
  *
  * <p>등록 화면에서 {@code window.open} 으로 여는 작은 창이다. 고른 값을
@@ -50,6 +52,7 @@ public class FindController {
     private final UserFinder users;
     private final CompanyFinder companies;
     private final ProductFinder products;
+    private final ProposalRouteFinder routes;
 
     /**
      * @param codes 은행·업종 코드표
@@ -57,18 +60,21 @@ public class FindController {
      * @param users 사용자 조회
      * @param companies 협력업체 조회
      * @param products 제품 조회
+     * @param routes 결재라인 조회
      */
     public FindController(
             CompanyCodes codes,
             DocumentFinder documents,
             UserFinder users,
             CompanyFinder companies,
-            ProductFinder products) {
+            ProductFinder products,
+            ProposalRouteFinder routes) {
         this.codes = codes;
         this.documents = documents;
         this.users = users;
         this.companies = companies;
         this.products = products;
+        this.routes = routes;
     }
 
     /**
@@ -169,6 +175,30 @@ public class FindController {
         model.addAttribute("search", search);
         model.addAttribute("entries", search == null ? null : products.search(search));
         return "find/multi-product";
+    }
+
+    /**
+     * 결재라인 찾기.
+     *
+     * <p>다른 팝업과 달리 <b>내 것만</b> 보여준다. 조회가 사번으로 좁혀져 있다.
+     *
+     * <p>돌려주는 값이 셋이다 — 번호, 결재 순서대로 이은 사번, 그리고 이름.
+     * 부모 화면이 결재선을 그 문자열로 채운다.
+     *
+     * @param search 검색어. 파라미터 자체가 없으면 {@code null}
+     * @param user 로그인 사용자
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/proposal-route")
+    public String proposalRoute(
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal ErflowUserDetails user,
+            Model model) {
+        model.addAttribute("search", search);
+        model.addAttribute("entries",
+                search == null ? null : routes.search(user.id(), search));
+        return "find/proposal-route";
     }
 
     /**
