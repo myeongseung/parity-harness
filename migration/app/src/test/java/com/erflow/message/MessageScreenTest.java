@@ -2,8 +2,10 @@ package com.erflow.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -156,5 +158,53 @@ class MessageScreenTest {
     private int readStatus(int id) {
         return jdbc.queryForObject(
                 "SELECT read_status FROM message_tbl WHERE id = ?", Integer.class, id);
+    }
+
+    @Test
+    @DisplayName("삭제는 지우지 않고 내 쪽 visible 만 내린다 (D-047)")
+    @Transactional
+    void deleteSoftHides() {
+        // admin 이 자신에게 보낸 쪽지 — admin 이 보낸 쪽이자 받는 쪽이라 둘 다 내려간다.
+        messageService.send("admin", List.of("admin"), "삭제 시험");
+        int id = jdbc.queryForObject("SELECT MAX(id) FROM message_tbl", Integer.class);
+        assertThat(visible(id, "sender_visible")).isEqualTo(1);
+        assertThat(visible(id, "receiver_visible")).isEqualTo(1);
+
+        boolean deleted = messageService.delete("admin", List.of(id));
+
+        assertThat(deleted).isTrue();
+        // 행은 그대로 있고 플래그만 0 이 된다.
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM message_tbl WHERE id = ?", Integer.class, id))
+                .isEqualTo(1);
+        assertThat(visible(id, "sender_visible")).isZero();
+        assertThat(visible(id, "receiver_visible")).isZero();
+    }
+
+    @Test
+    @DisplayName("나와 무관한 쪽지는 삭제되지 않는다")
+    @Transactional
+    void deleteByNonPartyFails() {
+        messageService.send("admin", List.of("admin"), "남의 쪽지");
+        int id = jdbc.queryForObject("SELECT MAX(id) FROM message_tbl", Integer.class);
+
+        // 보낸 사람도 받는 사람도 아닌 사용자.
+        boolean deleted = messageService.delete("nobody-xyz", List.of(id));
+
+        assertThat(deleted).isFalse();
+        assertThat(visible(id, "sender_visible")).isEqualTo(1);
+        assertThat(visible(id, "receiver_visible")).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("목록 삭제는 class 가 없으면 잘못된 접근으로 보낸다")
+    void listDeleteWithoutClassRedirects() throws Exception {
+        mockMvc.perform(post("/message/delete").with(user(TestUsers.admin())).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-error"));
+    }
+
+    private int visible(int id, String column) {
+        return jdbc.queryForObject(
+                "SELECT " + column + " FROM message_tbl WHERE id = " + id, Integer.class);
     }
 }

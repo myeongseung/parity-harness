@@ -79,4 +79,28 @@ public interface MessageMapper {
             @Param("senderId") String senderId,
             @Param("receiverId") String receiverId,
             @Param("content") String content);
+
+    /**
+     * 쪽지의 보낸/받는 사람. 소프트 삭제가 어느 쪽을 숨길지 정하는 데 쓴다.
+     *
+     * @param id 쪽지 번호
+     * @return 보낸/받는 사람. 없으면 {@code null}
+     */
+    MessageParties findParties(@Param("id") int id);
+
+    /**
+     * 쪽지를 한 쪽(또는 양쪽)에서 안 보이게 한다(소프트 삭제).
+     *
+     * <p>레거시는 사용자가 보낸 사람이면 {@code sender_visible = 0}, 받는 사람이면
+     * {@code receiver_visible = 0}, 둘 다면 둘 다 내렸다. 지우지 않고 숨긴다.
+     *
+     * @param id 쪽지 번호
+     * @param hideSender 보낸 쪽에서 숨길지
+     * @param hideReceiver 받는 쪽에서 숨길지
+     * @return 반영된 행 수
+     */
+    int hide(
+            @Param("id") int id,
+            @Param("hideSender") boolean hideSender,
+            @Param("hideReceiver") boolean hideReceiver);
 }

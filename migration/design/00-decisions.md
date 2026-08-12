@@ -1253,6 +1253,34 @@ update message_tbl set read_at = now(), read_status = 1 where id = ?
 
 ---
 
+## D-047 · 쪽지 삭제는 지우지 않고 «내 쪽에서만» 숨긴다
+
+쪽지 삭제는 행을 지우지 않는다. 보낸 사람과 받는 사람이 각자 «지울» 수 있어야 하므로,
+지우면 상대의 쪽지까지 사라진다. 그래서 각 쪽에 visible 플래그가 따로 있다.
+
+```java
+if (isSender)   sb.append("sender_visible = 0 ");
+if (isReceiver) sb.append("receiver_visible = 0 ");
+String sql = "update message_tbl set " + sb + "where id = ?";
+```
+
+내가 보낸 쪽지면 `sender_visible`, 받은 쪽지면 `receiver_visible` 을 내린다. 자기 자신에게
+보낸 쪽지는 둘 다 내려간다. 목록 SQL 이 `<class>_visible = 1` 로 거르므로(D 없음, Phase ①),
+숨긴 쪽에서만 사라지고 상대 쪽에는 남는다.
+
+**결정:** 그대로 옮긴다. `MessageService.delete` 가 쪽지의 보낸/받는 사람을 읽어
+어느 플래그를 내릴지 정하고, `hide` 매퍼가 그 플래그만 0 으로 바꾼다.
+
+**나와 무관한 쪽지.** 레거시는 이때 SET 절이 비어 `update message_tbl set where id=?`
+가 되어 SQL 오류가 났고 결과가 false 였다. 오류를 재현하지 않는다 — 보낸 사람도 받는
+사람도 아니면 서비스가 매퍼를 부르지 않고 false 를 돌려준다. 결과(false)는 같다.
+
+삭제 액션은 둘이다. 목록에서 삭제({@code /message/delete})는 쪽지함으로 돌아가고,
+읽기에서 삭제({@code /message/read-delete})는 팝업을 닫고 여는 창을 새로 고친다.
+지우는 로직은 같다 — 후처리만 다르다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

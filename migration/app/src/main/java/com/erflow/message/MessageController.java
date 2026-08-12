@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * message/register.jsp GET  /message/register        (쓰기 폼)
  * message/reply.jsp    GET  /message/reply           (답장 폼)
  * registerProc.jsp     POST /message/register        (전송)
+ * deleteProc.jsp       POST /message/delete          (목록에서 삭제)
+ * readDeleteProc.jsp   POST /message/read-delete     (읽기에서 삭제)
  * </pre>
  *
  * <p>받은쪽지함(receiver)과 보낸쪽지함(sender)이 같은 화면을 쓰고 {@code class} 로
@@ -142,6 +144,48 @@ public class MessageController {
         boolean sent = messageService.send(
                 user.id(), List.of(receiverId.split(";")), content);
         model.addAttribute("message", sent ? "쪽지를 전송했습니다." : "쪽지 전송을 실패했습니다.");
+        return "message/result";
+    }
+
+    /**
+     * 목록에서 선택 삭제. 처리 뒤 쪽지함으로 돌아간다.
+     *
+     * @param className receiver 또는 sender
+     * @param messageId 삭제할 쪽지 번호 목록
+     * @param user 로그인 사용자
+     * @param model 뷰 모델
+     * @return 결과 템플릿. class 가 없으면 잘못된 접근 화면
+     */
+    @PostMapping("/message/delete")
+    public String deleteFromList(
+            @RequestParam(name = "class", required = false) String className,
+            @RequestParam(required = false) List<Integer> messageId,
+            @AuthenticationPrincipal ErflowUserDetails user,
+            Model model) {
+        if (className == null || className.isBlank()) {
+            return "redirect:/access-error";
+        }
+        boolean deleted = messageId != null && messageService.delete(user.id(), messageId);
+        model.addAttribute("message", deleted ? "쪽지가 삭제되었습니다." : "선택된 쪽지가 없습니다.");
+        model.addAttribute("nextPage", "/message?class=" + className);
+        return "message/list-result";
+    }
+
+    /**
+     * 읽기 팝업에서 삭제. 처리 뒤 여는 창을 새로 고치고 팝업을 닫는다.
+     *
+     * @param messageId 삭제할 쪽지 번호 목록
+     * @param user 로그인 사용자
+     * @param model 뷰 모델
+     * @return 결과 템플릿(팝업)
+     */
+    @PostMapping("/message/read-delete")
+    public String deleteFromRead(
+            @RequestParam(required = false) List<Integer> messageId,
+            @AuthenticationPrincipal ErflowUserDetails user,
+            Model model) {
+        boolean deleted = messageId != null && messageService.delete(user.id(), messageId);
+        model.addAttribute("message", deleted ? "쪽지가 삭제되었습니다." : "선택된 쪽지가 없습니다.");
         return "message/result";
     }
 }

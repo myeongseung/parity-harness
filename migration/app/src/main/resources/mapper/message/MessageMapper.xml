@@ -109,4 +109,27 @@
              VALUES (#{senderId}, #{receiverId}, #{content}, NOW())
     </insert>
 
+    <!-- 레거시 getMessage 가 읽던 값 중 소프트 삭제에 필요한 둘. -->
+    <select id="findParties" resultType="com.erflow.message.MessageParties">
+        SELECT user_tbl_sender_id   AS senderId,
+               user_tbl_receiver_id AS receiverId
+          FROM message_tbl
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시 deleteMessage: update message_tbl set [sender_visible = 0][, receiver_visible = 0]
+                            where id = ?
+      보낸/받는 쪽 여부에 따라 SET 절을 조립했다. 서비스가 최소 한 쪽은 참임을 보장하므로
+      <set> 이 비지 않는다(둘 다 거짓이면 서비스가 부르지 않는다).
+    -->
+    <update id="hide">
+        UPDATE message_tbl
+        <set>
+            <if test="hideSender">sender_visible = 0,</if>
+            <if test="hideReceiver">receiver_visible = 0,</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
 </mapper>

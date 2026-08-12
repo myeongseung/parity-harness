@@ -84,6 +84,42 @@ public class MessageService {
     }
 
     /**
+     * 선택된 쪽지를 소프트 삭제한다.
+     *
+     * <p>레거시 {@code deleteMessage} 를 옮겼다 — 지우지 않고 내 쪽에서만 안 보이게
+     * 한다. 내가 보낸 쪽지면 {@code sender_visible}, 받은 쪽지면 {@code receiver_visible}
+     * 을 내린다. 나와 무관한 쪽지는 어느 플래그도 내릴 수 없어 실패로 본다(레거시는 이때
+     * SET 절이 비어 SQL 오류가 났고 결과가 false 였다). 한 건씩 처리해 {@code &=} 로 모은다.
+     *
+     * @param userId 현재 사용자 사번
+     * @param ids 삭제할 쪽지 번호 목록
+     * @return 전부 처리됐으면 {@code true}
+     */
+    @Transactional
+    public boolean delete(String userId, List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        boolean all = true;
+        for (int id : ids) {
+            MessageParties parties = messageMapper.findParties(id);
+            if (parties == null) {
+                all = false;
+                continue;
+            }
+            boolean hideSender = userId.equals(parties.senderId());
+            boolean hideReceiver = userId.equals(parties.receiverId());
+            if (!hideSender && !hideReceiver) {
+                // 나와 무관한 쪽지. 레거시는 SET 절이 비어 실패했다.
+                all = false;
+                continue;
+            }
+            all &= messageMapper.hide(id, hideSender, hideReceiver) == 1;
+        }
+        return all;
+    }
+
+    /**
      * 쪽지함 한 페이지.
      *
      * @param rows 이 페이지의 쪽지 목록
