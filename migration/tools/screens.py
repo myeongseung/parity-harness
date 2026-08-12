@@ -134,6 +134,9 @@ SCREENS = (
     _screen("task", "taskUpdate", "update", True, legacy="task/taskUpdate.jsp"),
     _screen("task", "createModal", "history-modal", True, legacy="task/createModal.jsp"),
 
+    # 쪽지 — 목록만 screen 테이블에 있다(읽기·쓰기·답장은 로그인만 보는 팝업)
+    _screen("message", "index", "index", True, legacy="message/index.jsp"),
+
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),
     _screen("post", "postView", "view", True),

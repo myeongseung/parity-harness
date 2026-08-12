@@ -1207,6 +1207,29 @@ for (...) taskCon.createTaskHistory(bean); // 그리고 다시 넣는다
 
 ---
 
+## D-045 · 쪽지함 페이징은 원래 동작하지 않는다
+
+`message/index.jsp` 의 페이징 링크는 `javascript:block(...)`·`javascript:paging(...)` 을
+부른다. 그런데 이 화면이 읽어들이는 스크립트(`js/main/index.js`,
+`js/message/index.js`) 어디에도 두 함수가 없다. 두 함수는 다른 목록 화면들
+(`unitList.js`·`task.js`·`company.js` 등)에 각자 정의돼 있고, 쪽지 화면은 그 어느
+것도 로드하지 않는다.
+
+그래서 링크를 누르면 `ReferenceError` 가 날 뿐 아무 일도 일어나지 않는다. **쪽지가
+15건을 넘어도 1페이지 말고는 볼 수 없다.**
+
+**결정:** 그대로 옮긴다. 페이징 마크업은 두되(정답에 있으므로 지우면 누락),
+`block`/`paging` 을 정의하지 않는다 — 레거시와 같은 «죽은 페이징» 이다.
+
+게이트는 이것을 못 본다. 링크는 `javascript:` 라 detail 이 `javascript:` 로만 남고,
+함수가 있는지는 마크업에 없다. 실화면에서 눌러 봐야 드러난다.
+
+2단계에서 되살릴 후보다 — `block`/`paging` 이 `classFrm` 을 제출하게 정의하면
+페이징이 동작한다. 다른 목록 화면들과 달리 쪽지는 페이징 폼이 `classFrm` 이라
+그 이름에 맞춰야 한다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

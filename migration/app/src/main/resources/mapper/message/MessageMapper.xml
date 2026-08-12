@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/MessageServiceImpl.java
+  레거시 SQL 을 그대로 옮긴다. 정렬은 id 내림차순이다.
+
+  레거시는 className 을 컬럼 접두어로 SQL 에 이어 붙였다(receiver_id / sender_id 등).
+  화면이 receiver·sender 두 값으로만 검증하므로 안전했지만, 여기서는 분기로 고정해
+  이어 붙일 자리를 아예 없앤다.
+
+  <class>_visible = 1 이 소프트 삭제 필터다. 지운 쪽지는 지워지지 않고 그 쪽에서만
+  안 보이게 된다.
+-->
+<mapper namespace="com.erflow.message.MessageMapper">
+
+    <sql id="scope">
+        <choose>
+            <when test="className == 'receiver'">
+                receiver_id = #{classId} AND receiver_visible = 1
+            </when>
+            <when test="className == 'sender'">
+                sender_id = #{classId} AND sender_visible = 1
+            </when>
+        </choose>
+    </sql>
+
+    <!--
+      레거시 검색 분기
+        receiver  and receiver_name like ?
+        sender    and sender_name like ?
+        content   and content like ?
+    -->
+    <sql id="searchCondition">
+        <if test="search != null and search.active">
+            AND
+            <choose>
+                <when test="search.column == 'receiver_name'">receiver_name</when>
+                <when test="search.column == 'sender_name'">sender_name</when>
+                <when test="search.column == 'content'">content</when>
+            </choose>
+            LIKE #{search.pattern}
+        </if>
+    </sql>
+
+    <!--
+      레거시: select * from message_view where <class>_id = ? and <class>_visible = 1
+              [조건] order by id desc limit ?, ?
+    -->
+    <select id="findPage" resultType="com.erflow.message.MessageRow">
+        SELECT id,
+               sender_id        AS senderId,
+               sender_name      AS senderName,
+               sender_dept_name AS senderDeptName,
+               sender_job_name  AS senderJobName,
+               receiver_name    AS receiverName,
+               receiver_dept_name AS receiverDeptName,
+               receiver_job_name  AS receiverJobName,
+               content,
+               created_at       AS createdAt
+          FROM message_view
+         WHERE <include refid="scope"/>
+        <include refid="searchCondition"/>
+         ORDER BY id DESC
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from message_view where <class>_id = ? and <class>_visible = 1 [조건] -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM message_view
+         WHERE <include refid="scope"/>
+        <include refid="searchCondition"/>
+    </select>
+
+</mapper>
