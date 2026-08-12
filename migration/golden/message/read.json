@@ -1,0 +1,50 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "message-read",
+  "source": "../legacy/ERFlow/src/main/webapp/message/read.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "messageid",
+      "detail": "hidden",
+      "raw": "messageId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "senderid",
+      "detail": "hidden",
+      "raw": "senderId"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "보낸사람",
+      "detail": "",
+      "raw": "보낸사람"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "받은시각",
+      "detail": "",
+      "raw": "받은시각"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "답장",
+      "detail": "submit",
+      "raw": "답장"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "submit",
+      "raw": "삭제"
+    }
+  ]
+}

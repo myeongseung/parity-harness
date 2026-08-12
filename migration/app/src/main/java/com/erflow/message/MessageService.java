@@ -48,6 +48,42 @@ public class MessageService {
     }
 
     /**
+     * 쪽지를 «읽음» 으로 표시하고 내용을 읽어 온다.
+     *
+     * <p>레거시 {@code read.jsp} 는 여는 순간 읽음 처리를 했다. <b>화면을 여는 것이
+     * 대상을 바꾼다</b> — 조회수(D-029)와 같은 부류다. 두 앱이 같은 스키마를 보면 한 쪽에서
+     * 읽는 순간 다른 쪽에도 읽음으로 보인다. 그대로 옮긴다(D-046).
+     *
+     * @param id 쪽지 번호
+     * @return 쪽지. 없으면 {@code null}
+     */
+    @Transactional
+    public MessageDetail read(int id) {
+        messageMapper.markRead(id);
+        return messageMapper.findView(id);
+    }
+
+    /**
+     * 쪽지를 여러 사람에게 보낸다.
+     *
+     * <p>레거시는 받는 사람을 {@code ;} 로 이어 보냈다(사용자 찾기가 여러 명을 그렇게
+     * 넘긴다). 한 명씩 넣고 결과를 {@code &=} 로 모은다.
+     *
+     * @param senderId 보낸 사람 사번
+     * @param receiverIds 받는 사람 사번 목록
+     * @param content 내용
+     * @return 전부 보내졌으면 {@code true}
+     */
+    @Transactional
+    public boolean send(String senderId, List<String> receiverIds, String content) {
+        boolean all = true;
+        for (String receiverId : receiverIds) {
+            all &= messageMapper.insertMessage(senderId, receiverId, content) == 1;
+        }
+        return all;
+    }
+
+    /**
      * 쪽지함 한 페이지.
      *
      * @param rows 이 페이지의 쪽지 목록

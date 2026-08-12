@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 쪽지함 목록이 실제 데이터로 그려지는지 확인한다.
@@ -39,6 +41,9 @@ class MessageScreenTest {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @BeforeAll
     static void requireLocalConfig() {
@@ -104,5 +109,52 @@ class MessageScreenTest {
         // 한 쪽지가 양쪽에 동시에 들어가려면 자기 자신에게 보낸 것뿐이라, id 교집합은
         // 그런 경우가 없으면 비어야 한다. 여기서는 각 목록이 자기 조건을 지키는지만 본다.
         assertThat(received).allSatisfy(row -> assertThat(row.senderId()).isNotNull());
+    }
+
+    @Test
+    @DisplayName("쪽지를 보내면 message_tbl 에 한 건 쌓인다")
+    @Transactional
+    void sendInsertsOneMessage() {
+        // admin 이 자신에게 보낸다(받는 사람이 실재해야 하므로 안전한 대상). 롤백된다.
+        // JdbcTemplate 은 테스트 트랜잭션의 커넥션을 써서 아직 커밋 안 된 삽입도 본다.
+        int before = jdbc.queryForObject("SELECT COUNT(*) FROM message_tbl", Integer.class);
+
+        boolean sent = messageService.send("admin", List.of("admin"), "테스트 쪽지");
+
+        assertThat(sent).isTrue();
+        int after = jdbc.queryForObject("SELECT COUNT(*) FROM message_tbl", Integer.class);
+        assertThat(after).isEqualTo(before + 1);
+    }
+
+    @Test
+    @DisplayName("받는 사람을 ; 로 이으면 사람 수만큼 들어간다")
+    @Transactional
+    void sendSplitsBySemicolon() {
+        int before = jdbc.queryForObject("SELECT COUNT(*) FROM message_tbl", Integer.class);
+
+        // 레거시는 ; 로 이어 여러 명에게 보낸다.
+        messageService.send("admin", List.of("admin;admin".split(";")), "여러 명");
+
+        int after = jdbc.queryForObject("SELECT COUNT(*) FROM message_tbl", Integer.class);
+        assertThat(after).isEqualTo(before + 2);
+    }
+
+    @Test
+    @DisplayName("읽기 화면을 열면 읽음으로 바뀐다 (D-046)")
+    @Transactional
+    void readMarksAsRead() {
+        // admin 에게 새 쪽지를 하나 만들고(읽지 않음), 그 id 로 읽기를 연다. 롤백된다.
+        messageService.send("admin", List.of("admin"), "읽음 시험");
+        int id = jdbc.queryForObject("SELECT MAX(id) FROM message_tbl", Integer.class);
+
+        assertThat(readStatus(id)).isZero();
+        MessageDetail read = messageService.read(id);
+        assertThat(read).isNotNull();
+        assertThat(readStatus(id)).isEqualTo(1);
+    }
+
+    private int readStatus(int id) {
+        return jdbc.queryForObject(
+                "SELECT read_status FROM message_tbl WHERE id = ?", Integer.class, id);
     }
 }

@@ -74,4 +74,39 @@
         <include refid="searchCondition"/>
     </select>
 
+    <!-- 레거시: select * from message_view where id = ? (getMessageView) -->
+    <select id="findView" resultType="com.erflow.message.MessageDetail">
+        SELECT id,
+               sender_id        AS senderId,
+               sender_name      AS senderName,
+               sender_dept_name AS senderDeptName,
+               sender_job_name  AS senderJobName,
+               content,
+               created_at       AS createdAt
+          FROM message_view
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시 readMessage: update message_tbl set read_at = now(), read_status = 1 where id = ?
+      단, 컨트롤러가 read_status == 0 일 때만 불렀다. AND read_status = 0 으로 같게 만든다 —
+      이미 읽은 쪽지는 read_at 이 바뀌지 않는다.
+    -->
+    <update id="markRead">
+        UPDATE message_tbl
+           SET read_at = NOW(), read_status = 1
+         WHERE id = #{id} AND read_status = 0
+    </update>
+
+    <!--
+      레거시 createMessage:
+        insert into message_tbl (user_tbl_sender_id, user_tbl_receiver_id, content, created_at)
+        values (?, ?, ?, now())
+    -->
+    <insert id="insertMessage">
+        INSERT INTO message_tbl
+                    (user_tbl_sender_id, user_tbl_receiver_id, content, created_at)
+             VALUES (#{senderId}, #{receiverId}, #{content}, NOW())
+    </insert>
+
 </mapper>

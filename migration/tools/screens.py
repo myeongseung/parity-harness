@@ -136,6 +136,9 @@ SCREENS = (
 
     # 쪽지 — 목록만 screen 테이블에 있다(읽기·쓰기·답장은 로그인만 보는 팝업)
     _screen("message", "index", "index", True, legacy="message/index.jsp"),
+    _screen("message", "read", "read", True, legacy="message/read.jsp"),
+    _screen("message", "register", "register", True, legacy="message/register.jsp"),
+    _screen("message", "reply", "reply", True, legacy="message/reply.jsp"),
 
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),

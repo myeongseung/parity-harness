@@ -46,4 +46,37 @@ public interface MessageMapper {
             @Param("className") String className,
             @Param("classId") String classId,
             @Param("search") MessageSearch search);
+
+    /**
+     * 쪽지 한 건을 읽기 화면용으로 조회한다.
+     *
+     * @param id 쪽지 번호
+     * @return 쪽지. 없으면 {@code null}
+     */
+    MessageDetail findView(@Param("id") int id);
+
+    /**
+     * 쪽지를 «읽음» 으로 표시한다.
+     *
+     * <p>레거시는 읽지 않은 것만 갱신했다({@code read_status == 0} 일 때만). 여기서는
+     * {@code WHERE ... AND read_status = 0} 으로 같은 결과를 낸다 — 이미 읽은 것은
+     * {@code read_at} 이 바뀌지 않는다.
+     *
+     * @param id 쪽지 번호
+     * @return 갱신된 행 수(이미 읽었으면 0)
+     */
+    int markRead(@Param("id") int id);
+
+    /**
+     * 쪽지 한 건을 넣는다.
+     *
+     * @param senderId 보낸 사람 사번
+     * @param receiverId 받는 사람 사번
+     * @param content 내용
+     * @return 반영된 행 수
+     */
+    int insertMessage(
+            @Param("senderId") String senderId,
+            @Param("receiverId") String receiverId,
+            @Param("content") String content);
 }

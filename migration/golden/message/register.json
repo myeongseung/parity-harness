@@ -1,0 +1,57 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "message-register",
+  "source": "../legacy/ERFlow/src/main/webapp/message/register.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "받는 사람",
+      "detail": "",
+      "raw": "받는 사람"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "찾기 버튼을 눌러 받을 사람을 설정하세요.",
+      "detail": "text",
+      "raw": "찾기 버튼을 눌러 받을 사람을 설정하세요."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "찾기",
+      "detail": "button",
+      "raw": "찾기"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "내 용",
+      "detail": "",
+      "raw": "내 용"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "content",
+      "detail": "",
+      "raw": "content"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "등록",
+      "detail": "submit",
+      "raw": "등록"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "취소",
+      "detail": "button",
+      "raw": "취소"
+    }
+  ]
+}
