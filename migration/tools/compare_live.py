@@ -44,6 +44,8 @@ NEW = os.environ.get("ERFLOW_NEW_BASE", "http://localhost:18080")
 #: 아니다. 값이 <div> 에 흩어져 있어 표 비교로는 아무것도 잡지 못한다.
 SCREENS = (
     ("생산 설비 관리", "/unit/unitList.jsp", "/unit/list", "rows"),
+    ("사용자 찾기 팝업", "/findUser.jsp", "/find/user", "rows"),
+    ("사용자 찾기 팝업 (한 명)", "/findEachUser.jsp", "/find/each-user", "rows"),
     ("협력업체 관리 (구매)", "/company/companyList.jsp?flag=1", "/company/list?flag=1", "rows"),
     ("협력업체 관리 (영업)", "/company/companyList.jsp?flag=0", "/company/list?flag=0", "rows"),
     ("게시판 목록", "/post/boardList.jsp", "/post/board-list", "rows"),

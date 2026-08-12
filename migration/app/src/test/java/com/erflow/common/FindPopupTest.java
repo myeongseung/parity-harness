@@ -7,6 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.erflow.auth.TestUsers;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,10 +21,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * 코드 찾기 팝업.
+ * 찾기 팝업.
  *
- * <p>검색 전과 «검색어를 비운 채 누른 것»이 다르다는 점을 주로 본다. 레거시가
- * 그렇게 갈라 놓았고, 눈으로는 잘 드러나지 않는 차이다.
+ * <p>코드 찾기(은행·업종·문서)에서는 검색 전과 «검색어를 비운 채 누른 것»이 다르다는
+ * 점을 주로 본다. 레거시가 그렇게 갈라 놓았고, 눈으로는 잘 드러나지 않는 차이다.
+ *
+ * <p>사용자 찾기는 도움말이 없고 열자마자 전체 목록이 나온다. 걸러내는 조건이 셋이라
+ * 어느 칸을 보고 어느 칸을 안 보는지를 확인한다 — 표에 사번이 보이는데 검색은 이름만
+ * 훑는다.
  */
 @SpringBootTest(properties = "server.port=0")
 @AutoConfigureMockMvc
@@ -119,5 +126,161 @@ class FindPopupTest {
 
         assertThat(html).doesNotContain("a-work-info");
         assertThat(html).contains("업체 코드 찾기 서비스 제공");
+    }
+
+    /**
+     * 사용자 찾기 팝업을 연다.
+     *
+     * @param dept 부서명. 빈 문자열이면 전체부서
+     * @param job 직급명. 빈 문자열이면 전체직급
+     * @param keyword 이름 검색어
+     * @return 받은 HTML
+     */
+    private String openUsers(String dept, String job, String keyword) throws Exception {
+        return mockMvc.perform(get("/find/user").with(user(TestUsers.admin()))
+                        .param("deptKeyfield", dept)
+                        .param("jobKeyfield", job)
+                        .param("keyword", keyword))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+    }
+
+    /**
+     * 표에서 한 칸의 글자를 모은다. 셀마다 class 가 달려 있어 그것으로 고른다.
+     *
+     * @param html 받은 HTML
+     * @param cellClass 셀의 class 이름
+     * @return 그 칸의 값 목록
+     */
+    private static List<String> column(String html, String cellClass) {
+        var found = new ArrayList<String>();
+        var cell = Pattern.compile("class=\"" + cellClass + "\">([^<]*)<").matcher(html);
+        while (cell.find()) {
+            found.add(cell.group(1).strip());
+        }
+        return found;
+    }
+
+    /**
+     * 콤보의 항목을 모은다. «전체부서» 처럼 값이 빈 항목은 뺀다.
+     *
+     * @param html 받은 HTML
+     * @param selectClass select 의 class 이름
+     * @return 고를 수 있는 값 목록
+     */
+    private static List<String> options(String html, String selectClass) {
+        var block = Pattern.compile("class=\"" + selectClass + "\".*?</select>", Pattern.DOTALL)
+                .matcher(html);
+        if (!block.find()) {
+            return List.of();
+        }
+        var found = new ArrayList<String>();
+        var option = Pattern.compile("<option value=\"([^\"]+)\"").matcher(block.group());
+        while (option.find()) {
+            found.add(option.group(1));
+        }
+        return found;
+    }
+
+    @Test
+    @DisplayName("사용자 팝업은 열자마자 전체 목록이 나온다")
+    void userPopupListsEveryoneOnOpen() throws Exception {
+        // 코드 찾기 셋과 다르다. 도움말 마크업이 아예 없고 검색 전후를 가리지 않는다.
+        String html = mockMvc.perform(get("/find/user").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).doesNotContain("tip");
+        assertThat(column(html, "search-people-body-receiver")).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("관리자는 목록에 없다")
+    void userPopupHidesAdmin() throws Exception {
+        // 레거시 조건이 where id <> 'admin' 이다.
+        String html = openUsers("", "", "");
+
+        assertThat(column(html, "search-people-body-receiver-id")).doesNotContain("admin");
+    }
+
+    @Test
+    @DisplayName("이름으로 걸러낸다")
+    void userPopupFiltersByName() throws Exception {
+        String someone = column(openUsers("", "", ""), "search-people-body-receiver").get(0);
+
+        List<String> names =
+                column(openUsers("", "", someone), "search-people-body-receiver");
+
+        assertThat(names).isNotEmpty().allSatisfy(name -> assertThat(name).contains(someone));
+    }
+
+    @Test
+    @DisplayName("사번으로는 찾지 못한다")
+    void userPopupDoesNotSearchById() throws Exception {
+        // 표에 사번이 보이지만 레거시 조건은 name like 뿐이다. 그대로 옮겼다.
+        String someone = column(openUsers("", "", ""), "search-people-body-receiver-id").get(0);
+
+        String html = openUsers("", "", someone);
+
+        assertThat(column(html, "search-people-body-receiver-id")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("부서를 고르면 그 부서만 남고 콤보에 선택이 남는다")
+    void userPopupFiltersByDeptAndKeepsSelection() throws Exception {
+        String all = openUsers("", "", "");
+        List<String> combo = options(all, "search-people-dept");
+        // 콤보에 있는 부서 중 실제로 사용자가 있는 것을 고른다. 콤보에 없는 부서를
+        // 가진 사용자가 있어서(관리자 부서, D-038) 표의 첫 줄을 그냥 쓸 수 없다.
+        String dept = column(all, "search-people-body-dept").stream()
+                .filter(combo::contains)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("콤보에 있는 부서를 가진 사용자가 없다"));
+
+        String html = openUsers(dept, "", "");
+
+        assertThat(column(html, "search-people-body-dept"))
+                .isNotEmpty().allSatisfy(name -> assertThat(name).contains(dept));
+        // 다시 열었을 때 고른 부서가 콤보에 남아 있어야 한다. 레거시가
+        // deptKeyfield.equals(name) 로 selected 를 찍는다 — 딱 하나여야 한다.
+        assertThat(html).containsOnlyOnce("selected=\"selected\"");
+    }
+
+    @Test
+    @DisplayName("개별 찾기는 라디오로 한 명만 고른다")
+    void eachUserPopupPicksOne() throws Exception {
+        String html = mockMvc.perform(get("/find/each-user").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).contains("type=\"radio\"");
+        // 전체 선택 칸이 없다. 한 명만 고르는 화면이라 있을 이유가 없다.
+        assertThat(html).doesNotContain("chkAll");
+    }
+
+    @Test
+    @DisplayName("두 사용자 팝업은 같은 사람들을 보여준다")
+    void bothUserPopupsShareTheSameQuery() throws Exception {
+        // 조회는 하나다. 고르는 방식만 다르다 — 화면 둘이 어긋나면 그쪽이 갈라진 것이다.
+        String many = mockMvc.perform(get("/find/user").with(user(TestUsers.admin())))
+                .andReturn().getResponse().getContentAsString();
+        String one = mockMvc.perform(get("/find/each-user").with(user(TestUsers.admin())))
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(column(one, "search-people-body-receiver-id"))
+                .isNotEmpty()
+                .isEqualTo(column(many, "search-people-body-receiver-id"));
+    }
+
+    @Test
+    @DisplayName("관리자 부서는 콤보에 없다")
+    void adminDeptIsHiddenFromCombo() throws Exception {
+        // 레거시 DepartmentService 주석: «불러올 때 관리자를 제외하고 불러올 것
+        // (관리자 부서 번호: -1)». 목록 쪽은 admin 계정만 빼므로 그 부서에 속한
+        // 사용자는 표에 나온다. 좁힐 수 없는 부서가 표에 보이는 셈이다 — D-038.
+        String html = openUsers("", "", "");
+
+        assertThat(options(html, "search-people-dept")).isNotEmpty().doesNotContain("관리자");
+        assertThat(options(html, "search-people-job")).isNotEmpty().doesNotContain("관리자");
     }
 }

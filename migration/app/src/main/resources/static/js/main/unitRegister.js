@@ -6,7 +6,8 @@ $(document).ready(function() {
 		const top = (screen.height - height) / 2;
 		const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-		window.open('../findDocument.jsp', '_blank', features);
+		// 레거시: '../findDocument.jsp'. 라우팅이 바뀌었다(D-005)
+		window.open('/find/document', '_blank', features);
 	});
 
 	$(".find-user").on("click", function() {
@@ -16,7 +17,7 @@ $(document).ready(function() {
 		const top = (screen.height - height) / 2;
 		const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-		window.open('../findUser.jsp', '_blank', features);
+		window.open('/find/user', '_blank', features);
 	});
 });
 

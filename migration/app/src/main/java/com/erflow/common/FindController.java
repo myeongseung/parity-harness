@@ -3,6 +3,8 @@ package com.erflow.common;
 import com.erflow.auth.ErflowUserDetails;
 import com.erflow.company.CompanyCodes;
 import com.erflow.document.DocumentFinder;
+import com.erflow.user.UserFinder;
+import com.erflow.user.UserSearch;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * findBank.jsp      GET /find/bank
  * findWork.jsp      GET /find/work
  * findDocument.jsp  GET /find/document
+ * findUser.jsp      GET /find/user
+ * findEachUser.jsp  GET /find/each-user
  * </pre>
  *
  * <p>등록 화면에서 {@code window.open} 으로 여는 작은 창이다. 고른 값을
@@ -28,6 +32,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  * <p>레거시는 {@code request.getParameter("search")} 가 {@code null} 이면 도움말을
  * 보여주고, 빈 문자열이면 <b>전체 목록</b>을 보여준다. 창을 처음 열었을 때와
  * 검색창을 비운 채 누른 것을 구별하는 것이다. 그대로 옮긴다.
+ *
+ * <p>다만 코드 찾기 셋만 그렇다. 사용자 찾기는 도움말이 아예 없고 열자마자
+ * 전체 목록이 나온다({@link #user}).
  */
 @Controller
 @RequestMapping("/find")
@@ -35,14 +42,17 @@ public class FindController {
 
     private final CompanyCodes codes;
     private final DocumentFinder documents;
+    private final UserFinder users;
 
     /**
      * @param codes 은행·업종 코드표
      * @param documents 문서 조회
+     * @param users 사용자 조회
      */
-    public FindController(CompanyCodes codes, DocumentFinder documents) {
+    public FindController(CompanyCodes codes, DocumentFinder documents, UserFinder users) {
         this.codes = codes;
         this.documents = documents;
+        this.users = users;
     }
 
     /**
@@ -95,5 +105,78 @@ public class FindController {
         model.addAttribute("search", search == null ? "" : search);
         model.addAttribute("entries", documents.search(user.id(), search));
         return "find/document";
+    }
+
+    /**
+     * 사용자 찾기 — 여러 명.
+     *
+     * <p>고른 사번을 {@code ;} 로 이어 {@code window.opener.updateSelect} 에 넘긴다 —
+     * 설비 등록은 그중 하나만 쓰고, 쪽지 쓰기는 전부 받는다. 팝업은 어느 쪽인지 모른다.
+     *
+     * <p>파라미터 이름이 {@code search} 가 아니라 셋이다. 레거시 화면이 부서·직급
+     * 콤보와 검색어를 각각 {@code deptKeyfield}·{@code jobKeyfield}·{@code keyword}
+     * 로 보낸다. 이름을 바꾸면 부모 화면과 즐겨찾기한 주소가 어긋난다.
+     *
+     * @param deptKeyfield 부서명. 콤보에서 «전체부서» 면 빈 문자열
+     * @param jobKeyfield 직급명. 콤보에서 «전체직급» 이면 빈 문자열
+     * @param keyword 이름 검색어
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/user")
+    public String user(
+            @RequestParam(defaultValue = "") String deptKeyfield,
+            @RequestParam(defaultValue = "") String jobKeyfield,
+            @RequestParam(defaultValue = "") String keyword,
+            Model model) {
+        return listUsers(deptKeyfield, jobKeyfield, keyword, model, "find/user");
+    }
+
+    /**
+     * 사용자 찾기 — 한 명.
+     *
+     * <p>{@code findUser.jsp} 와 조회가 같고 화면도 같다. 다른 것은 고르는 방식뿐이다 —
+     * 라디오라서 한 명이고, 사번과 <b>이름</b>을 {@code receiveEachUserInfo} 로 넘긴다.
+     * 이름을 표의 셀에서 읽어 가므로 표 구조가 곧 계약이다.
+     *
+     * <p>레거시가 이 둘을 파일 두 개로 나눠 두었다. 한 화면에 파라미터를 붙여 합칠 수
+     * 있지만 그러면 부모 화면들이 여는 주소가 바뀐다 — 화면 수를 줄이는 것이 이관의
+     * 목표가 아니다.
+     *
+     * @param deptKeyfield 부서명
+     * @param jobKeyfield 직급명
+     * @param keyword 이름 검색어
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/each-user")
+    public String eachUser(
+            @RequestParam(defaultValue = "") String deptKeyfield,
+            @RequestParam(defaultValue = "") String jobKeyfield,
+            @RequestParam(defaultValue = "") String keyword,
+            Model model) {
+        return listUsers(deptKeyfield, jobKeyfield, keyword, model, "find/each-user");
+    }
+
+    /**
+     * 두 사용자 팝업이 함께 쓰는 모델 채우기.
+     *
+     * @param dept 부서명
+     * @param job 직급명
+     * @param keyword 이름 검색어
+     * @param model 뷰 모델
+     * @param view 팝업 템플릿 이름
+     * @return 받은 템플릿 이름
+     */
+    private String listUsers(String dept, String job, String keyword, Model model, String view) {
+        // 레거시는 파라미터가 없으면 빈 문자열로 두고 그 값으로 조회한다. 검색
+        // 전과 후를 구별하지 않으므로 창을 열자마자 전체 목록이 나온다.
+        model.addAttribute("deptKeyfield", dept);
+        model.addAttribute("jobKeyfield", job);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("departments", users.departments());
+        model.addAttribute("jobs", users.jobs());
+        model.addAttribute("users", users.search(new UserSearch(dept, job, keyword)));
+        return view;
     }
 }
