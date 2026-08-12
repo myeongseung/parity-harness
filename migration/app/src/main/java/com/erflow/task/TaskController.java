@@ -1,8 +1,11 @@
 package com.erflow.task;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -10,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 수·발주 관리 화면.
  *
  * <pre>
- * purchaseTask.jsp  GET /task/purchase-task   (발주, type=1)
- * sellTask.jsp      GET /task/sell-task        (수주, type=0)
+ * purchaseTask.jsp     GET  /task/purchase-task   (발주, type=1)
+ * sellTask.jsp         GET  /task/sell-task        (수주, type=0)
+ * taskRegister.jsp     GET  /task/register?flag=
+ * taskRegisterProc.jsp POST /task/register
+ * createModal.jsp      GET  /task/history-modal?taskId=
  * </pre>
  *
  * <p>발주와 수주는 거의 같은 화면인데 {@code type} 과 권한이 갈린다. 협력업체 관리의
@@ -81,5 +87,108 @@ public class TaskController {
         model.addAttribute("keyfield", keyfield == null ? "" : keyfield);
         model.addAttribute("keyword", keyword == null ? "" : keyword);
         return view;
+    }
+
+    /**
+     * 수·발주 등록 화면. 화면 글자와 권한이 {@code flag} 로 갈린다.
+     *
+     * <p>사실상 {@code flag} 는 언제나 sell/purchase 다. {@code screen} 테이블이
+     * {@code /task/register} 를 flag 값별로 등록해 두어, 그 밖의 flag(없거나 다른 값)는
+     * {@link com.erflow.auth.ScreenAuthorizationManager} 가 컨트롤러 전에 막는다. 아래
+     * 분기는 그 방어가 뚫렸을 때를 위한 것이다 — 레거시 {@code taskRegister.jsp} 도 flag
+     * 가 없으면 잘못된 접근으로 보냈다.
+     *
+     * @param flag sell 또는 purchase
+     * @param model 뷰 모델
+     * @return 등록 템플릿. flag 가 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/register")
+    public String registerForm(@RequestParam(required = false) String flag, Model model) {
+        if (!"sell".equals(flag) && !"purchase".equals(flag)) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("flag", flag);
+        model.addAttribute("isSell", "sell".equals(flag));
+        return "task/register";
+    }
+
+    /**
+     * 수·발주 등록 처리.
+     *
+     * <p>레거시 {@code taskRegisterProc.jsp} 를 옮겼다. 다섯 값(사번·업체·문서·의뢰
+     * 시각·상태)이 모두 있고 제품이 하나라도 있어야 등록한다. 하나라도 없으면 «실패».
+     *
+     * @param flag sell 또는 purchase
+     * @param userId 담당 직원 사번
+     * @param companyId 협력업체 번호
+     * @param documentId 문서 번호
+     * @param taskAt 의뢰 시각
+     * @param status 상태 코드
+     * @param productId 제품 코드 목록
+     * @param count 제품별 수량 목록
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/register")
+    public String register(
+            @RequestParam(required = false) String flag,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) Integer companyId,
+            @RequestParam(required = false) Integer documentId,
+            @RequestParam(required = false) String taskAt,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) List<String> productId,
+            @RequestParam(required = false) List<Integer> count,
+            Model model) {
+
+        boolean present = userId != null && companyId != null && documentId != null
+                && taskAt != null && status != null && productId != null;
+        boolean created = present && taskService.create(
+                new Task(userId, companyId, documentId, "sell".equals(flag) ? 0 : 1,
+                        taskAt, status),
+                histories(productId, count));
+
+        model.addAttribute("message", created ? "등록에 성공했습니다." : "등록에 실패했습니다.");
+        model.addAttribute("nextPage", listPath(flag));
+        return "task/result";
+    }
+
+    /**
+     * 내역 모달. 한 수·발주의 제품·수량을 보여준다.
+     *
+     * @param taskId 수·발주 번호
+     * @param model 뷰 모델
+     * @return 모달 템플릿. 번호가 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/history-modal")
+    public String historyModal(
+            @RequestParam(required = false) Integer taskId, Model model) {
+        if (taskId == null || taskId == 0) {
+            // 레거시 createModal.jsp 가 taskId 가 0 이면 accessError 로 보냈다.
+            return "redirect:/access-error";
+        }
+        model.addAttribute("histories", taskService.histories(taskId));
+        return "task/history-modal";
+    }
+
+    /**
+     * 제품 코드·수량 배열을 이력 목록으로 짝짓는다.
+     *
+     * @param productIds 제품 코드 목록
+     * @param counts 수량 목록. 짧으면 0 으로 본다
+     * @return 이력 목록. taskId 는 등록 시 채운다
+     */
+    private static List<TaskHistory> histories(List<String> productIds, List<Integer> counts) {
+        List<TaskHistory> histories = new ArrayList<>();
+        for (int i = 0; i < productIds.size(); i++) {
+            int quantity = counts != null && i < counts.size() ? counts.get(i) : 0;
+            histories.add(new TaskHistory(0, productIds.get(i), quantity));
+        }
+        return histories;
+    }
+
+    private static String listPath(String flag) {
+        // 레거시: flag + "Task.jsp" -> 목록으로 돌아간다.
+        return "sell".equals(flag) ? "/task/sell-task" : "/task/purchase-task";
     }
 }

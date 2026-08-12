@@ -40,4 +40,38 @@ public interface TaskMapper {
      * @return 전체 건수
      */
     int countBy(@Param("type") int type, @Param("search") TaskSearch search);
+
+    /**
+     * 수·발주 한 건을 넣는다. id·created_at 은 DB 가 채운다.
+     *
+     * @param task 등록할 수·발주
+     * @return 반영된 행 수
+     */
+    int insertTask(@Param("task") Task task);
+
+    /**
+     * 방금 넣은 행의 자동 생성 id.
+     *
+     * <p>{@code createTask} 가 생성 키를 읽어 이력을 잇던 것을 대신한다. 같은 트랜잭션
+     * (같은 커넥션) 안에서 불러야 방금 넣은 값을 돌려준다.
+     *
+     * @return {@code LAST_INSERT_ID()}
+     */
+    int lastInsertId();
+
+    /**
+     * 이력 한 줄을 넣는다.
+     *
+     * @param history 제품·수량
+     * @return 반영된 행 수
+     */
+    int insertHistory(@Param("history") TaskHistory history);
+
+    /**
+     * 한 수·발주의 제품 이력.
+     *
+     * @param taskId 수·발주 번호
+     * @return 제품 코드·이름·수량 목록
+     */
+    List<TaskHistoryRow> findHistories(@Param("taskId") int taskId);
 }

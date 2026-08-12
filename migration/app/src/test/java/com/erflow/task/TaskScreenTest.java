@@ -6,10 +6,17 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+
 import com.erflow.auth.TestUsers;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +26,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 수·발주 목록이 실제 데이터로 그려지는지 확인한다.
@@ -38,6 +46,12 @@ class TaskScreenTest {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private DataSource dataSource;
 
     @BeforeAll
     static void requireLocalConfig() {
@@ -123,5 +137,92 @@ class TaskScreenTest {
 
         assertThat(page.rows()).isEmpty();
         assertThat(page.pagination().totalRecord()).isZero();
+    }
+
+    @Test
+    @DisplayName("발주 등록 화면이 그려진다")
+    void purchaseRegisterFormRenders() throws Exception {
+        String html = render("/task/register?flag=purchase", "task-register.html");
+
+        assertThat(html).contains("발주 등록").contains("직원 찾기").contains("제품 찾기");
+        assertThat(html).contains("진행중").contains("완료").contains("미확인");
+    }
+
+    @Test
+    @DisplayName("수주 등록 화면은 글자가 수주다")
+    void sellRegisterFormRenders() throws Exception {
+        String html = render("/task/register?flag=sell", "task-register-sell.html");
+
+        assertThat(html).contains("수주 등록");
+    }
+
+    @Test
+    @DisplayName("flag 가 없으면 화면 권한 판정이 먼저 막는다")
+    void registerWithoutFlagIsDenied() throws Exception {
+        // screen 테이블에 /task/register 는 flag=sell·purchase 행만 있다. flag 가 없으면
+        // 어느 규칙에도 안 걸려 ScreenAuthorizationManager 가 거부한다(컨트롤러 전에 403).
+        // 레거시는 no-flag 를 accessError 로 보냈지만, 화면 권한을 한 곳에서 판정하는
+        // 우리 구조는 permission 계열로 막는다 — 협력업체 flag 처리(D-018)와 같은 맥락.
+        mockMvc.perform(get("/task/register").with(user(TestUsers.admin())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("내역 모달은 taskId 가 없으면 잘못된 접근으로 보낸다")
+    void modalWithoutTaskIdRedirects() throws Exception {
+        mockMvc.perform(get("/task/history-modal").with(user(TestUsers.admin())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-error"));
+    }
+
+    @Test
+    @DisplayName("등록하면 수량 0 인 제품은 이력에서 빠진다")
+    @Transactional
+    void createStoresOnlyPositiveCounts() throws Exception {
+        long[] refs = existingTaskRefs();
+        assumeTrue(refs != null, "기존 수·발주가 없어 건너뛴다");
+        List<String> products = someProducts(2);
+        assumeTrue(products.size() == 2, "제품이 둘 미만이라 건너뛴다");
+
+        boolean created = taskService.create(
+                new Task((String) existingUserId, (int) refs[0], (int) refs[1],
+                        TaskService.PURCHASE, "2026-01-01 00:00:00", 1),
+                List.of(new TaskHistory(0, products.get(0), 5),
+                        new TaskHistory(0, products.get(1), 0)));
+
+        assertThat(created).isTrue();
+        int newId = taskMapper.lastInsertId();
+        // 수량 5 만 남고 0 은 빠진다 — 레거시 if(count > 0) 그대로.
+        assertThat(taskService.histories(newId))
+                .extracting(TaskHistoryRow::productId)
+                .containsExactly(products.get(0));
+    }
+
+    /** FK 안전한 값을 기존 task_tbl 한 행에서 가져온다. */
+    private Object existingUserId;
+
+    private long[] existingTaskRefs() throws Exception {
+        try (Connection c = dataSource.getConnection();
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery(
+                        "SELECT user_tbl_id, company_tbl_id, document_tbl_id FROM task_tbl LIMIT 1")) {
+            if (!rs.next()) {
+                return null;
+            }
+            existingUserId = rs.getString(1);
+            return new long[] {rs.getLong(2), rs.getLong(3)};
+        }
+    }
+
+    private List<String> someProducts(int n) throws Exception {
+        List<String> ids = new ArrayList<>();
+        try (Connection c = dataSource.getConnection();
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery("SELECT id FROM product_tbl LIMIT " + n)) {
+            while (rs.next()) {
+                ids.add(rs.getString(1));
+            }
+        }
+        return ids;
     }
 }

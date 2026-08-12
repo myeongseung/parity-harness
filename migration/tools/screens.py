@@ -130,6 +130,8 @@ SCREENS = (
     # 업무(수·발주) — 목록 둘은 파일이 나뉘어 있다(경로도 /task/*-task)
     _screen("task", "purchaseTask", "purchase-task", True, legacy="task/purchaseTask.jsp"),
     _screen("task", "sellTask", "sell-task", True, legacy="task/sellTask.jsp"),
+    _screen("task", "taskRegister", "register", True, legacy="task/taskRegister.jsp"),
+    _screen("task", "createModal", "history-modal", True, legacy="task/createModal.jsp"),
 
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),

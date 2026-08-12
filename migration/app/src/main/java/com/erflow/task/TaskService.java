@@ -53,6 +53,48 @@ public class TaskService {
     }
 
     /**
+     * 수·발주를 이력과 함께 등록한다.
+     *
+     * <p>레거시 {@code createTask} 를 옮겼다 — 본체를 넣어 생성된 id 를 받고, 그 id 로
+     * 수량이 <b>0 보다 큰</b> 이력만 잇는다. 수량 0 은 넣지 않는다.
+     *
+     * <h2>레거시와 달라지는 것 — 원자성</h2>
+     *
+     * <p>레거시는 트랜잭션이 없었다. 본체가 들어가고 이력 하나가 실패해도 본체는 남았고,
+     * 예외를 삼켜 «성공»으로 알렸다(D-043). 여기서는 한 트랜잭션으로 묶어 이력이 실패하면
+     * 본체까지 되돌린다. 정상 데이터에서는 결과가 같다.
+     *
+     * @param task 등록할 수·발주 본체
+     * @param histories 제품·수량 목록
+     * @return 본체가 들어갔으면 {@code true}
+     */
+    @Transactional
+    public boolean create(Task task, List<TaskHistory> histories) {
+        boolean created = taskMapper.insertTask(task) == 1;
+        if (created && histories != null) {
+            int taskId = taskMapper.lastInsertId();
+            for (TaskHistory history : histories) {
+                if (history.count() > 0) {
+                    taskMapper.insertHistory(
+                            new TaskHistory(taskId, history.productId(), history.count()));
+                }
+            }
+        }
+        return created;
+    }
+
+    /**
+     * 한 수·발주의 제품 이력. 내역 모달이 쓴다.
+     *
+     * @param taskId 수·발주 번호
+     * @return 제품·수량 목록
+     */
+    @Transactional(readOnly = true)
+    public List<TaskHistoryRow> histories(int taskId) {
+        return taskMapper.findHistories(taskId);
+    }
+
+    /**
      * 목록 한 페이지.
      *
      * @param rows 이 페이지의 수·발주 목록

@@ -1,0 +1,36 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "task-createModal",
+  "source": "../legacy/ERFlow/src/main/webapp/task/createModal.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "종료",
+      "detail": "button",
+      "raw": "종료"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제품 번호",
+      "detail": "",
+      "raw": "제품 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제품명",
+      "detail": "",
+      "raw": "제품명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "수량",
+      "detail": "",
+      "raw": "수량"
+    }
+  ]
+}
