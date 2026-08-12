@@ -103,6 +103,16 @@ class FindPopupTest {
     }
 
     @Test
+    @DisplayName("문서 찾기는 도움말이 뜨지 않는다")
+    void documentPopupNeverShowsTips() throws Exception {
+        // 레거시가 검색어를 빈 문자열로 채워 놓고 null 인지 검사한다. 도움말
+        // 갈래가 한 번도 실행되지 않는다 — 결함이지만 그대로 옮겼다. D-036 참조.
+        String html = open("/find/document", null);
+
+        assertThat(html).doesNotContain("<h3>tip</h3>");
+    }
+
+    @Test
     @DisplayName("찾는 것이 없으면 목록만 비고 화면은 뜬다")
     void noMatchStillRenders() throws Exception {
         String html = open("/find/work", "없는업종이름12345");

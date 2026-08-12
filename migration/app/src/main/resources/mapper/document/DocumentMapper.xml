@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/DocumentServiceImpl.java
+-->
+<mapper namespace="com.erflow.document.DocumentMapper">
+
+    <!--
+      레거시 getDocumentViews(null, null, "user", userId) 가 만드는 SQL 이다.
+        select * from document_view where user_id = ? order by id desc
+    -->
+    <select id="findByUser" resultType="com.erflow.document.DocumentRow">
+        SELECT id, subject
+          FROM document_view
+         WHERE user_id = #{userId}
+         ORDER BY id DESC
+    </select>
+
+    <!--
+      레거시 hasProposal: select count(*) from proposal_tbl where document_tbl_id = ?
+
+      찾기 팝업이 문서마다 이것을 다시 부른다. 한 번의 조인으로 합치면 질의는
+      줄지만 결과가 같은지 따로 증명해야 한다. 게시판 목록에서와 같은 판단으로
+      호출 구조를 그대로 둔다 — 사용자 본인 문서만 훑으므로 건수가 작다.
+    -->
+    <select id="countProposals" resultType="int">
+        SELECT COUNT(*)
+          FROM proposal_tbl
+         WHERE document_tbl_id = #{documentId}
+    </select>
+
+</mapper>

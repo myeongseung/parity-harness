@@ -1,6 +1,9 @@
 package com.erflow.common;
 
+import com.erflow.auth.ErflowUserDetails;
 import com.erflow.company.CompanyCodes;
+import com.erflow.document.DocumentFinder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 코드 찾기 팝업.
  *
  * <pre>
- * findBank.jsp  GET /find/bank
- * findWork.jsp  GET /find/work
+ * findBank.jsp      GET /find/bank
+ * findWork.jsp      GET /find/work
+ * findDocument.jsp  GET /find/document
  * </pre>
  *
  * <p>등록 화면에서 {@code window.open} 으로 여는 작은 창이다. 고른 값을
@@ -30,12 +34,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class FindController {
 
     private final CompanyCodes codes;
+    private final DocumentFinder documents;
 
     /**
      * @param codes 은행·업종 코드표
+     * @param documents 문서 조회
      */
-    public FindController(CompanyCodes codes) {
+    public FindController(CompanyCodes codes, DocumentFinder documents) {
         this.codes = codes;
+        this.documents = documents;
     }
 
     /**
@@ -64,5 +71,29 @@ public class FindController {
         model.addAttribute("search", search);
         model.addAttribute("entries", search == null ? null : codes.fieldTable().search(search));
         return "find/work";
+    }
+
+    /**
+     * 문서 찾기.
+     *
+     * <p>은행·업종과 달리 <b>도움말이 없다.</b> 레거시가 검색어를 빈 문자열로
+     * 채워 놓고 {@code null} 인지 검사해서, 도움말 갈래가 한 번도 실행되지 않는다.
+     * 그대로 옮긴다 — D-036 참조.
+     *
+     * @param search 검색어
+     * @param user 로그인 사용자
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/document")
+    public String document(
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal ErflowUserDetails user,
+            Model model) {
+        // 레거시가 Optional.orElse("") 로 채운다. 그래서 도움말 조건이 절대 참이
+        // 되지 않는다. 여기서 null 을 그대로 넘기면 레거시에 없던 도움말이 뜬다.
+        model.addAttribute("search", search == null ? "" : search);
+        model.addAttribute("entries", documents.search(user.id(), search));
+        return "find/document";
     }
 }

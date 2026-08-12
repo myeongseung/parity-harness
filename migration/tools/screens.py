@@ -106,7 +106,7 @@ SCREENS = (
     # 찾기 팝업 — 레거시는 최상위에 있다. 등록 화면이 window.open 으로 연다
     _screen("find", "findBank", "bank", True, legacy="findBank.jsp"),
     _screen("find", "findWork", "work", True, legacy="findWork.jsp"),
-    _screen("find", "findDocument", "document", False, legacy="findDocument.jsp"),
+    _screen("find", "findDocument", "document", True, legacy="findDocument.jsp"),
     _screen("find", "findUser", "user", False, legacy="findUser.jsp"),
     _screen("find", "findCompany", "company", False, legacy="findCompany.jsp"),
     _screen("find", "findProduct", "product", False, legacy="findProduct.jsp"),
