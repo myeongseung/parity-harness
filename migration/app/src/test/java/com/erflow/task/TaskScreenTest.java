@@ -225,4 +225,84 @@ class TaskScreenTest {
         }
         return ids;
     }
+
+    private Integer firstTaskId(int type) throws Exception {
+        try (Connection c = dataSource.getConnection();
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery(
+                        "SELECT id FROM task_tbl WHERE type = " + type + " LIMIT 1")) {
+            return rs.next() ? rs.getInt(1) : null;
+        }
+    }
+
+    @Test
+    @DisplayName("발주 수정 화면이 기존 값으로 그려진다")
+    void purchaseUpdateFormRenders() throws Exception {
+        Integer id = firstTaskId(TaskService.PURCHASE);
+        assumeTrue(id != null, "발주 데이터가 없어 건너뛴다");
+
+        String html = render("/task/update?flag=purchase&id=" + id, "task-update.html");
+
+        assertThat(html).contains("발주 관리 수정").contains("제출").contains("제품 찾기");
+    }
+
+    @Test
+    @DisplayName("수정 화면은 id 가 없으면 잘못된 접근으로 보낸다")
+    void updateWithoutIdRedirects() throws Exception {
+        mockMvc.perform(get("/task/update?flag=purchase").with(user(TestUsers.admin())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-error"));
+    }
+
+    @Test
+    @DisplayName("수주 수정은 성공한다")
+    @Transactional
+    void sellUpdateSucceeds() throws Exception {
+        Integer id = firstTaskId(TaskService.SELL);
+        assumeTrue(id != null, "수주 데이터가 없어 건너뛴다");
+        List<String> products = someProducts(1);
+        assumeTrue(!products.isEmpty(), "제품이 없어 건너뛴다");
+        TaskDetail before = taskService.get(id);
+
+        boolean updated = taskService.update(
+                new TaskUpdate(id, before.userId(), before.documentId(), "2026-02-02 00:00:00", 2, 0),
+                List.of(new TaskHistory(0, products.get(0), 3)));
+
+        assertThat(updated).isTrue();
+    }
+
+    @Test
+    @DisplayName("발주 수정은 실패하지만 이력은 바뀐다 (D-044)")
+    @Transactional
+    void purchaseUpdateFailsButHistoriesStillChange() throws Exception {
+        Integer id = firstTaskId(TaskService.PURCHASE);
+        assumeTrue(id != null, "발주 데이터가 없어 건너뛴다");
+        List<String> products = someProducts(1);
+        assumeTrue(!products.isEmpty(), "제품이 없어 건너뛴다");
+        TaskDetail before = taskService.get(id);
+
+        boolean updated = taskService.update(
+                new TaskUpdate(id, before.userId(), before.documentId(), "2026-02-02 00:00:00", 2, 0),
+                List.of(new TaskHistory(0, products.get(0), 7)));
+
+        // type 이 0 이라 발주(type=1)는 WHERE 에 안 걸려 본체 수정 실패.
+        assertThat(updated).isFalse();
+        // 그런데 이력은 지우고 다시 넣는다 — «실패» 인데 데이터는 바뀐다.
+        assertThat(taskService.histories(id))
+                .extracting(TaskHistoryRow::productId)
+                .containsExactly(products.get(0));
+    }
+
+    @Test
+    @DisplayName("삭제는 type 이 맞아야 지운다")
+    @Transactional
+    void deleteRespectsType() throws Exception {
+        Integer sellId = firstTaskId(TaskService.SELL);
+        assumeTrue(sellId != null, "수주 데이터가 없어 건너뛴다");
+
+        // 수주 건을 발주 type 으로 지우려 하면 걸리는 행이 없다.
+        assertThat(taskService.delete(List.of(sellId), TaskService.PURCHASE)).isFalse();
+        // 올바른 type 이면 지워진다.
+        assertThat(taskService.delete(List.of(sellId), TaskService.SELL)).isTrue();
+    }
 }

@@ -1,0 +1,127 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "task-taskUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/task/taskUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "의뢰 id",
+      "detail": "text",
+      "raw": "의뢰 ID"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "userid",
+      "detail": "text",
+      "raw": "userId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "직원 찾기",
+      "detail": "button",
+      "raw": "직원 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제품 찾기",
+      "detail": "button",
+      "raw": "제품 찾기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제품번호",
+      "detail": "",
+      "raw": "제품번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "수량",
+      "detail": "",
+      "raw": "수량"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "문서 찾기",
+      "detail": "button",
+      "raw": "문서 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "의뢰 시각",
+      "detail": "text",
+      "raw": "의뢰 시각"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "status",
+      "detail": "",
+      "raw": "status"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "진행중",
+      "detail": "",
+      "raw": "진행중"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "완료",
+      "detail": "",
+      "raw": "완료"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "미확인",
+      "detail": "",
+      "raw": "미확인"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제출",
+      "detail": "submit",
+      "raw": "제출"
+    }
+  ]
+}

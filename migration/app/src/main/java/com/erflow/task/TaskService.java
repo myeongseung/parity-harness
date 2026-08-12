@@ -84,7 +84,7 @@ public class TaskService {
     }
 
     /**
-     * 한 수·발주의 제품 이력. 내역 모달이 쓴다.
+     * 한 수·발주의 제품 이력. 내역 모달과 수정 화면이 쓴다.
      *
      * @param taskId 수·발주 번호
      * @return 제품·수량 목록
@@ -92,6 +92,70 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskHistoryRow> histories(int taskId) {
         return taskMapper.findHistories(taskId);
+    }
+
+    /**
+     * 수·발주 한 건을 읽는다. 수정 화면이 쓴다.
+     *
+     * @param id 의뢰 번호
+     * @return 수·발주. 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public TaskDetail get(int id) {
+        return taskMapper.findById(id);
+    }
+
+    /**
+     * 수·발주를 수정하고 이력을 갈아 끼운다.
+     *
+     * <p>레거시 {@code taskUpdateProc} 를 옮겼다 — 본체를 고치고, 이력을 <b>전부 지운
+     * 뒤 제출된 제품을 다시 넣는다.</b> 등록과 달리 수량 0 도 넣는다(레거시가 여기선
+     * {@code if count > 0} 을 걸지 않는다).
+     *
+     * <h2>본체 수정이 실패해도 이력은 바뀐다</h2>
+     *
+     * <p>레거시는 본체 수정 결과와 무관하게 이력을 지우고 다시 넣었고, 화면에는 본체
+     * 결과만 알렸다. 그래서 발주 수정(D-044 로 항상 실패)은 «실패» 라고 뜨는데도 이력은
+     * 바뀐다. 그대로 옮긴다 — 돌려주는 값은 본체 수정 결과다.
+     *
+     * @param task 수정 값
+     * @param histories 제품·수량 목록(전량 교체)
+     * @return 본체가 수정됐으면 {@code true}
+     */
+    @Transactional
+    public boolean update(TaskUpdate task, List<TaskHistory> histories) {
+        boolean updated = taskMapper.updateTask(task) == 1;
+        taskMapper.deleteHistories(task.id());
+        if (histories != null) {
+            for (TaskHistory history : histories) {
+                taskMapper.insertHistory(
+                        new TaskHistory(task.id(), history.productId(), history.count()));
+            }
+        }
+        return updated;
+    }
+
+    /**
+     * 선택된 수·발주를 지운다.
+     *
+     * <p>레거시는 한 건씩 지우며 결과를 {@code &=} 로 모았다. type 이 맞아야 지워지므로
+     * 발주 목록에서 고른 것은 발주만 지워진다. 이력은 본체보다 먼저 지운다.
+     *
+     * @param ids 지울 의뢰 번호 목록
+     * @param type 0 수주 / 1 발주
+     * @return 전부 지워졌으면 {@code true}
+     */
+    @Transactional
+    public boolean delete(List<Integer> ids, int type) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        boolean all = true;
+        for (int id : ids) {
+            taskMapper.deleteHistories(id);
+            all &= taskMapper.deleteTask(id, type) == 1;
+        }
+        return all;
     }
 
     /**

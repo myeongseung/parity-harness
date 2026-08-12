@@ -105,4 +105,50 @@
          ORDER BY h.task_tbl_id
     </select>
 
+    <!--
+      레거시: select * from task_tbl where id = ? (getTask)
+      document_tbl_id·company_tbl_id 는 NULL 일 수 있다. 레거시 extractViewtTaskBean 이
+      rs.getInt 로 읽어 NULL 을 0 으로 봤다 — COALESCE 로 같게 맞춘다(record 의 int 가
+      NULL 을 못 받는다).
+    -->
+    <select id="findById" resultType="com.erflow.task.TaskDetail">
+        SELECT id,
+               user_tbl_id                AS userId,
+               COALESCE(company_tbl_id, 0)  AS companyId,
+               COALESCE(document_tbl_id, 0) AS documentId,
+               type,
+               task_at                    AS taskAt,
+               status
+          FROM task_tbl
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시: update task_tbl set user_tbl_id=?, document_tbl_id=?, task_at=?, status=?
+              where id=? and type=?
+      type 은 언제나 0 이다(D-044). 회사·생성시각은 건드리지 않는다.
+    -->
+    <update id="updateTask">
+        UPDATE task_tbl
+           SET user_tbl_id     = #{task.userId},
+               document_tbl_id = #{task.documentId},
+               task_at         = #{task.taskAt},
+               status          = #{task.status}
+         WHERE id = #{task.id}
+           AND type = #{task.type}
+    </update>
+
+    <!-- 레거시: delete from task_history_tbl where task_tbl_id = ? -->
+    <delete id="deleteHistories">
+        DELETE FROM task_history_tbl
+         WHERE task_tbl_id = #{taskId}
+    </delete>
+
+    <!-- 레거시: delete from task_tbl where id = ? and type = ? (이력은 먼저 지운다) -->
+    <delete id="deleteTask">
+        DELETE FROM task_tbl
+         WHERE id = #{id}
+           AND type = #{type}
+    </delete>
+
 </mapper>

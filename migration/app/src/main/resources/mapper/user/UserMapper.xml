@@ -52,4 +52,11 @@
         </if>
     </select>
 
+    <!-- 레거시 getUserView(id).getName(): select * from user_view where id = ? -->
+    <select id="findUserName" resultType="string">
+        SELECT name
+          FROM user_view
+         WHERE id = #{id}
+    </select>
+
 </mapper>

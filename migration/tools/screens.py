@@ -131,6 +131,7 @@ SCREENS = (
     _screen("task", "purchaseTask", "purchase-task", True, legacy="task/purchaseTask.jsp"),
     _screen("task", "sellTask", "sell-task", True, legacy="task/sellTask.jsp"),
     _screen("task", "taskRegister", "register", True, legacy="task/taskRegister.jsp"),
+    _screen("task", "taskUpdate", "update", True, legacy="task/taskUpdate.jsp"),
     _screen("task", "createModal", "history-modal", True, legacy="task/createModal.jsp"),
 
     _screen("post", "boardList", "board-list", True),

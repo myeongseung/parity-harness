@@ -1,5 +1,6 @@
 package com.erflow.task;
 
+import com.erflow.user.UserFinder;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  * sellTask.jsp         GET  /task/sell-task        (수주, type=0)
  * taskRegister.jsp     GET  /task/register?flag=
  * taskRegisterProc.jsp POST /task/register
+ * taskUpdate.jsp       GET  /task/update?flag=&amp;id=
+ * taskUpdateProc.jsp   POST /task/update
+ * taskDeleteProc.jsp   POST /task/delete
  * createModal.jsp      GET  /task/history-modal?taskId=
  * </pre>
  *
@@ -32,12 +36,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserFinder users;
 
     /**
      * @param taskService 수·발주 업무
+     * @param users 담당 직원명 조회
      */
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, UserFinder users) {
         this.taskService = taskService;
+        this.users = users;
     }
 
     /**
@@ -154,6 +161,98 @@ public class TaskController {
     }
 
     /**
+     * 수·발주 수정 화면.
+     *
+     * <p>기존 값을 불러 채운다. 다만 의뢰 시각은 비운 채 다시 받고, 상태는 미리 고르지
+     * 않는다 — 레거시 {@code taskUpdate.jsp} 그대로다.
+     *
+     * @param flag sell 또는 purchase
+     * @param id 의뢰 번호
+     * @param model 뷰 모델
+     * @return 수정 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/update")
+    public String updateForm(
+            @RequestParam(required = false) String flag,
+            @RequestParam(required = false) Integer id,
+            Model model) {
+        TaskDetail task = id == null ? null : taskService.get(id);
+        if (task == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("flag", flag);
+        model.addAttribute("isSell", "sell".equals(flag));
+        model.addAttribute("task", task);
+        model.addAttribute("userId", task.userId());
+        model.addAttribute("userName", nullToEmpty(users.name(task.userId())));
+        model.addAttribute("histories", taskService.histories(task.id()));
+        return "task/update";
+    }
+
+    /**
+     * 수·발주 수정 처리.
+     *
+     * <p>레거시 {@code taskUpdateProc.jsp} 를 옮겼다. 다섯 값(의뢰번호·사번·문서·의뢰
+     * 시각·상태)이 모두 있고 제품이 있어야 처리한다. 협력업체는 수정 대상이 아니다.
+     * type 은 언제나 0 이라 발주 수정은 실패한다(D-044) — 그래도 이력은 갈린다.
+     *
+     * @param flag sell 또는 purchase
+     * @param taskId 의뢰 번호
+     * @param userId 담당 직원 사번
+     * @param documentId 문서 번호
+     * @param taskAt 의뢰 시각
+     * @param status 상태 코드
+     * @param productId 제품 코드 목록
+     * @param count 제품별 수량 목록
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/update")
+    public String update(
+            @RequestParam(required = false) String flag,
+            @RequestParam(required = false) Integer taskId,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) Integer documentId,
+            @RequestParam(required = false) String taskAt,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) List<String> productId,
+            @RequestParam(required = false) List<Integer> count,
+            Model model) {
+
+        boolean present = taskId != null && userId != null && documentId != null
+                && taskAt != null && status != null && productId != null;
+        boolean updated = present && taskService.update(
+                // type=0 은 레거시 결함을 그대로 옮긴 것이다(D-044). flag 로 바꾸지 않는다.
+                new TaskUpdate(taskId, blankToNull(userId), documentId,
+                        blankToNull(taskAt), status, 0),
+                histories(productId, count));
+
+        model.addAttribute("message", updated ? "수정에 성공했습니다." : "수정에 실패했습니다.");
+        model.addAttribute("nextPage", listPath(flag));
+        return "task/result";
+    }
+
+    /**
+     * 선택된 수·발주 삭제.
+     *
+     * @param flag sell 또는 purchase
+     * @param taskId 지울 의뢰 번호 목록
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/delete")
+    public String delete(
+            @RequestParam(required = false) String flag,
+            @RequestParam(required = false) List<Integer> taskId,
+            Model model) {
+        int type = "sell".equals(flag) ? TaskService.SELL : TaskService.PURCHASE;
+        boolean deleted = taskId != null && taskService.delete(taskId, type);
+        model.addAttribute("message", deleted ? "삭제에 성공했습니다." : "삭제에 실패했습니다.");
+        model.addAttribute("nextPage", listPath(flag));
+        return "task/result";
+    }
+
+    /**
      * 내역 모달. 한 수·발주의 제품·수량을 보여준다.
      *
      * @param taskId 수·발주 번호
@@ -190,5 +289,14 @@ public class TaskController {
     private static String listPath(String flag) {
         // 레거시: flag + "Task.jsp" -> 목록으로 돌아간다.
         return "sell".equals(flag) ? "/task/sell-task" : "/task/purchase-task";
+    }
+
+    private static String blankToNull(String value) {
+        // 레거시 updateProc 가 빈 문자열을 null 로 바꿔 넣었다.
+        return value == null || value.trim().isEmpty() ? null : value.trim();
+    }
+
+    private static String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 }

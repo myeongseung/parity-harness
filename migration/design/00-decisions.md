@@ -1161,6 +1161,52 @@ return flag;                          // 본체 결과만 본다
 
 ---
 
+## D-044 · 발주 수정은 언제나 실패한다 — 레거시가 type 을 안 넣는다
+
+레거시 `updateTask` 의 SQL 이다.
+
+```sql
+update task_tbl set user_tbl_id = ?, document_tbl_id = ?, task_at = ?, status = ?
+ where id = ? and type = ?
+```
+
+그런데 `taskUpdateProc.jsp` 는 본체를 채울 때 `type` 을 넣지 않는다.
+
+```java
+task.setId(...); task.setUserId(...); task.setDocumentId(...);
+task.setTaskAt(...); task.setStatus(...);
+// task.setType(...) 이 없다
+result = taskCon.updateTask(task);
+```
+
+`TaskBean.type` 은 int 기본값 **0** 이다. 그래서 WHERE 절이 언제나 `type = 0` 이 되어,
+**발주(type=1) 수정은 걸리는 행이 없어 0 행이 바뀌고 «수정에 실패했습니다» 가 뜬다.**
+수주(type=0)만 수정된다.
+
+**곁들여** 더 나쁜 것: 본체 수정 결과와 상관없이 이력은 지우고 다시 넣는다.
+
+```java
+result = taskCon.updateTask(task);   // 발주면 false
+taskCon.deleteTaskHistory(task.getId());   // 그래도 이력은 지운다
+for (...) taskCon.createTaskHistory(bean); // 그리고 다시 넣는다
+```
+
+그래서 발주 수정은 «실패» 라고 뜨는데도 **제품 이력은 실제로 바뀐다.** 사용자는
+실패한 줄 알지만 데이터는 달라져 있다.
+
+**결정:** 그대로 옮긴다. `TaskUpdate.type` 을 flag 와 무관하게 0 으로 두고
+({@code TaskController.update} 주석), 본체 결과만 «성공/실패» 로 보고하되 이력은 항상
+갈아 끼운다. 게이트는 이 결함을 못 본다 — SQL 과 서버 동작이라 화면 대조에 안 잡힌다.
+실화면 대조에서 «발주 수정이 늘 실패» 로 드러날 것이다.
+
+2단계에서 고칠 후보다 — flag 로 type 을 넣으면 발주 수정이 되살아난다. 다만 그때
+«실패해도 이력이 바뀌던» 동작도 함께 정리해야 한다.
+
+수정은 등록과 달리 수량 0 인 제품도 이력에 넣는다(레거시가 수정 루프에는
+`if count > 0` 을 걸지 않는다). 이것도 그대로 옮겼다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

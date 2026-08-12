@@ -74,4 +74,40 @@ public interface TaskMapper {
      * @return 제품 코드·이름·수량 목록
      */
     List<TaskHistoryRow> findHistories(@Param("taskId") int taskId);
+
+    /**
+     * 수·발주 한 건을 읽는다. 수정 화면이 쓴다.
+     *
+     * @param id 의뢰 번호
+     * @return 수·발주. 없으면 {@code null}
+     */
+    TaskDetail findById(@Param("id") int id);
+
+    /**
+     * 본체를 수정한다.
+     *
+     * <p>{@code WHERE id = ? AND type = ?} 다 — 레거시 그대로. type 이 언제나 0 이라
+     * 발주 수정은 걸리는 행이 없다(D-044).
+     *
+     * @param task 수정 값
+     * @return 반영된 행 수
+     */
+    int updateTask(@Param("task") TaskUpdate task);
+
+    /**
+     * 한 수·발주의 이력을 모두 지운다.
+     *
+     * @param taskId 수·발주 번호
+     * @return 지워진 행 수
+     */
+    int deleteHistories(@Param("taskId") int taskId);
+
+    /**
+     * 수·발주 한 건을 지운다. type 이 맞아야 지워진다.
+     *
+     * @param id 의뢰 번호
+     * @param type 0 수주 / 1 발주
+     * @return 반영된 행 수
+     */
+    int deleteTask(@Param("id") int id, @Param("type") int type);
 }

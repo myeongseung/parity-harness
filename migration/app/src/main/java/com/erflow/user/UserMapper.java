@@ -38,4 +38,15 @@ public interface UserMapper {
      * @return 사용자 목록. {@code admin} 은 빠진다
      */
     List<UserRow> findUserViews(@Param("search") UserSearch search);
+
+    /**
+     * 한 사용자의 이름.
+     *
+     * <p>레거시 {@code getUserView(id).getName()} 이 화면에서 쓰던 것이다 — 수·발주 수정
+     * 화면이 사번으로 담당 직원명을 채운다.
+     *
+     * @param id 사번
+     * @return 이름. 없으면 {@code null}
+     */
+    String findUserName(@Param("id") String id);
 }

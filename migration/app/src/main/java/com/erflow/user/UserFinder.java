@@ -58,4 +58,15 @@ public class UserFinder {
     public List<UserRow> search(UserSearch search) {
         return userMapper.findUserViews(search);
     }
+
+    /**
+     * 한 사용자의 이름.
+     *
+     * @param id 사번
+     * @return 이름. 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public String name(String id) {
+        return userMapper.findUserName(id);
+    }
 }
