@@ -150,8 +150,14 @@ def table_rows(html: str) -> list[list[str]]:
     if start < 0 or end < 0:
         start = html.find("<table")
         end = html.find("</table>")
-    if start < 0 or end < 0:
+    if start < 0:
         return []
+    if end < 0:
+        # 레거시는 표를 닫지 않고 </div> 로 끝내는 화면이 있다(findMultiProduct, D-037).
+        # 브라우저는 자리에서 표를 닫지만 이 파서는 못 하므로, 닫는 태그가 없으면
+        # 문서 끝까지 훑는다. <tr> 단위로 자르고 <td> 만 뽑으므로 뒤따르는
+        # footer div 는 셀이 없어 자연히 걸러진다.
+        end = len(html)
     rows = []
     for chunk in re.split(r"<tr[^>]*>", html[start:end])[1:]:
         # 셀 안쪽 공백까지 하나로 줄인다. 줄바꿈 문자가 무엇이든, 들여쓰기가
