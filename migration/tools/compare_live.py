@@ -46,6 +46,8 @@ SCREENS = (
     ("생산 설비 관리", "/unit/unitList.jsp", "/unit/list", "rows"),
     ("사용자 찾기 팝업", "/findUser.jsp", "/find/user", "rows"),
     ("사용자 찾기 팝업 (한 명)", "/findEachUser.jsp", "/find/each-user", "rows"),
+    # 검색어를 비운 채 누른 것으로 열어야 표가 나온다. 파라미터가 없으면 도움말이다
+    ("여러 제품 찾기 팝업", "/findMultiProduct.jsp?search=", "/find/multi-product?search=", "rows"),
     ("협력업체 관리 (구매)", "/company/companyList.jsp?flag=1", "/company/list?flag=1", "rows"),
     ("협력업체 관리 (영업)", "/company/companyList.jsp?flag=0", "/company/list?flag=0", "rows"),
     ("게시판 목록", "/post/boardList.jsp", "/post/board-list", "rows"),

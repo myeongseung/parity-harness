@@ -987,6 +987,66 @@ click 을 가로채 `preventDefault` 하고 고른 사번을 부모 창에 넘�
 
 ---
 
+## D-039 · 협력업체 찾기는 번호로 찾을 수 없다
+
+찾기 팝업 넷이 겉모습이 같다. 검색창에 코드나 이름을 넣으면 걸리는 것을 보여준다.
+조건도 같아 보이는데 하나가 다르다.
+
+| 화면 | 조건 |
+|---|---|
+| 은행 찾기 | `key.contains(search) \|\| value.contains(search)` |
+| 업종 찾기 | `key.contains(search) \|\| value.contains(search)` |
+| 제품 찾기 | `key.contains(search) \|\| value.contains(search)` |
+| **협력업체 찾기** | `value.contains(search)` |
+
+협력업체만 번호를 훑지 않는다. 그런데 도움말은 이렇게 안내한다.
+
+```html
+<strong>협력업체 ID</strong><br> 예) 1 -> 삼성
+```
+
+번호를 넣으면 «그 번호를 이름에 품은 업체»만 나온다. 도움말이 약속한 검색은 한 번도
+동작한 적이 없다.
+
+**결정:** 그대로 옮긴다. 조건을 고치면 검색 결과가 달라진다. 도움말도 지우지 않는다 —
+화면에 있는 글자이고, 지우면 누락 게이트가 잡는다.
+
+게이트는 이 차이를 보지 못한다. 도움말 마크업은 네 화면에 다 있고 무엇이 걸리는지는
+서버가 정한다. `FindPopupTest.companyPopupCannotSearchById` 가 렌더링 결과에서
+확인한다.
+
+---
+
+## D-040 · 여러 제품 찾기의 «전체 선택» 은 다시 켜지지 않는다
+
+숨은 입력의 `name` 이 행 체크박스와 같다.
+
+```html
+<input name="productId" type="checkbox" value="031002">   <!-- 행마다 하나 -->
+<input type="hidden" id="productId" name="productId">     <!-- 폼 끝에 하나 -->
+```
+
+스크립트는 이름으로 세어 «전체 선택» 을 맞춘다.
+
+```js
+const total = $("input[name=productId]").length;            // 행 수 + 1
+const checked = $("input[name=productId]:checked").length;  // 행 수
+if (total != checked) $("#chkAll").prop("checked", false);
+```
+
+숨은 입력은 체크될 수 없으므로 `total` 이 언제나 하나 크다. 그래서 행을 전부 골라도
+«전체 선택» 이 켜지지 않는다. 위에서 눌러 한 번에 고르는 것은 되지만, 하나 풀었다 다시
+채우면 그 체크는 돌아오지 않는다.
+
+**결정:** 그대로 옮긴다. `name` 을 바꾸면 고쳐지지만 그것은 이관이 아니다. 고르는 동작
+자체는 멀쩡하다 — 부모 화면에 넘어가는 것은 체크된 체크박스의 값이고 숨은 입력은
+그 계산에 끼지 않는다. 표시만 어긋난다.
+
+숨은 입력 둘(`productId`·`productName`)은 아무 곳에도 쓰이지 않는다. 폼이 제출되지 않고
+스크립트도 읽지 않는다. 그래도 남긴다 — 정답에 있으므로 지우면 누락으로 잡힌다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

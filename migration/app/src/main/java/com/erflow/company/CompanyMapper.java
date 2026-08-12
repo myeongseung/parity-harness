@@ -47,6 +47,13 @@ public interface CompanyMapper {
     Company findById(@Param("id") int id);
 
     /**
+     * 찾기 팝업이 쓰는 (번호, 이름) 목록.
+     *
+     * @return 모든 협력업체. 목록 화면과 달리 구매·영업을 가리지 않는다
+     */
+    List<CompanyRow> findAllNames();
+
+    /**
      * 협력업체를 등록한다.
      *
      * @param company 등록할 협력업체

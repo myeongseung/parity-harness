@@ -78,6 +78,18 @@
     </select>
 
     <!--
+      레거시 getCompanies(): select * from company_tbl order by id
+
+      찾기 팝업이 쓴다. 구분(subcontract) 을 가리지 않는다 — 목록 화면과 다른
+      점이라 눈에 띄게 적어 둔다.
+    -->
+    <select id="findAllNames" resultType="com.erflow.company.CompanyRow">
+        SELECT id, name
+          FROM company_tbl
+         ORDER BY id
+    </select>
+
+    <!--
       레거시: insert into company_tbl values(0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       id 자리에 0 을 넣어 AUTO_INCREMENT 를 태웠다. 컬럼명을 적어도 같은 결과이며,
       테이블 컬럼 순서가 바뀌어도 깨지지 않는다.

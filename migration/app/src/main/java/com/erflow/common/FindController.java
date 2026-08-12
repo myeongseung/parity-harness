@@ -2,7 +2,9 @@ package com.erflow.common;
 
 import com.erflow.auth.ErflowUserDetails;
 import com.erflow.company.CompanyCodes;
+import com.erflow.company.CompanyFinder;
 import com.erflow.document.DocumentFinder;
+import com.erflow.product.ProductFinder;
 import com.erflow.user.UserFinder;
 import com.erflow.user.UserSearch;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,11 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 코드 찾기 팝업.
  *
  * <pre>
- * findBank.jsp      GET /find/bank
- * findWork.jsp      GET /find/work
- * findDocument.jsp  GET /find/document
- * findUser.jsp      GET /find/user
- * findEachUser.jsp  GET /find/each-user
+ * findBank.jsp          GET /find/bank
+ * findWork.jsp          GET /find/work
+ * findDocument.jsp      GET /find/document
+ * findCompany.jsp       GET /find/company
+ * findProduct.jsp       GET /find/product
+ * findMultiProduct.jsp  GET /find/multi-product
+ * findUser.jsp          GET /find/user
+ * findEachUser.jsp      GET /find/each-user
  * </pre>
  *
  * <p>등록 화면에서 {@code window.open} 으로 여는 작은 창이다. 고른 값을
@@ -43,16 +48,27 @@ public class FindController {
     private final CompanyCodes codes;
     private final DocumentFinder documents;
     private final UserFinder users;
+    private final CompanyFinder companies;
+    private final ProductFinder products;
 
     /**
      * @param codes 은행·업종 코드표
      * @param documents 문서 조회
      * @param users 사용자 조회
+     * @param companies 협력업체 조회
+     * @param products 제품 조회
      */
-    public FindController(CompanyCodes codes, DocumentFinder documents, UserFinder users) {
+    public FindController(
+            CompanyCodes codes,
+            DocumentFinder documents,
+            UserFinder users,
+            CompanyFinder companies,
+            ProductFinder products) {
         this.codes = codes;
         this.documents = documents;
         this.users = users;
+        this.companies = companies;
+        this.products = products;
     }
 
     /**
@@ -105,6 +121,54 @@ public class FindController {
         model.addAttribute("search", search == null ? "" : search);
         model.addAttribute("entries", documents.search(user.id(), search));
         return "find/document";
+    }
+
+    /**
+     * 협력업체 찾기.
+     *
+     * <p>도움말이 번호로도 찾을 수 있다고 안내하지만 실제로는 이름만 훑는다 —
+     * {@link CompanyFinder#search} 설명 참조(D-039).
+     *
+     * @param search 검색어. 파라미터 자체가 없으면 {@code null}
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/company")
+    public String company(@RequestParam(required = false) String search, Model model) {
+        model.addAttribute("search", search);
+        model.addAttribute("entries", search == null ? null : companies.search(search));
+        return "find/company";
+    }
+
+    /**
+     * 제품 찾기 — 한 개.
+     *
+     * @param search 검색어. 파라미터 자체가 없으면 {@code null}
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/product")
+    public String product(@RequestParam(required = false) String search, Model model) {
+        model.addAttribute("search", search);
+        model.addAttribute("entries", search == null ? null : products.search(search));
+        return "find/product";
+    }
+
+    /**
+     * 제품 찾기 — 여러 개.
+     *
+     * <p>{@code findProduct.jsp} 와 조회가 같다. 목록을 표로 보여주고 체크박스로
+     * 여럿 고른다는 점만 다르다.
+     *
+     * @param search 검색어. 파라미터 자체가 없으면 {@code null}
+     * @param model 뷰 모델
+     * @return 팝업 템플릿
+     */
+    @GetMapping("/multi-product")
+    public String multiProduct(@RequestParam(required = false) String search, Model model) {
+        model.addAttribute("search", search);
+        model.addAttribute("entries", search == null ? null : products.search(search));
+        return "find/multi-product";
     }
 
     /**

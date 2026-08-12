@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.erflow.auth.TestUsers;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -126,6 +128,79 @@ class FindPopupTest {
 
         assertThat(html).doesNotContain("a-work-info");
         assertThat(html).contains("업체 코드 찾기 서비스 제공");
+    }
+
+    /**
+     * 목록에서 (코드, 이름) 짝을 모은다. 팝업이 값을 data 속성으로 넘긴다(D-035).
+     *
+     * @param html 받은 HTML
+     * @return 코드를 키로 하는 짝. 순서는 화면 순서다
+     */
+    private static Map<String, String> pairs(String html) {
+        var found = new LinkedHashMap<String, String>();
+        var pair = Pattern.compile("data-key=\"([^\"]*)\"\\s+data-value=\"([^\"]*)\"")
+                .matcher(html);
+        while (pair.find()) {
+            found.put(pair.group(1), pair.group(2));
+        }
+        return found;
+    }
+
+    @Test
+    @DisplayName("협력업체 찾기도 처음 열면 도움말이다")
+    void companyPopupShowsTipsFirst() throws Exception {
+        String html = open("/find/company", null);
+
+        assertThat(html).contains("<h3>tip</h3>");
+        assertThat(html).doesNotContain("a_company_info");
+    }
+
+    @Test
+    @DisplayName("협력업체는 번호로 찾지 못한다")
+    void companyPopupCannotSearchById() throws Exception {
+        // 도움말은 «협력업체 ID — 예) 1 -> 삼성» 이라고 안내한다. 그런데 조건은
+        // 이름만 훑는다 — 은행·업종·제품 팝업은 코드도 본다. 그대로 옮겼다(D-039).
+        Map<String, String> all = pairs(open("/find/company", ""));
+        // 이름에 자기 번호가 든 업체를 고르면 이름 검색으로 걸려 버린다. 그런 짝은 건넌다.
+        String id = all.entrySet().stream()
+                .filter(entry -> !entry.getValue().contains(entry.getKey()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("번호가 이름에 없는 업체가 없다"));
+
+        assertThat(pairs(open("/find/company", id))).doesNotContainKey(id);
+    }
+
+    @Test
+    @DisplayName("제품은 코드로도 찾는다")
+    void productPopupSearchesByCode() throws Exception {
+        Map<String, String> all = pairs(open("/find/product", ""));
+        String code = all.keySet().iterator().next();
+
+        assertThat(pairs(open("/find/product", code))).containsKey(code);
+    }
+
+    @Test
+    @DisplayName("여러 제품 찾기는 검색한 뒤에만 표가 나온다")
+    void multiProductPopupShowsTableAfterSearch() throws Exception {
+        assertThat(open("/find/multi-product", null))
+                .contains("<h3>tip</h3>")
+                .doesNotContain("search-people-body-product-id");
+
+        String html = open("/find/multi-product", "");
+
+        assertThat(column(html, "search-people-body-product-id")).isNotEmpty();
+        assertThat(html).doesNotContain("<h3>tip</h3>");
+    }
+
+    @Test
+    @DisplayName("두 제품 팝업은 같은 제품을 같은 순서로 보여준다")
+    void bothProductPopupsShareTheSameQuery() throws Exception {
+        List<String> one = List.copyOf(pairs(open("/find/product", "")).keySet());
+        List<String> many = column(open("/find/multi-product", ""),
+                "search-people-body-product-id");
+
+        assertThat(many).isNotEmpty().isEqualTo(one);
     }
 
     /**

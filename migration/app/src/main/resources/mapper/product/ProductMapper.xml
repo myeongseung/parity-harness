@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/ProductServiceImpl.java
+-->
+<mapper namespace="com.erflow.product.ProductMapper">
+
+    <!--
+      레거시 getAllProducts(): select * from product_tbl
+
+      정렬이 없다. 넣지 않는다 — 화면이 이름으로 다시 정렬하지만, 이름이 같은
+      제품끼리의 앞뒤는 여기서 오는 순서가 정한다.
+    -->
+    <select id="findAllNames" resultType="com.erflow.product.ProductRow">
+        SELECT id, name
+          FROM product_tbl
+    </select>
+
+</mapper>
