@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/TaskServiceImpl.java
+  레거시 SQL 을 그대로 옮긴다. 정렬은 task_id 오름차순이다.
+
+  검색 컬럼을 문자열로 이어 붙이지 않고 분기로 고정한다. 레거시는 화이트리스트에
+  있는 keyfield 만 컬럼으로 바꿔 붙였는데, 여기서는 SQL 이 분기별로 정적이라 주입할
+  자리가 없다.
+-->
+<mapper namespace="com.erflow.task.TaskMapper">
+
+    <!--
+      레거시 조건 분기(getTasks / getTaskCount)
+        userName/deptName/companyName  and <col> like ?
+        date                           and task_at >= ?
+        status                         and status = ?
+      «전체조회»(빈 keyfield)는 조건 없음.
+    -->
+    <sql id="searchCondition">
+        <if test="search != null and search.active">
+            <choose>
+                <when test="search.like">
+                    AND
+                    <choose>
+                        <when test="search.column == 'user_name'">user_name</when>
+                        <when test="search.column == 'dept_name'">dept_name</when>
+                        <when test="search.column == 'company_name'">company_name</when>
+                    </choose>
+                    LIKE #{search.pattern}
+                </when>
+                <when test="search.date">
+                    AND task_at &gt;= #{search.dateValue}
+                </when>
+                <when test="search.status">
+                    AND status = #{search.statusValue}
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+    <!-- 레거시: select * from task_view where type = ? [조건] order by task_id limit ?, ? -->
+    <select id="findPage" resultType="com.erflow.task.TaskRow">
+        SELECT task_id   AS id,
+               user_name AS userName,
+               dept_name AS deptName,
+               company_name AS companyName,
+               subject,
+               task_at   AS taskAt,
+               status
+          FROM task_view
+         WHERE type = #{type}
+        <include refid="searchCondition"/>
+         ORDER BY task_id
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from task_view where type = ? [조건] -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM task_view
+         WHERE type = #{type}
+        <include refid="searchCondition"/>
+    </select>
+
+</mapper>
