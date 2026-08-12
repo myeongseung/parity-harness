@@ -91,16 +91,19 @@ SCREENS = (
             legacy="login/passwordError.html"),
     _screen("login", "passwordOk", "password-ok", True,
             legacy="login/passwordOk.html"),
-    _screen("login", "findPassword", "find-password", False),
+    _screen("login", "findPassword", "find-password", True),
+    # 메일 발송 성공 화면. 발송 자체가 이관 범위 밖이라 화면도 아직이다(O-011).
+    # 목록에는 넣는다 — 빼면 이 화면이 있다는 사실 자체가 사라진다
+    _screen("login", "sendOk", "send-ok", False, legacy="login/sendOk.html"),
 
     # 오류 화면 — 레거시는 최상위에 있고 신규는 error/ 아래로 묶었다
     _screen("error", "accessError", "access-error", True,
             legacy="accessError.jsp"),
     _screen("error", "permissionError", "permission-error", True,
             legacy="permissionError.jsp"),
-    _screen("error", "notFoundError", "not-found-error", False,
+    _screen("error", "notFoundError", "not-found-error", True,
             legacy="notFoundError.jsp"),
-    _screen("error", "internalServerError", "internal-server-error", False,
+    _screen("error", "internalServerError", "internal-server-error", True,
             legacy="internalServerError.jsp"),
 
     # 찾기 팝업 — 레거시는 최상위에 있다. 등록 화면이 window.open 으로 연다

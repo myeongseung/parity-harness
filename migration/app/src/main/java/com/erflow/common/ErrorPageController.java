@@ -34,6 +34,29 @@ public class ErrorPageController {
     }
 
     /**
+     * 없는 페이지 안내.
+     *
+     * <p>실제 404 응답에도 이 화면이 뜬다({@link ErrorViewConfig}). 매핑을 따로 두는
+     * 것은 레거시에서 {@code notFoundError.jsp} 가 직접 열리는 주소였기 때문이다.
+     *
+     * @return 안내 템플릿
+     */
+    @GetMapping("/not-found-error")
+    public String notFoundError() {
+        return "error/not-found-error";
+    }
+
+    /**
+     * 내부 서버 오류 안내.
+     *
+     * @return 안내 템플릿
+     */
+    @GetMapping("/internal-server-error")
+    public String internalServerError() {
+        return "error/internal-server-error";
+    }
+
+    /**
      * 홈. 레거시 {@code index.jsp} 가 이관되면 이 매핑을 지운다.
      *
      * @param model 뷰 모델

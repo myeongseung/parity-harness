@@ -60,6 +60,10 @@ public class SecurityConfig {
                             .hasAuthority(ErflowUserDetails.ROLE_PASSWORD_CHANGE)
                         .requestMatchers("/login/password-ok", "/permission-error", "/access-error")
                             .permitAll()
+                        // 오류 화면은 누구에게나 보여야 한다. 로그인하지 않은 사람이
+                        // 없는 주소를 열면 레거시도 404 화면을 보여줬다
+                        .requestMatchers("/not-found-error", "/internal-server-error", "/error")
+                            .permitAll()
                         .anyRequest().access(screenAuthorization))
                 .formLogin(form -> form
                         .loginPage("/login")

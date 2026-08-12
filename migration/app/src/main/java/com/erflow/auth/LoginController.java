@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * LoginServlet           POST /login              (Spring Security 가 처리)
  * changePassword.jsp     GET  /login/change-password
  * ChangePasswordServlet  POST /login/change-password
+ * findPassword.jsp       GET  /login/find-password
  * passwordError.html     GET  /login/password-error
  * passwordOk.html        GET  /login/password-ok
  * logoutProc.jsp         POST /login/logout-proc  (Spring Security 가 처리)
@@ -88,6 +89,19 @@ public class LoginController {
         // 레거시도 변경 뒤 세션을 버려 다시 로그인하게 했다
         request.getSession().invalidate();
         return "redirect:/login/password-ok";
+    }
+
+    /**
+     * 비밀번호 찾기 화면.
+     *
+     * <p>«send» 를 받는 메일 발송은 이관 범위 밖이다(O-011). 화면만 옮겼다 —
+     * 로그인 화면의 «Forgot Password?» 가 여기로 오는데 지금까지 갈 곳이 없었다.
+     *
+     * @return 비밀번호 찾기 템플릿
+     */
+    @GetMapping("/login/find-password")
+    public String findPasswordForm() {
+        return "login/find-password";
     }
 
     /**
