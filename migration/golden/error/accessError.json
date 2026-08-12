@@ -1,0 +1,43 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "error-accessError",
+  "source": "legacy/ERFlow/src/main/webapp/accessError.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "잘못된 접근입니다.",
+      "detail": "",
+      "raw": "잘못된 접근입니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "궁금하신 사항은 로 문의해 주시기 바랍니다.",
+      "detail": "",
+      "raw": "궁금하신 사항은 로 문의해 주시기 바랍니다."
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "고객센터",
+      "detail": "",
+      "raw": "고객센터"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "이전페이지",
+      "detail": "submit",
+      "raw": "이전페이지"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전페이지",
+      "detail": "login/login.jsp",
+      "raw": "이전페이지"
+    }
+  ]
+}

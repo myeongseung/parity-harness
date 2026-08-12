@@ -22,15 +22,15 @@ import sys
 import tempfile
 from pathlib import Path
 
-from screens import GOLDEN, HARNESS, ROOT, SCREENS, golden_path, legacy_path
+from screens import GOLDEN, HARNESS, ROOT, SCREENS
 
 
-def extract_one(domain: str, jsp: str, out: Path) -> tuple[int, str]:
+def extract_one(screen, out: Path) -> tuple[int, str]:
     """하네스 추출기를 돌려 정답 하나를 만든다."""
     result = subprocess.run(
         [sys.executable, "-m", "gates.extract_golden",
-         "--legacy", str(legacy_path(domain, jsp)),
-         "--screen", f"{domain}-{jsp}",
+         "--legacy", str(screen.legacy_file),
+         "--screen", f"{screen.domain}-{screen.name}",
          "-o", str(out)],
         cwd=HARNESS, capture_output=True, text=True, encoding="utf-8", errors="replace")
     return result.returncode, (result.stdout or "") + (result.stderr or "")
@@ -55,19 +55,19 @@ def main(argv: list[str] | None = None) -> int:
 
     changed, failed = [], []
     with tempfile.TemporaryDirectory() as tmp:
-        for domain, jsp, _, _done in SCREENS:
-            fresh_path = Path(tmp) / f"{domain}-{jsp}.json"
-            code, output = extract_one(domain, jsp, fresh_path)
+        for screen in SCREENS:
+            fresh_path = Path(tmp) / f"{screen.domain}-{screen.name}.json"
+            code, output = extract_one(screen, fresh_path)
             if code != 0:
-                print(f"  ERROR {domain}/{jsp}\n{output}")
-                failed.append(f"{domain}/{jsp}")
+                print(f"  ERROR {screen.domain}/{screen.name}\n{output}")
+                failed.append(f"{screen.domain}/{screen.name}")
                 continue
 
             fresh = json.loads(fresh_path.read_text(encoding="utf-8"))
             # 추출기는 넘겨준 경로를 그대로 적는다. 절대경로가 박히면 기계마다
             # 정답이 달라지고, 공개 저장소에 남의 디렉터리 구조가 들어간다.
-            fresh["source"] = legacy_path(domain, jsp).relative_to(ROOT).as_posix()
-            target = golden_path(domain, jsp)
+            fresh["source"] = screen.legacy_file.relative_to(ROOT).as_posix()
+            target = screen.golden_file
             before = (json.loads(target.read_text(encoding="utf-8"))
                       if target.is_file() else None)
 

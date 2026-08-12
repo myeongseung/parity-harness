@@ -1,0 +1,57 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "login-login",
+  "source": "legacy/ERFlow/src/main/webapp/login/login.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "welcome",
+      "detail": "",
+      "raw": "Welcome"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "username",
+      "detail": "",
+      "raw": "Username"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "id",
+      "detail": "text",
+      "raw": "id"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "password",
+      "detail": "",
+      "raw": "Password"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "password",
+      "detail": "password",
+      "raw": "password"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "forgot password?",
+      "detail": "findpassword.jsp",
+      "raw": "Forgot Password?"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "login",
+      "detail": "submit",
+      "raw": "Login"
+    }
+  ]
+}

@@ -31,8 +31,7 @@ import tempfile
 from pathlib import Path
 
 from screens import (  # noqa: E402  경로 상수와 화면 목록의 단일 출처
-    ALLOWLIST, GOLDEN, HARNESS, LAYOUTS, MIGRATED, PENDING, ROOT, SCREENS, SEED, TEMPLATES,
-    golden_path, legacy_path, template_path,
+    ALLOWLIST, GOLDEN, HARNESS, LAYOUTS, MIGRATED, PENDING, ROOT, SCREENS, SEED,
 )
 
 
@@ -63,22 +62,22 @@ def check_golden_is_reproducible() -> int:
     print("== 정답 재생산 ==")
     worst = 0
     with tempfile.TemporaryDirectory() as tmp:
-        for domain, jsp, _, _done in SCREENS:
-            fresh = Path(tmp) / f"{jsp}.json"
+        for screen in SCREENS:
+            fresh = Path(tmp) / f"{screen.domain}-{screen.name}.json"
             code, output = run([
                 "gates.extract_golden",
-                "--legacy", str(legacy_path(domain, jsp)),
-                "--screen", f"{domain}-{jsp}",
+                "--legacy", str(screen.legacy_file),
+                "--screen", f"{screen.domain}-{screen.name}",
                 "-o", str(fresh),
             ])
             if code != 0:
-                print(f"  ERROR {jsp}\n{output}")
+                print(f"  ERROR {screen.name}\n{output}")
                 worst = max(worst, 2)
                 continue
 
-            committed = golden_path(domain, jsp)
+            committed = screen.golden_file
             if not committed.is_file():
-                print(f"  MISSING {domain}/{jsp}.json")
+                print(f"  MISSING {screen.domain}/{screen.name}.json")
                 worst = max(worst, 3)
                 continue
 
@@ -87,7 +86,7 @@ def check_golden_is_reproducible() -> int:
             same = (before.get("extractor") == after.get("extractor")
                     and before.get("signatures") == after.get("signatures"))
 
-            print(f"  {'OK   ' if same else 'DRIFT'} {domain}/{jsp}.json")
+            print(f"  {'OK   ' if same else 'DRIFT'} {screen.domain}/{screen.name}.json")
             if not same:
                 print(f"        저장소 {len(before.get('signatures', []))}건 / "
                       f"재생성 {len(after.get('signatures', []))}건")
@@ -138,24 +137,24 @@ def check_screens(module: str, title: str) -> int:
     """
     print(f"\n== {title} ==")
     worst = 0
-    for domain, jsp, template, _done in MIGRATED:
+    for screen in MIGRATED:
         code, output = run([
             module,
-            "--golden", str(golden_path(domain, jsp)),
-            "--new", str(template_path(domain, template)),
+            "--golden", str(screen.golden_file),
+            "--new", str(screen.template_file),
             "--allowlist", str(ALLOWLIST),
         ])
         head = output.strip().splitlines()[0] if output.strip() else "(출력 없음)"
         # 경로가 길어 첫 줄이 지저분해진다. 파일명만 남긴다.
-        head = head.replace(str(TEMPLATES), "").replace("\\", "/")
-        print(f"  [{code}] {domain}/{template}.html  {head}")
+        head = head.replace(str(screen.template_file), screen.template)
+        print(f"  [{code}] {screen.template:28} {head}")
         if code != 0:
             print("      " + output.strip().replace("\n", "\n      "))
         worst = max(worst, code)
 
     if PENDING:
         # 조용히 건너뛰지 않는다. 남은 것이 몇 개인지 매번 눈에 띄어야 한다.
-        left = ", ".join(f"{domain}/{template}" for domain, _, template, _ in PENDING)
+        left = ", ".join(s.label for s in PENDING)
         print(f"  이관 전 {len(PENDING)}건 — 대조 안 함: {left}")
     return worst
 

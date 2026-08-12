@@ -1,0 +1,43 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "error-internalServerError",
+  "source": "legacy/ERFlow/src/main/webapp/internalServerError.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "500",
+      "detail": "",
+      "raw": "500"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "error",
+      "detail": "",
+      "raw": "ERROR"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "내부 서버 오류입니다.",
+      "detail": "",
+      "raw": "내부 서버 오류입니다."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "돌아가기",
+      "detail": "submit",
+      "raw": "돌아가기"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "돌아가기",
+      "detail": "/erflow/login/login.jsp",
+      "raw": "돌아가기"
+    }
+  ]
+}

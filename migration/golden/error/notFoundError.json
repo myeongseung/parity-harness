@@ -1,0 +1,43 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "error-notFoundError",
+  "source": "legacy/ERFlow/src/main/webapp/notFoundError.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "404",
+      "detail": "",
+      "raw": "404"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "error",
+      "detail": "",
+      "raw": "ERROR"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "페이지를 찾을 수 없습니다.",
+      "detail": "",
+      "raw": "페이지를 찾을 수 없습니다."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "돌아가기",
+      "detail": "submit",
+      "raw": "돌아가기"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "돌아가기",
+      "detail": "/erflow/login/login.jsp",
+      "raw": "돌아가기"
+    }
+  ]
+}
