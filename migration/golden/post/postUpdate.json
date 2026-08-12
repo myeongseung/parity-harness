@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 5,
+  "extractor": 6,
   "screen": "post-postUpdate",
   "source": "legacy/ERFlow/src/main/webapp/post/postUpdate.jsp",
   "signatures": [
@@ -28,9 +28,9 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "",
+      "label": "«dyn»",
       "detail": "text",
-      "raw": ""
+      "raw": "«dyn»"
     },
     {
       "kind": "control",

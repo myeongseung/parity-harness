@@ -245,8 +245,18 @@ def _href_detail(href: str) -> str:
 def _signature_for(node: _Node, label_map: dict[str, str]) -> Signature | None:
     tag = node.tag
     input_type = norm(node.attrs.get("type", "text")) or "text" if tag == "input" else ""
-    # value 가 표시 라벨인 것은 버튼류뿐이다. 나머지 입력의 value 는 데이터다.
-    use_value = tag != "input" or input_type in _BUTTON_INPUT_TYPES
+    # value 가 표시 라벨인 것은 버튼류와 **고칠 수 없는 입력**이다.
+    #
+    # 편집 가능한 입력의 value 는 데이터다 — 사용자가 지우고 다시 쓴다. 반면
+    # readonly/disabled 입력의 value 는 그 자리에 박혀 있는 글자다. 사용자가
+    # 읽기만 하므로 화면에 찍힌 라벨과 다를 바 없다.
+    #
+    # 이것을 보지 않아서 놓친 결함이 있다. 레거시 글쓰기 화면이 게시판 이름을
+    # `value="자유게시판"` 으로 박아 두었는데(D-032), 어느 게시판에서 열어도 같은
+    # 글자가 뜬다. 답변·수정 화면은 같은 자리에 `<%=boardName%>` 를 쓴다.
+    # value 를 안 보면 셋이 전부 `control:input||text` 라 구별되지 않았다.
+    fixed_text = "readonly" in node.attrs or "disabled" in node.attrs
+    use_value = tag != "input" or input_type in _BUTTON_INPUT_TYPES or fixed_text
     label, raw = _label_for(
         node, label_map, prefer_text=(tag == "button"), use_value=use_value
     )

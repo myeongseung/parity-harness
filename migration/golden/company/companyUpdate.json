@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 5,
+  "extractor": 6,
   "screen": "company-companyUpdate",
   "source": "legacy/ERFlow/src/main/webapp/company/companyUpdate.jsp",
   "signatures": [
@@ -98,9 +98,9 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "업체명",
+      "label": "«dyn»",
       "detail": "text",
-      "raw": "업체명"
+      "raw": "«dyn»"
     },
     {
       "kind": "control",
@@ -119,9 +119,9 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "은행명",
+      "label": "«dyn»",
       "detail": "text",
-      "raw": "은행명"
+      "raw": "«dyn»"
     },
     {
       "kind": "control",

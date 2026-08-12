@@ -94,7 +94,7 @@ JSP + Servlet(Model 1) ERP 를 Spring Boot 4 / MyBatis / MariaDB 로 이관하�
 | 화면 | `unit` 3 + `company` 3 + `post` 6 = **12화면. 게이트 PASS** |
 | 실화면 대조 | 레거시를 띄워 9화면 대조 + 조회수 집계 규칙 검증 |
 
-테스트: 하네스 59건 / 앱 82건.
+테스트: 하네스 63건 / 앱 82건.
 
 ### 하네스가 실제로 값을 하는가
 
@@ -226,6 +226,15 @@ java.lang.IllegalArgumentException: 쿠키 값에 유효하지 않은 문자 [59
 정답에 남아 있어서, **신규 구현에 빈 앵커를 만들라고 강요하고 있었다.** 정답이
 발명을 요구한 셈이다.
 
+**아는 사각지대는 닫는다.** `readonly` 입력의 `value` 는 사용자가 고칠 수 없으니
+화면에 박힌 글자다. 이것을 안 봐서 레거시 글쓰기 화면의 하드코딩된 게시판 이름을
+놓쳤다(D-032). 규칙을 고치고 **실제로 닫혔는지 확인했다** — 하드코딩을 동적으로
+"고쳐" 보면 양쪽 게이트가 HIGH 로 막는다(D-034).
+
+닫지 못하는 것은 그대로 두되 이유를 적었다. 날짜 형식은 자바 코드에 있고, 스크립틀릿
+출력은 자바를 해석해야 하고, 조회수 규칙은 마크업에 없다. **할 수 있는데 안 하는
+것과 원리상 못 하는 것은 다르다.**
+
 ### 덤으로 찾은 레거시 결함
 
 정답을 추출하다 드러난 것들. **고치지 않고 그대로 재현**했다 — 이관 중에 동작을 바꾸면
@@ -267,7 +276,7 @@ python migration/tools/run_gates.py
 
 | | |
 |---|---|
-| 하네스 테스트 | 59건 |
+| 하네스 테스트 | 63건 |
 | 정합성 게이트 | 비밀 잔존 · 정답 재생산 · 메뉴 · 발명 차단 · 누락 차단 (`run_gates.py`) |
 | 앱 빌드 | 컴파일 + Checkstyle + 테스트 |
 
@@ -285,7 +294,7 @@ python migration/tools/run_gates.py
 |---|---|
 | [parity-harness/README.md](parity-harness/README.md) | 게이트 동작 원리, 오탐 제어, 한계 |
 | [migration/README.md](migration/README.md) | 이관 현황과 슬라이스별 결과 |
-| [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~033) + 미결 안건 |
+| [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~034) + 미결 안건 |
 | [migration/design/01-menu-layout.md](migration/design/01-menu-layout.md) | 레이아웃·권한 설계 |
 | [docs/변환은-쉽고-증명이-어렵다.md](docs/%EB%B3%80%ED%99%98%EC%9D%80-%EC%89%BD%EA%B3%A0-%EC%A6%9D%EB%AA%85%EC%9D%B4-%EC%96%B4%EB%A0%B5%EB%8B%A4.md) | **이 프로젝트를 왜, 어떻게 만들었는지** — 글로 읽는 버전 |
 

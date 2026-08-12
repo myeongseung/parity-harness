@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 5,
+  "extractor": 6,
   "screen": "company-companyRegister",
   "source": "legacy/ERFlow/src/main/webapp/company/companyRegister.jsp",
   "signatures": [
@@ -21,9 +21,9 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "",
+      "label": "«dyn»",
       "detail": "text",
-      "raw": ""
+      "raw": "«dyn»"
     },
     {
       "kind": "control",

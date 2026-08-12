@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 5,
+  "extractor": 6,
   "screen": "post-postRegister",
   "source": "legacy/ERFlow/src/main/webapp/post/postRegister.jsp",
   "signatures": [
@@ -14,9 +14,9 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "",
+      "label": "자유게시판",
       "detail": "text",
-      "raw": ""
+      "raw": "자유게시판"
     },
     {
       "kind": "control",

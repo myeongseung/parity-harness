@@ -321,3 +321,38 @@ class TestDynamicTextScope(unittest.TestCase):
         """안쪽 글자가 라벨인 요소는 그대로 «dyn» 이어야 한다."""
         self.assertIn(f"control:button|{DYNAMIC}|submit",
                       keys('<button type="submit" th:text="${label}">시안</button>'))
+
+
+class TestFixedInputValue(unittest.TestCase):
+    """고칠 수 없는 입력의 `value` 는 화면 글자다.
+
+    이 규칙이 없어서 D-032 를 못 봤다 — 레거시 글쓰기 화면이 게시판 이름을
+    박아 두었는데 게이트가 조용히 통과시켰다.
+    """
+
+    def test_readonly_value_is_a_label(self) -> None:
+        self.assertIn("control:input|자유게시판|text",
+                      keys('<input type="text" value="자유게시판" readonly>'))
+
+    def test_disabled_value_is_a_label(self) -> None:
+        self.assertIn("control:input|완료|text",
+                      keys('<input type="text" value="완료" disabled>'))
+
+    def test_editable_value_is_still_data(self) -> None:
+        """사용자가 지우고 다시 쓰는 값이다. 라벨로 세면 수정 폼이 전부 «dyn» 이 된다."""
+        found = extract('<input type="text" name="unitName" value="3호기">')
+        self.assertEqual("unitname", found[0].label)
+
+    def test_hardcoded_and_dynamic_no_longer_look_alike(self) -> None:
+        """D-032 가 잡히는지 확인한다. 이 시험이 사각지대가 닫혔다는 증거다.
+
+        레거시는 값을 박아 두었고, 고친 버전은 서버가 채운다. 예전에는 둘 다
+        `control:input||text` 였다 — 무엇을 하든 게이트가 통과시켰다.
+        """
+        legacy = '<input type="text" value="자유게시판" readonly>'
+        as_is = '<input type="text" value="자유게시판" readonly>'
+        improved = '<input type="text" th:value="${board.subject}" readonly>'
+
+        self.assertEqual(keys(legacy), keys(as_is))
+        self.assertNotEqual(keys(legacy), keys(improved))
+        self.assertIn(f"control:input|{DYNAMIC}|text", keys(improved))
