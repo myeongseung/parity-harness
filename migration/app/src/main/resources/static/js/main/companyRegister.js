@@ -17,7 +17,8 @@ function findBankCode() {
 	const top = (screen.height - height) / 2;
 	const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-	window.open('../findBank.jsp', '_blank', features);
+	// 레거시: '../findBank.jsp'. 라우팅이 바뀌었다(D-005)
+	window.open('/find/bank', '_blank', features);
 }
 
 function findWorkCode() {
@@ -27,7 +28,7 @@ function findWorkCode() {
 	const top = (screen.height - height) / 2;
 	const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-	window.open('../findWork.jsp', '_blank', features);
+	window.open('/find/work', '_blank', features);
 }
 
 function receiveBankInfo(bankCode, bankName) {

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,45 @@ public final class CodeTable {
      *
      * @param keyword 검색어
      * @return 걸리는 코드 목록. 없으면 빈 목록
+     */
+    /**
+     * 코드와 이름 중 하나라도 검색어를 품은 항목. 이름 순으로 돌려준다.
+     *
+     * <p>레거시 찾기 팝업이 그렇게 한다 — 목록을 이름으로 정렬해 두고
+     * {@code key.contains(search) || value.contains(search)} 로 거른다.
+     * 검색어가 빈 문자열이면 전부 보여준다. 그것도 레거시 그대로다.
+     *
+     * @param keyword 검색어. 빈 문자열이면 전체
+     * @return (코드, 이름) 목록
+     */
+    public List<Entry> search(String keyword) {
+        String needle = keyword == null ? "" : keyword;
+        return byCode.entrySet().stream()
+                .filter(entry -> needle.isEmpty()
+                        || entry.getKey().contains(needle)
+                        || entry.getValue().contains(needle))
+                .map(entry -> new Entry(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(Entry::name))
+                .toList();
+    }
+
+    /**
+     * 코드표 한 줄.
+     *
+     * @param code 코드
+     * @param name 이름
+     */
+    public record Entry(String code, String name) {
+    }
+
+    /**
+     * 이름에 검색어가 든 항목의 코드.
+     *
+     * <p>목록 화면의 검색이 쓴다. 이름만 보고 코드만 돌려준다는 점에서
+     * {@link #search(String)} 와 다르다 — 그쪽은 팝업이 쓰며 코드도 훑는다.
+     *
+     * @param keyword 검색어
+     * @return 코드 목록. 검색어가 비면 빈 목록
      */
     public List<String> matching(String keyword) {
         if (keyword == null || keyword.isBlank()) {

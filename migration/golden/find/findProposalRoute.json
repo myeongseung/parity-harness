@@ -1,0 +1,92 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findProposalRoute",
+  "source": "legacy/ERFlow/src/main/webapp/findProposalRoute.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "예)결재라인명을 검색해주세요.",
+      "detail": "text",
+      "raw": "예)결재라인명을 검색해주세요."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "submit",
+      "raw": "검색"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tip",
+      "detail": "",
+      "raw": "tip"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다.",
+      "detail": "",
+      "raw": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 1 -> 삼성",
+      "detail": "",
+      "raw": "예) 1 -> 삼성"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "협력업체 id",
+      "detail": "",
+      "raw": "협력업체 ID"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 삼성 -> 1",
+      "detail": "",
+      "raw": "예) 삼성 -> 1"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "협력업체 명",
+      "detail": "",
+      "raw": "협력업체 명"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "powered by 권명승 © 협력업체 찾기 서비스 제공",
+      "detail": "",
+      "raw": "Powered by 권명승 © 협력업체 찾기 서비스 제공"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "routeid",
+      "detail": "hidden",
+      "raw": "routeId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "route",
+      "detail": "hidden",
+      "raw": "route"
+    }
+  ]
+}

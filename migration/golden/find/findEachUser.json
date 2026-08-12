@@ -1,0 +1,127 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findEachUser",
+  "source": "legacy/ERFlow/src/main/webapp/findEachUser.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "deptkeyfield",
+      "detail": "",
+      "raw": "deptKeyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체부서",
+      "detail": "",
+      "raw": "전체부서"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "jobkeyfield",
+      "detail": "",
+      "raw": "jobKeyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체직급",
+      "detail": "",
+      "raw": "전체직급"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "keyword",
+      "detail": "text",
+      "raw": "keyword"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "찾기",
+      "detail": "submit",
+      "raw": "찾기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "receivers",
+      "detail": "hidden",
+      "raw": "receivers"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "선택",
+      "detail": "button",
+      "raw": "선택"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "userid",
+      "detail": "radio",
+      "raw": "userId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "made by 김시찬",
+      "detail": "",
+      "raw": "made by 김시찬"
+    }
+  ]
+}

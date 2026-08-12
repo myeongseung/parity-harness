@@ -852,6 +852,39 @@ D-032 를 기록하면서 "게이트는 이것을 보지 못한다"고 적었다
 
 ---
 
+## D-035 · 팝업이 값을 돌려주는 방식을 하나로 맞춘다
+
+찾기 팝업은 고른 값을 부모 창에 돌려주고 닫힌다. 레거시가 두 가지 방식을 쓴다.
+
+```html
+<!-- findBank.jsp — 마크업에서 함수를 직접 부른다 -->
+<a onclick="selectBank('003', '기업은행')">003 기업은행</a>
+
+<!-- findWork.jsp — data 속성에 담고 JS 가 읽어 간다 -->
+<a class="a-work-info" data-key="010301" data-value="어로 어업">010301 어로 어업</a>
+```
+
+Thymeleaf 는 첫 번째를 거부한다.
+
+```
+Only variable expressions returning numbers or booleans are allowed in this context,
+any other datatypes are not trusted
+```
+
+**막는 것이 옳다.** 이름에 작은따옴표가 들어가면 그 글자가 코드가 된다. 코드표는
+지금 소스에서 온 값이지만, 같은 모양을 DB 값에 쓰면 바로 주입 통로가 된다.
+
+**결정:** 은행 팝업도 `data` 속성 방식으로 맞춘다. `findBank.js` 가 `findWork.js`
+와 같은 모양으로 읽어 간다.
+
+화면에 보이는 것은 달라지지 않는다 — 라벨도, 링크도, 누르면 일어나는 일도 같다.
+게이트도 통과한다(`onclick` 과 `data-*` 는 signature 에 들어가지 않는다).
+
+레거시가 한 화면 안에서도 방식이 갈렸던 것을 하나로 모은 셈이다. 이관하며 굳이
+두 갈래를 유지할 이유가 없다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

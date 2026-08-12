@@ -1,0 +1,127 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findMultiProduct",
+  "source": "legacy/ERFlow/src/main/webapp/findMultiProduct.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "예) 제품 코드 or 제품 명 검색",
+      "detail": "text",
+      "raw": "예) 제품 코드 or 제품 명 검색"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "submit",
+      "raw": "검색"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "확인",
+      "detail": "button",
+      "raw": "확인"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tip",
+      "detail": "",
+      "raw": "tip"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다.",
+      "detail": "",
+      "raw": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 031002 -> 환공어묵",
+      "detail": "",
+      "raw": "예) 031002 -> 환공어묵"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "제품 코드",
+      "detail": "",
+      "raw": "제품 코드"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 환공어묵 -> 031002",
+      "detail": "",
+      "raw": "예) 환공어묵 -> 031002"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "제품 명",
+      "detail": "",
+      "raw": "제품 명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkall",
+      "detail": "checkbox",
+      "raw": "chkAll"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제품번호",
+      "detail": "",
+      "raw": "제품번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "productid",
+      "detail": "checkbox",
+      "raw": "productId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "powered by 권명승 © 제품 코드 찾기 서비스 제공",
+      "detail": "",
+      "raw": "Powered by 권명승 © 제품 코드 찾기 서비스 제공"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "productid",
+      "detail": "hidden",
+      "raw": "productId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "productname",
+      "detail": "hidden",
+      "raw": "productName"
+    }
+  ]
+}

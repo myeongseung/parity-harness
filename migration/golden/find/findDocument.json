@@ -1,0 +1,78 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findDocument",
+  "source": "legacy/ERFlow/src/main/webapp/findDocument.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "예) 문서 id or 문서명 검색",
+      "detail": "text",
+      "raw": "예) 문서 ID or 문서명 검색"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "submit",
+      "raw": "검색"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tip",
+      "detail": "",
+      "raw": "tip"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다.",
+      "detail": "",
+      "raw": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 20010 -> 21년 하반기 결산문서",
+      "detail": "",
+      "raw": "예) 20010 -> 21년 하반기 결산문서"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "문서 id",
+      "detail": "",
+      "raw": "문서 ID"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 21년 하반기 결산문서 -> 20010",
+      "detail": "",
+      "raw": "예) 21년 하반기 결산문서 -> 20010"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "문서 명",
+      "detail": "",
+      "raw": "문서 명"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "powered by 권명승 © 문서 찾기 서비스 제공",
+      "detail": "",
+      "raw": "Powered by 권명승 © 문서 찾기 서비스 제공"
+    }
+  ]
+}

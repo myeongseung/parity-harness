@@ -1,0 +1,92 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findWork",
+  "source": "legacy/ERFlow/src/main/webapp/findWork.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "예) 업체 코드 or 업체 명 검색",
+      "detail": "text",
+      "raw": "예) 업체 코드 or 업체 명 검색"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "submit",
+      "raw": "검색"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tip",
+      "detail": "",
+      "raw": "tip"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다.",
+      "detail": "",
+      "raw": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 010301 -> 어로 어업",
+      "detail": "",
+      "raw": "예) 010301 -> 어로 어업"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "업체 코드",
+      "detail": "",
+      "raw": "업체 코드"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 수산물 가공 및 저장 처리업 -> 031002",
+      "detail": "",
+      "raw": "예) 수산물 가공 및 저장 처리업 -> 031002"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "업체 명",
+      "detail": "",
+      "raw": "업체 명"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "powered by 권명승 © 업체 코드 찾기 서비스 제공",
+      "detail": "",
+      "raw": "Powered by 권명승 © 업체 코드 찾기 서비스 제공"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "workcode",
+      "detail": "hidden",
+      "raw": "workCode"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "workname",
+      "detail": "hidden",
+      "raw": "workName"
+    }
+  ]
+}

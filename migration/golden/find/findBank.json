@@ -1,0 +1,92 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "find-findBank",
+  "source": "legacy/ERFlow/src/main/webapp/findBank.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "예) 은행 코드 or 은행 명 검색",
+      "detail": "text",
+      "raw": "예) 은행 코드 or 은행 명 검색"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "submit",
+      "raw": "검색"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tip",
+      "detail": "",
+      "raw": "tip"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다.",
+      "detail": "",
+      "raw": "아래와 같은 조합으로 검색하면 더욱 정확한 검색 결과가 제공됩니다."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 002 -> 산업은행",
+      "detail": "",
+      "raw": "예) 002 -> 산업은행"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "은행 코드",
+      "detail": "",
+      "raw": "은행 코드"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "예) 기업은행 -> 003",
+      "detail": "",
+      "raw": "예) 기업은행 -> 003"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "은행 명",
+      "detail": "",
+      "raw": "은행 명"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "powered by 권명승 © 은행 코드 찾기 서비스 제공",
+      "detail": "",
+      "raw": "Powered by 권명승 © 은행 코드 찾기 서비스 제공"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "bankcode",
+      "detail": "hidden",
+      "raw": "bankCode"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "bankname",
+      "detail": "hidden",
+      "raw": "bankName"
+    }
+  ]
+}

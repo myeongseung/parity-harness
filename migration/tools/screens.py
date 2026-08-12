@@ -103,6 +103,19 @@ SCREENS = (
     _screen("error", "internalServerError", "internal-server-error", False,
             legacy="internalServerError.jsp"),
 
+    # 찾기 팝업 — 레거시는 최상위에 있다. 등록 화면이 window.open 으로 연다
+    _screen("find", "findBank", "bank", True, legacy="findBank.jsp"),
+    _screen("find", "findWork", "work", True, legacy="findWork.jsp"),
+    _screen("find", "findDocument", "document", False, legacy="findDocument.jsp"),
+    _screen("find", "findUser", "user", False, legacy="findUser.jsp"),
+    _screen("find", "findCompany", "company", False, legacy="findCompany.jsp"),
+    _screen("find", "findProduct", "product", False, legacy="findProduct.jsp"),
+    _screen("find", "findMultiProduct", "multi-product", False,
+            legacy="findMultiProduct.jsp"),
+    _screen("find", "findEachUser", "each-user", False, legacy="findEachUser.jsp"),
+    _screen("find", "findProposalRoute", "proposal-route", False,
+            legacy="findProposalRoute.jsp"),
+
     _screen("unit", "unitList", "list", True),
     _screen("unit", "unitRegister", "register", True),
     _screen("unit", "unitUpdate", "update", True),

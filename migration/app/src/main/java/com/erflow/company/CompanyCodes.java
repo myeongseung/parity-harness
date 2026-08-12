@@ -56,6 +56,24 @@ public class CompanyCodes {
     /**
      * @return 은행코드 수
      */
+    /**
+     * 업종 코드표 자체. 찾기 팝업이 코드와 이름을 함께 훑어야 한다.
+     *
+     * @return 업종 코드표
+     */
+    public CodeTable fieldTable() {
+        return fields;
+    }
+
+    /**
+     * 은행 코드표 자체.
+     *
+     * @return 은행 코드표
+     */
+    public CodeTable bankTable() {
+        return banks;
+    }
+
     public int bankCount() {
         return banks.size();
     }
