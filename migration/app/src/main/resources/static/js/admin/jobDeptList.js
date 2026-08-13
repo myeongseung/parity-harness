@@ -1,3 +1,9 @@
+// 직급·부서 리스트 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/admin/jobDeptList.js
+//
+// 동작은 레거시 그대로다. 여는 주소만 새 라우트로 바꿨다(D-005).
+//   jobRegister.jsp  -> /admin/permission/job-register
+//   deptRegister.jsp -> /admin/permission/dept-register
 $(function() {
    $('.open-job-btn').on('click', openNewJob);
    $('.open-dept-btn').on('click', openNewDept);
@@ -9,7 +15,7 @@ $(function() {
          $('[name=readFrm]').submit();
       }
    });
-   
+
    $('[name=deptKeyword]').on('keydown', function(e) {
       if ($('[name=deptKeyword]').is(':focus') && e.which === 13) {
          e.preventDefault();
@@ -23,7 +29,7 @@ $(function() {
       $('[name=readFrm]').find('[name=jobKeyword]').val($('[name=jobFrm]').find('[name=jobKeyword]').val());
       $('[name=readFrm]').submit();
    });
-   
+
    $("#chkAllJob").click(function() {
       $("input[name=jobId]").prop("checked", $("#chkAllJob").is(":checked"));
    });
@@ -45,12 +51,12 @@ $(function() {
 
       $("#chkAllDept").prop("checked", total === checked);
    });
-   
+
   $('[name=deptms]').on('click', function() {
       $('[name=readFrm]').find('[name=deptKeyword]').val($('[name=deptFrm]').find('[name=deptKeyword]').val());
       $('[name=readFrm]').submit();
    });
-   
+
    function openNewJob() {
       const width = 400;
       const height = 220;
@@ -58,7 +64,7 @@ $(function() {
       const top = (screen.height - height) / 2;
       const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-      window.open('jobRegister.jsp', '_blank', features);
+      window.open('/admin/permission/job-register', '_blank', features);
    }
 
    function openNewDept() {
@@ -68,6 +74,6 @@ $(function() {
       const top = (screen.height - height) / 2;
       const features = `width=${width},height=${height},left=${left},top=${top}`;
 
-      window.open('deptRegister.jsp', '_blank', features);
+      window.open('/admin/permission/dept-register', '_blank', features);
    }
 });

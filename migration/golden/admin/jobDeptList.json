@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "admin-jobDeptList",
-  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/jobDeptList.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/admin/permission/jobDeptList.jsp",
   "signatures": [
     {
       "kind": "text",

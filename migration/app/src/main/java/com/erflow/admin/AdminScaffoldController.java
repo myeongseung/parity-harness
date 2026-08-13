@@ -18,17 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminScaffoldController {
 
     /**
-     * 직급 및 부서 리스트. {@code admin/permission/jobDeptList.jsp}
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin/permission/job-dept-list")
-    public String jobDeptList(Model model) {
-        return scaffold(model, "직급 및 부서 리스트");
-    }
-
-    /**
      * 프로그램 리스트. {@code admin/permission/programList.jsp}
      *
      * @param model 뷰 모델
