@@ -171,6 +171,10 @@ SCREENS = (
     Screen("adminFooter", "admin", "admin/adminFooter.jsp",
            "fragments/admin-footer.html", True),
     _screen("admin", "userList", "user/list", True, legacy="admin/user/userList.jsp"),
+    _screen("admin", "userRegister", "user/register", True,
+            legacy="admin/user/userRegister.jsp"),
+    _screen("admin", "userUpdate", "user/update", True,
+            legacy="admin/user/userUpdate.jsp"),
     # 정답이 0건인 화면이다. 글자가 전부 «라벨 : <%=값%>» 이라 추출기가 하나도 잡지
     # 못한다. 대조는 통과하지만 판정한 것이 없다 — 목록에는 둔다(D-056)
     _screen("admin", "userAddress", "user/address", True,

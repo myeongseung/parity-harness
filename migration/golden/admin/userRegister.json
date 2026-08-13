@@ -1,0 +1,127 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-userRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/user/userRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "관리자 > 사원 > 사원추가",
+      "detail": "",
+      "raw": "관리자 > 사원 > 사원추가"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "사원 번호",
+      "detail": "text",
+      "raw": "사원 번호:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "이름",
+      "detail": "text",
+      "raw": "이름:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "주민 번호",
+      "detail": "text",
+      "raw": "주민 번호:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "email",
+      "detail": "email",
+      "raw": "Email"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "우편번호",
+      "detail": "text",
+      "raw": "우편번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "동/읍/면",
+      "detail": "text",
+      "raw": "동/읍/면"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편 찾기",
+      "detail": "button",
+      "raw": "우편 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "도로명 주소",
+      "detail": "text",
+      "raw": "도로명 주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "내선 번호",
+      "detail": "text",
+      "raw": "내선 번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "주민 번호",
+      "detail": "text",
+      "raw": "주민 번호:"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "사원 생성",
+      "detail": "submit",
+      "raw": "사원 생성"
+    }
+  ]
+}

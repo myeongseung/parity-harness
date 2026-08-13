@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.erflow.admin.AdminOption;
 import com.erflow.auth.TestUsers;
+import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 사원 리스트와 주소 팝업이 실제 데이터로 도는지 확인한다.
@@ -40,6 +44,9 @@ class AdminUserScreenTest {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeAll
     static void requireLocalConfig() {
@@ -150,5 +157,143 @@ class AdminUserScreenTest {
                         .with(user(TestUsers.admin())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/access-error"));
+    }
+
+    @Test
+    @DisplayName("사원 추가 화면이 그려진다")
+    void registerFormRenders() throws Exception {
+        String html = mockMvc.perform(get("/admin/user/register").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).contains("관리자 &gt; 사원 &gt; 사원추가")
+                .contains("사원 생성").contains("우편 찾기");
+        // 직급·부서 콤보가 실제로 채워진다.
+        String firstJob = jdbc.queryForObject(
+                "SELECT name FROM job_tbl WHERE id != -1 LIMIT 1", String.class);
+        assertThat(html).contains(firstJob);
+    }
+
+    @Test
+    @DisplayName("사원 수정 화면이 값으로 채워진다")
+    void updateFormRenders() throws Exception {
+        var row = jdbc.queryForMap(
+                "SELECT id, name FROM user_tbl WHERE id != 'admin' LIMIT 1");
+
+        String html = mockMvc.perform(get("/admin/user/update")
+                        .param("id", (String) row.get("id"))
+                        .with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).contains("관리자 &gt; 사원 &gt; 사원수정")
+                .contains("value=\"" + row.get("id") + "\"")
+                .contains("value=\"" + row.get("name") + "\"");
+    }
+
+    @Test
+    @DisplayName("수정 화면은 사번이 없으면 잘못된 접근으로 보낸다")
+    void updateFormWithoutIdRedirects() throws Exception {
+        mockMvc.perform(get("/admin/user/update").with(user(TestUsers.admin())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-error"));
+    }
+
+    @Test
+    @DisplayName("추가 화면은 DB 순서, 수정 화면은 이름순으로 콤보를 그린다")
+    void updateFormSortsOptionsByName() {
+        var registerJobs = adminUserService.registerForm().jobs();
+        var updateJobs = adminUserService.updateForm(anyUserId()).options().jobs();
+
+        assertThat(updateJobs).isSortedAccordingTo(Comparator.comparing(AdminOption::name));
+        // 같은 항목이되 순서만 다르다. 레거시가 수정 화면에서만 정렬한다.
+        assertThat(updateJobs).containsExactlyInAnyOrderElementsOf(registerJobs);
+    }
+
+    @Test
+    @DisplayName("등록하면 초기 비밀번호가 사번이다")
+    @Transactional
+    void registerSetsInitialPasswordToId() {
+        boolean created = adminUserService.register(newUser("T-9001"));
+
+        assertThat(created).isTrue();
+        String stored = jdbc.queryForObject(
+                "SELECT password FROM user_tbl WHERE id = 'T-9001'", String.class);
+        // 최초 로그인 판정이 «비밀번호 == 사번» 이다. 새 사원은 그 상태로 시작해야 한다.
+        assertThat(passwordEncoder.matches("T-9001", stored)).isTrue();
+        assertThat(jdbc.queryForObject(
+                "SELECT hired_at FROM user_tbl WHERE id = 'T-9001'", String.class)).isNotNull();
+    }
+
+    @Test
+    @DisplayName("등록은 주소와 휴대 전화를 버린다 — 레거시 그대로다")
+    @Transactional
+    void registerDropsAddressAndMobilePhone() {
+        adminUserService.register(newUser("T-9002"));
+
+        var row = jdbc.queryForMap(
+                "SELECT postal_code, address1, address2, mobile_phone, extension_phone "
+                        + "FROM user_tbl WHERE id = 'T-9002'");
+        // 우편번호와 내선 번호는 남는다.
+        assertThat(row.get("postal_code")).isEqualTo("48058");
+        assertThat(row.get("extension_phone")).isEqualTo("123");
+        // 주소 두 줄과 휴대 전화는 화면에서 입력해도 저장되지 않는다(D-057).
+        assertThat(row.get("address1")).isNull();
+        assertThat(row.get("address2")).isNull();
+        assertThat(row.get("mobile_phone")).isNull();
+    }
+
+    @Test
+    @DisplayName("같은 사번을 다시 등록하면 실패한다")
+    @Transactional
+    void registerRejectsDuplicateId() {
+        assertThat(adminUserService.register(newUser("T-9003"))).isTrue();
+
+        assertThat(adminUserService.register(newUser("T-9003"))).isFalse();
+    }
+
+    @Test
+    @DisplayName("수정하면 휴대 전화가 지워진다 — 레거시 그대로다")
+    @Transactional
+    void updateWipesMobilePhone() {
+        adminUserService.register(newUser("T-9004"));
+        jdbc.update("UPDATE user_tbl SET mobile_phone = '010-0000-0000' WHERE id = 'T-9004'");
+
+        boolean updated = adminUserService.update(new AdminUserEdit(
+                "T-9004", "고친이름", null, "new@erflow.test", "48058",
+                "부산광역시", "3층", jobId(), deptId(), "567", null));
+
+        assertThat(updated).isTrue();
+        var row = jdbc.queryForMap(
+                "SELECT name, address1, address2, mobile_phone, social_number "
+                        + "FROM user_tbl WHERE id = 'T-9004'");
+        assertThat(row.get("name")).isEqualTo("고친이름");
+        // 수정에서는 주소가 제대로 저장된다. 등록과 다르다.
+        assertThat(row.get("address1")).isEqualTo("부산광역시");
+        assertThat(row.get("address2")).isEqualTo("3층");
+        // 화면에 채워져 있던 번호가 조용히 지워진다(D-057).
+        assertThat(row.get("mobile_phone")).isNull();
+        // 주민등록번호는 갱신 문장에 없어 그대로 남는다.
+        assertThat(row.get("social_number")).isEqualTo("990115-1234567");
+    }
+
+    private AdminUserEdit newUser(String id) {
+        // 레거시 처리가 주소 두 줄과 휴대 전화를 읽지 않는다. 컨트롤러가 그 자리에
+        // null 을 넣는 것까지 그대로 시험한다.
+        return new AdminUserEdit(id, "시험사원", "990115-1234567", id + "@erflow.test",
+                "48058", null, null, jobId(), deptId(), "123", null);
+    }
+
+    private int jobId() {
+        return jdbc.queryForObject("SELECT id FROM job_tbl WHERE id != -1 LIMIT 1", Integer.class);
+    }
+
+    private int deptId() {
+        return jdbc.queryForObject("SELECT id FROM dept_tbl WHERE id != -1 LIMIT 1", Integer.class);
+    }
+
+    private String anyUserId() {
+        return jdbc.queryForObject(
+                "SELECT id FROM user_tbl WHERE id != 'admin' LIMIT 1", String.class);
     }
 }

@@ -73,4 +73,96 @@
          WHERE id = #{id}
     </select>
 
+    <!--
+      레거시 getUser(id): select * from user_tbl where id = ?
+      수정 화면은 뷰가 아니라 원본 표를 읽는다 — 직급·부서를 번호로 골라야 하는데
+      뷰에는 이름만 있기 때문이다.
+    -->
+    <select id="findForUpdate" resultType="com.erflow.admin.user.AdminUserForm">
+        SELECT id,
+               name,
+               social_number   AS socialNumber,
+               email,
+               postal_code     AS postalCode,
+               address1,
+               address2,
+               job_tbl_id      AS jobId,
+               dept_tbl_id     AS deptId,
+               extension_phone AS extensionPhone,
+               mobile_phone    AS mobilePhone
+          FROM user_tbl
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시 getJobs(null) / getDepts(null):
+        select * from job_tbl  where id <> -1
+        select * from dept_tbl where id <> -1
+
+      ORDER BY 가 없다. 넣지 않는다 — 등록 화면의 콤보가 이 순서 그대로 그려진다.
+      수정 화면만 이름순으로 다시 정렬하는데, 그 정렬은 레거시가 Java 에서 했으므로
+      Service 에 둔다(D-058).
+
+      `id = -1` 은 «없음» 을 뜻하는 자리다. 레거시가 목록마다 이 조건으로 걸러낸다.
+      권한 관리 화면도 같은 표를 읽는다 — 그쪽을 옮길 때 이 자리를 함께 본다.
+    -->
+    <select id="findJobs" resultType="com.erflow.admin.AdminOption">
+        SELECT id, name
+          FROM job_tbl
+         WHERE id != -1
+    </select>
+
+    <select id="findDepartments" resultType="com.erflow.admin.AdminOption">
+        SELECT id, name
+          FROM dept_tbl
+         WHERE id != -1
+    </select>
+
+    <!--
+      레거시 register(session, user):
+        insert into user_tbl (id, job_tbl_id, dept_tbl_id, name, password, social_number,
+                              postal_code, address1, address2, extension_phone,
+                              mobile_phone, email, hired_at)
+        values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())
+
+      비밀번호는 사번을 해시한 값이다 — 최초 로그인에서 비밀번호 변경 화면으로 가는
+      조건이 «비밀번호 == 사번» 이므로, 새 사원은 반드시 그 상태로 시작한다.
+
+      address1·address2·mobile_phone 은 화면이 값을 보내도 언제나 null 이 들어간다.
+      레거시 처리가 그 값을 읽지 않기 때문이다(D-057).
+    -->
+    <insert id="insertUser">
+        INSERT INTO user_tbl
+                    (id, job_tbl_id, dept_tbl_id, name, password, social_number,
+                     postal_code, address1, address2, extension_phone,
+                     mobile_phone, email, hired_at)
+             VALUES (#{user.id}, #{user.jobId}, #{user.deptId}, #{user.name}, #{password},
+                     #{user.socialNumber}, #{user.postalCode}, #{user.address1},
+                     #{user.address2}, #{user.extensionPhone}, #{user.mobilePhone},
+                     #{user.email}, NOW())
+    </insert>
+
+    <!--
+      레거시 updateUser(session, user):
+        update user_tbl set name = ?, email = ?, postal_code = ?, address1 = ?,
+               address2 = ?, job_tbl_id = ?, dept_tbl_id = ?, extension_phone = ?,
+               mobile_phone = ? where id = ?
+
+      주민등록번호는 이 문장에 없다 — 수정으로 바뀌지 않는다. 반대로 mobile_phone 은
+      있는데 값이 언제나 null 이라, **수정할 때마다 휴대 전화가 지워진다**(D-057).
+    -->
+    <update id="updateUser">
+        UPDATE user_tbl
+           SET name            = #{user.name},
+               email           = #{user.email},
+               postal_code     = #{user.postalCode},
+               address1        = #{user.address1},
+               address2        = #{user.address2},
+               job_tbl_id      = #{user.jobId},
+               dept_tbl_id     = #{user.deptId},
+               extension_phone = #{user.extensionPhone},
+               mobile_phone    = #{user.mobilePhone}
+         WHERE id = #{user.id}
+    </update>
+
 </mapper>

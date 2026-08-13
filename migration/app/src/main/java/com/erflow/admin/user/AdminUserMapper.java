@@ -1,5 +1,6 @@
 package com.erflow.admin.user;
 
+import com.erflow.admin.AdminOption;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -44,4 +45,43 @@ public interface AdminUserMapper {
      * @return 주소. 없으면 {@code null}
      */
     AdminUserAddress findAddress(@Param("id") String id);
+
+    /**
+     * 수정 화면이 채울 사원 한 명.
+     *
+     * @param id 사번
+     * @return 사원. 없으면 {@code null}
+     */
+    AdminUserForm findForUpdate(@Param("id") String id);
+
+    /**
+     * 직급 콤보에 채울 항목.
+     *
+     * @return 직급. DB 가 주는 순서 그대로다
+     */
+    List<AdminOption> findJobs();
+
+    /**
+     * 부서 콤보에 채울 항목.
+     *
+     * @return 부서. DB 가 주는 순서 그대로다
+     */
+    List<AdminOption> findDepartments();
+
+    /**
+     * 사원을 넣는다.
+     *
+     * @param user 화면이 보낸 값
+     * @param password 해시된 비밀번호. 평문은 사번이다
+     * @return 반영된 행 수
+     */
+    int insertUser(@Param("user") AdminUserEdit user, @Param("password") String password);
+
+    /**
+     * 사원을 고친다.
+     *
+     * @param user 화면이 보낸 값
+     * @return 반영된 행 수
+     */
+    int updateUser(@Param("user") AdminUserEdit user);
 }

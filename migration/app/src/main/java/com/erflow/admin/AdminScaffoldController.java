@@ -18,28 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminScaffoldController {
 
     /**
-     * 사원 추가. {@code admin/user/userRegister.jsp}
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin/user/register")
-    public String userRegister(Model model) {
-        return scaffold(model, "사원 추가");
-    }
-
-    /**
-     * 사원 수정. {@code admin/user/userUpdate.jsp}
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin/user/update")
-    public String userUpdate(Model model) {
-        return scaffold(model, "사원 수정");
-    }
-
-    /**
      * 직급 및 부서 리스트. {@code admin/permission/jobDeptList.jsp}
      *
      * @param model 뷰 모델
