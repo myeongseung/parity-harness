@@ -1,3 +1,8 @@
+// 문서 양식 리스트 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/admin/documentFormList.js
+//
+// 동작은 레거시 그대로다. 이동 주소만 새 라우트로 바꿨다(D-005).
+//   documentFormRegister.jsp -> /admin/document/form-register
 $(function () {
 	$("#chkAll").click(function () {
 		if ($("#chkAll").is(":checked")) {
@@ -16,7 +21,7 @@ $(function () {
 	});
 	
 	$('#btn-register').on('click', function() {
-		window.location.href = 'documentFormRegister.jsp';
+		window.location.href = '/admin/document/form-register';
 	});
 	
 	$('.close-button').on("click", function() {

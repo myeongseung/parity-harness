@@ -1,0 +1,71 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "admin-documentFormRegister",
+  "source": "legacy/ERFlow/src/main/webapp/admin/document/documentFormRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "관리자 > 문서 관리 > 문서 양식 추가",
+      "detail": "",
+      "raw": "관리자 > 문서 관리 > 문서 양식 추가"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "양식명",
+      "detail": "",
+      "raw": "양식명"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "subject",
+      "detail": "text",
+      "raw": "subject"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "content",
+      "detail": "",
+      "raw": "content"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "html-selector",
+      "detail": "file",
+      "raw": "html-selector"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "확인",
+      "detail": "submit",
+      "raw": "확인"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "다시입력",
+      "detail": "reset",
+      "raw": "다시입력"
+    }
+  ]
+}

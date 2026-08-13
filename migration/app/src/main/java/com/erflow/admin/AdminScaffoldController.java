@@ -18,17 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminScaffoldController {
 
     /**
-     * 문서 양식 리스트. {@code admin/document/documentFormList.jsp}
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin/document/form-list")
-    public String documentFormList(Model model) {
-        return scaffold(model, "문서 양식 리스트");
-    }
-
-    /**
      * 게시판 관리. {@code admin/board/adminBoardList.jsp}
      *
      * @param model 뷰 모델

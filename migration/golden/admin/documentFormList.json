@@ -1,0 +1,92 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "admin-documentFormList",
+  "source": "legacy/ERFlow/src/main/webapp/admin/document/documentFormList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "관리자 > 문서 관리 > 문서 양식 리스트",
+      "detail": "",
+      "raw": "관리자 > 문서 관리 > 문서 양식 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "submit",
+      "raw": "삭제"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "추가",
+      "detail": "button",
+      "raw": "추가"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkall",
+      "detail": "checkbox",
+      "raw": "chkAll"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서 번호",
+      "detail": "",
+      "raw": "문서 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서 제목",
+      "detail": "",
+      "raw": "문서 제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "내용 보기",
+      "detail": "",
+      "raw": "내용 보기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "templateid",
+      "detail": "checkbox",
+      "raw": "templateId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "documentformregister.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "보기",
+      "detail": "button",
+      "raw": "보기"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "×",
+      "detail": "",
+      "raw": "×"
+    }
+  ]
+}

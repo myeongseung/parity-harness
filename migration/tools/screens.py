@@ -191,6 +191,12 @@ SCREENS = (
             legacy="admin/permission/programDeptUpdate.jsp"),
     _screen("admin", "programJobUpdate", "permission/program-job-update", True,
             legacy="admin/permission/programJobUpdate.jsp"),
+    # 문서 양식 — admin/document/storage/*.html 셋은 넣지 않는다. 화면이 아니라
+    # 편집기에 부어 넣을 견본 문서(기안서·근태·업무)이며 어느 화면도 이어 주지 않는다
+    _screen("admin", "documentFormList", "document/form-list", True,
+            legacy="admin/document/documentFormList.jsp"),
+    _screen("admin", "documentFormRegister", "document/form-register", True,
+            legacy="admin/document/documentFormRegister.jsp"),
     # 정답이 0건인 화면이다. 글자가 전부 «라벨 : <%=값%>» 이라 추출기가 하나도 잡지
     # 못한다. 대조는 통과하지만 판정한 것이 없다 — 목록에는 둔다(D-056)
     _screen("admin", "userAddress", "user/address", True,

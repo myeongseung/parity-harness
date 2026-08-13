@@ -1797,6 +1797,28 @@ getPrograms     : where program_name like '%?%'   // 부분 일치
 
 ---
 
+## D-066 · 문서 양식 «보기» 는 어느 줄을 눌러도 첫 줄이 뜬다
+
+목록의 줄마다 모달이 하나씩 생기는데 **id 가 전부 같다.**
+
+```jsp
+for (TemplateBean bean : vlist) {
+...
+    <button data-bs-toggle="modal" data-bs-target="#calendar-plus">보기</button>
+    <div class="modal fade" id="calendar-plus"> ... <%=content%> ... </div>
+```
+
+부트스트랩은 `#calendar-plus` 로 찾은 **첫 요소**를 연다. 양식이 다섯이면 모달도
+다섯인데 전부 같은 이름이라, 셋째 줄의 «보기» 를 눌러도 첫 줄의 양식이 보인다.
+
+**결정:** 그대로 옮긴다. id 를 줄마다 다르게 하면 «고쳐지지만» 화면 동작이 달라진다.
+문서 번호를 눌러 수정 화면으로 가면 그 줄의 양식이 제대로 나오므로, 내용을 확인할
+길이 아예 없는 것은 아니다.
+
+**게이트는 못 본다** — 모달도 버튼도 양쪽에 다 있고, 다른 것은 어느 것이 열리느냐다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |
