@@ -60,22 +60,27 @@ def classify(signature: Signature, counterparts: list[Signature]) -> tuple[str, 
     same_role = [
         other
         for other in counterparts
-        if other.kind == signature.kind and other.role == signature.role and other.label
+        if other.kind == signature.kind and other.role == signature.role
     ]
 
-    # 라벨이 정확히 같으면 대상만 바뀐 것이다. 라벨을 서버가 채우는 경우(«dyn»)도
-    # 마찬가지다 — 값을 모를 뿐 같은 자리의 같은 요소다.
+    # 라벨이 정확히 같으면 대상만 바뀐 것이다. 라벨을 서버가 채우는 경우(«dyn»)도,
+    # 아예 없는 경우(빈 라벨)도 마찬가지다 — 값을 모를 뿐 같은 자리의 같은 요소다.
+    #
+    # 빈 라벨을 여기서 빼면 «글자 없는 링크의 대상이 바뀐 것»이 «사라졌다»로 잡힌다.
+    # 로고 링크가 그렇다 — `<a href="..."><img alt=""></a>` 는 라벨이 없고, 이관하며
+    # 주소만 바뀐다. 관리자 헤더를 옮기다 실제로 HIGH 로 잡혔다.
     for other in same_role:
         if other.label == signature.label:
             return DETAIL_CHANGE, other.detail or "(없음)"
 
-    # 닮은 라벨 찾기는 실제 글자가 있어야 뜻이 있다.
+    # 닮은 라벨 찾기는 실제 글자가 있어야 뜻이 있다. 양쪽 모두 — 글자 없는 쪽을
+    # 후보로 넘기면 difflib 이 빈 문자열과의 유사도를 재게 된다.
     if signature.label in ("", DYNAMIC):
         return NONE, None
 
     matches = difflib.get_close_matches(
         signature.raw or signature.label,
-        [other.raw or other.label for other in same_role],
+        [other.raw or other.label for other in same_role if other.label],
         n=1,
         cutoff=NEAR_MISS_RATIO,
     )

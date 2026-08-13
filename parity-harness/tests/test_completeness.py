@@ -68,6 +68,29 @@ class TestCompleteness(unittest.TestCase):
         self.assertEqual(DETAIL_CHANGE, findings[0].reason)
         self.assertEqual("MEDIUM", findings[0].severity)
 
+    def test_route_change_without_label_is_not_missing(self) -> None:
+        """글자 없는 링크도 마찬가지다 — 로고 링크가 그렇다.
+
+        `<a href="..."><img alt=""></a>` 는 라벨이 없다(장식 이미지라 alt 도 비어
+        있다). 이관하면 주소만 바뀌는데, 라벨이 없다는 이유로 짝을 못 찾으면
+        «있던 링크가 사라졌다»가 되어 HIGH 로 잡힌다.
+        """
+        golden = sigs('<a href="/ERFlow/admin/admin.jsp"><img src="/logo.png" alt=""></a>')
+        new = sigs('<a href="/admin"><img src="/images/logo.png" alt=""></a>')
+
+        findings, _ = detect(golden, new, {})
+        self.assertEqual(1, len(findings))
+        self.assertEqual(DETAIL_CHANGE, findings[0].reason)
+        self.assertEqual("MEDIUM", findings[0].severity)
+
+    def test_removed_link_without_label_is_still_missing(self) -> None:
+        """짝이 아예 없으면 라벨이 없어도 사라진 것이다."""
+        golden = sigs('<a href="/ERFlow/admin/admin.jsp"><img src="/logo.png" alt=""></a>')
+
+        findings, _ = detect(golden, [], {})
+        self.assertEqual(1, len(findings))
+        self.assertEqual(NONE, findings[0].reason)
+
     def test_missing_column_is_high(self) -> None:
         """그리드 컬럼이 하나 빠지면 그 데이터를 볼 수 없다."""
         golden = sigs("<th>장비ID</th><th>장비명</th><th>관리자</th>")
