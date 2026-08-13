@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/BoundServiceImpl.java
+  레거시는 getInbounds(type=0)·getOutbounds(type=1)로 나뉘어 type 을 상수로 박았다.
+  여기서는 type 파라미터로 합친다. 정렬은 id 오름차순.
+
+  검색 컬럼을 문자열로 이어 붙이지 않고 분기로 고정한다.
+-->
+<mapper namespace="com.erflow.bound.BoundMapper">
+
+    <!--
+      레거시 검색 분기
+        id/productName/userName  and <col> like ?
+        date                     and bounded_at >= ?
+    -->
+    <sql id="searchCondition">
+        <if test="search != null and search.active">
+            <choose>
+                <when test="search.like">
+                    AND
+                    <choose>
+                        <when test="search.column == 'id'">id</when>
+                        <when test="search.column == 'product_name'">product_name</when>
+                        <when test="search.column == 'user_name'">user_name</when>
+                    </choose>
+                    LIKE #{search.pattern}
+                </when>
+                <when test="search.date">
+                    AND bounded_at &gt;= #{search.dateValue}
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+    <!-- 레거시: select * from bound_view where type = ? [조건] order by id limit ?, ? -->
+    <select id="findPage" resultType="com.erflow.bound.BoundRow">
+        SELECT id,
+               product_name AS productName,
+               user_name    AS userName,
+               address1,
+               address2,
+               bounded_at   AS boundedAt,
+               count
+          FROM bound_view
+         WHERE type = #{type}
+        <include refid="searchCondition"/>
+         ORDER BY id
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from bound_view where type = ? [조건] -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM bound_view
+         WHERE type = #{type}
+        <include refid="searchCondition"/>
+    </select>
+
+</mapper>
