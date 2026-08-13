@@ -1,6 +1,12 @@
+// 게시판 관리 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/admin/adminBoardList.js
+//
+// 동작은 레거시 그대로다. 여는 주소만 새 라우트로 바꿨다(D-005).
+//   boardRegister.jsp -> /admin/board/register
+//   boardUpdate.jsp   -> /admin/board/update
 $(function() {
 	$('.register-board').on('click', function() { /* 게시판 생성버튼 클릭 */
-		window.open('boardRegister.jsp', '_blank',
+		window.open('/admin/board/register', '_blank',
 			'width=650, height=200, scrollbars=no, resizable=no, toolbar=no, menubar=no, channelmode=no');
 	});
 
@@ -11,7 +17,7 @@ $(function() {
 		if (length != 1) {
 			alert('게시판 수정은 하나만 선택한 상태에서 가능합니다.');
 		} else {
-			window.open(`boardUpdate.jsp?boardId=${boardId.eq(0).val()}`, '_blank',
+			window.open(`/admin/board/update?boardId=${boardId.eq(0).val()}`, '_blank',
 				'width=650, height=200, scrollbars=no, resizable=no, toolbar=no, menubar=no, channelmode=no');
 		}
 	});

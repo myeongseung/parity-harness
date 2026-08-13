@@ -1,0 +1,43 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "admin-boardUpdate",
+  "source": "legacy/ERFlow/src/main/webapp/admin/board/boardUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "게시판 이름",
+      "detail": "",
+      "raw": "게시판 이름"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "게시판",
+      "detail": "text",
+      "raw": "** 게시판"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "생성",
+      "detail": "submit",
+      "raw": "생성"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "취소",
+      "detail": "button",
+      "raw": "취소"
+    }
+  ]
+}

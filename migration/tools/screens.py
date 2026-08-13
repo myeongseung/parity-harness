@@ -197,6 +197,16 @@ SCREENS = (
             legacy="admin/document/documentFormList.jsp"),
     _screen("admin", "documentFormRegister", "document/form-register", True,
             legacy="admin/document/documentFormRegister.jsp"),
+    _screen("admin", "adminBoardList", "board/list", True,
+            legacy="admin/board/adminBoardList.jsp"),
+    _screen("admin", "boardRegister", "board/register", True,
+            legacy="admin/board/boardRegister.jsp"),
+    _screen("admin", "boardUpdate", "board/update", True,
+            legacy="admin/board/boardUpdate.jsp"),
+    _screen("admin", "boardDeptUpdate", "board/dept-update", True,
+            legacy="admin/board/boardDeptUpdate.jsp"),
+    _screen("admin", "boardJobUpdate", "board/job-update", True,
+            legacy="admin/board/boardJobUpdate.jsp"),
     # 정답이 0건인 화면이다. 글자가 전부 «라벨 : <%=값%>» 이라 추출기가 하나도 잡지
     # 못한다. 대조는 통과하지만 판정한 것이 없다 — 목록에는 둔다(D-056)
     _screen("admin", "userAddress", "user/address", True,

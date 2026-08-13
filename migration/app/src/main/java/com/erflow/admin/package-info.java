@@ -16,9 +16,13 @@
  * <pre>
  * com.erflow.admin
  *   user/        사원 관리      /admin/user/*
- *   permission/  권한 관리      /admin/permission/*   (아직)
- *   document/    문서 양식      /admin/document/*     (아직)
- *   board/       게시판 관리    /admin/board/*        (아직)
+ *   permission/  권한 관리      /admin/permission/*
+ *   document/    문서 양식      /admin/document/*
+ *   board/       게시판 관리    /admin/board/*
  * </pre>
+ *
+ * <p>사이드메뉴가 가리키는 네 갈래가 모두 실제 화면이다. 이관 전 발판
+ * ({@code AdminScaffoldController})은 지웠다. 남은 것은 관리자 홈({@code /admin})
+ * 하나이며 그것은 {@code common.ErrorPageController} 가 들고 있다.
  */
 package com.erflow.admin;
