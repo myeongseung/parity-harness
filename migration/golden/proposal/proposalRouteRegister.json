@@ -1,0 +1,113 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "proposal-proposalRouteRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalRouteRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 전자결재 > 결재라인 등록",
+      "detail": "",
+      "raw": "사용자 > 전자결재 > 결재라인 등록"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "userid",
+      "detail": "hidden",
+      "raw": "userId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재명",
+      "detail": "",
+      "raw": "결재명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "nickname",
+      "detail": "text",
+      "raw": "nickname"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재라인",
+      "detail": "",
+      "raw": "결재라인:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "직원 찾기",
+      "detail": "button",
+      "raw": "직원 찾기"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "no",
+      "detail": "",
+      "raw": "No"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "routeid",
+      "detail": "hidden",
+      "raw": "routeId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "결재 등록",
+      "detail": "submit",
+      "raw": "결재 등록"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "receiver",
+      "detail": "hidden",
+      "raw": "receiver"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nickname",
+      "detail": "hidden",
+      "raw": "nickname"
+    }
+  ]
+}

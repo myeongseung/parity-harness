@@ -58,4 +58,35 @@
         <include refid="searchCondition"/>
     </select>
 
+    <!--
+      레거시: insert into proposal_route_tbl values (null, ?, ?, ?, 0, now())
+      route 는 만든 사람 + 고른 결재자들의 사번을 ; 로 이은 문자열이다(type 0 고정).
+    -->
+    <insert id="insertRoute">
+        INSERT INTO proposal_route_tbl
+                    (user_tbl_id, nickname, route, type, created_at)
+             VALUES (#{userId}, #{nickname}, #{route}, 0, NOW())
+    </insert>
+
+    <!-- 레거시 getProposalRouteView(id) 중 화면이 쓰는 둘 -->
+    <select id="findForUpdate" resultType="com.erflow.proposal.ProposalRouteEdit">
+        SELECT nickname, route
+          FROM proposal_route_view
+         WHERE id = #{id}
+    </select>
+
+    <!-- 레거시: update proposal_route_tbl set nickname = ?, route = ? where id = ? -->
+    <update id="updateRoute">
+        UPDATE proposal_route_tbl
+           SET nickname = #{nickname},
+               route    = #{route}
+         WHERE id = #{id}
+    </update>
+
+    <!-- 레거시: delete from proposal_route_tbl where id = ? -->
+    <delete id="deleteById">
+        DELETE FROM proposal_route_tbl
+         WHERE id = #{id}
+    </delete>
+
 </mapper>

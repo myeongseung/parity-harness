@@ -20,6 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 결재라인 목록이 실제 데이터로 그려지는지 확인한다.
@@ -90,5 +91,53 @@ class ProposalRouteScreenTest {
                 "no-such-user", ProposalRouteSearch.none(), 1);
 
         assertThat(page.items()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("등록하면 만든 사람이 결재 순서 맨 앞에 들어간다")
+    @Transactional
+    void createPutsCreatorFirst() {
+        // 실재하는 사번 둘을 결재자로 고른다(FK 안전). admin 이 만든 사람. 롤백된다.
+        List<String> pickers = jdbc.queryForList(
+                "SELECT id FROM user_view WHERE id <> 'admin' LIMIT 2", String.class);
+        assumeTrue(pickers.size() == 2, "사용자가 둘 미만이라 건너뛴다");
+
+        boolean created = proposalRouteService.create("admin", "테스트 라인", pickers);
+        assertThat(created).isTrue();
+
+        String route = jdbc.queryForObject(
+                "SELECT route FROM proposal_route_tbl ORDER BY id DESC LIMIT 1", String.class);
+        // 만든 사람(admin) + 고른 둘 = admin;p1;p2
+        assertThat(route).isEqualTo("admin;" + pickers.get(0) + ";" + pickers.get(1));
+    }
+
+    @Test
+    @DisplayName("수정 화면은 결재관리번호가 없으면 잘못된 접근으로 보낸다")
+    void updateWithoutIdRedirects() throws Exception {
+        mockMvc.perform(get("/proposal/route-update").with(user(TestUsers.admin())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                        .redirectedUrl("/access-error"));
+    }
+
+    @Test
+    @DisplayName("수정하면 route 가 표 순서 그대로 저장된다(본인 재삽입 없음)")
+    @Transactional
+    void updateSavesRouteAsIs() {
+        // 결재라인을 하나 만들고, 그 id 로 결재자를 바꿔 수정한다. 롤백된다.
+        List<String> pickers = jdbc.queryForList(
+                "SELECT id FROM user_view WHERE id <> 'admin' LIMIT 2", String.class);
+        assumeTrue(pickers.size() == 2, "사용자가 둘 미만이라 건너뛴다");
+        proposalRouteService.create("admin", "라인", pickers);
+        int id = jdbc.queryForObject(
+                "SELECT id FROM proposal_route_tbl ORDER BY id DESC LIMIT 1", Integer.class);
+
+        boolean updated = proposalRouteService.update(id, "바뀐 이름", List.of(pickers.get(1)));
+
+        assertThat(updated).isTrue();
+        // 등록과 달리 본인을 앞에 다시 넣지 않는다 — 표에 있던 그대로.
+        assertThat(jdbc.queryForObject(
+                "SELECT route FROM proposal_route_tbl WHERE id = ?", String.class, id))
+                .isEqualTo(pickers.get(1));
     }
 }

@@ -1,0 +1,85 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "proposal-proposalRouteUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalRouteUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 전자결재 > 결재라인 수정 페이지",
+      "detail": "",
+      "raw": "사용자 > 전자결재 > 결재라인 수정 페이지"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재경로 id",
+      "detail": "",
+      "raw": "결재경로 ID:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "proposalid",
+      "detail": "text",
+      "raw": "proposalId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재명",
+      "detail": "",
+      "raw": "결재명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "nickname",
+      "detail": "text",
+      "raw": "nickname"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "no",
+      "detail": "",
+      "raw": "No"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "routeid",
+      "detail": "hidden",
+      "raw": "routeId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제출",
+      "detail": "submit",
+      "raw": "제출"
+    }
+  ]
+}

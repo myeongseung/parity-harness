@@ -80,11 +80,136 @@ public class ProposalRouteService {
     }
 
     /**
+     * 등록 화면이 쓸 결재자 표를 만든다.
+     *
+     * <p>사용자 찾기가 고른 사번을 화면 스크립트가 Base64(URL 인코딩)로 감싸 다시
+     * 넘긴다. 그것을 풀어 사람마다 조회한다. 값이 없으면 빈 표다.
+     *
+     * @param receiver Base64(URL 인코딩)로 감싼 {@code ;} 이은 사번. 없으면 {@code null}
+     * @return 결재자 목록. 이름을 이은 문자열도 함께
+     */
+    @Transactional(readOnly = true)
+    public RouteForm registerForm(String receiver) {
+        if (receiver == null || receiver.isBlank()) {
+            return new RouteForm("", List.of());
+        }
+        String decoded = java.net.URLDecoder.decode(
+                new String(java.util.Base64.getDecoder().decode(receiver),
+                        java.nio.charset.StandardCharsets.UTF_8),
+                java.nio.charset.StandardCharsets.UTF_8);
+        List<RouteUser> users = resolveUsers(decoded);
+        // 레거시는 이름 뒤에 공백을 붙여 이었다("홍길동 김철수 ").
+        StringBuilder names = new StringBuilder();
+        for (RouteUser user : users) {
+            names.append(user.name()).append(" ");
+        }
+        return new RouteForm(names.toString(), users);
+    }
+
+    /**
+     * 수정 화면이 쓸 결재자 표를 만든다.
+     *
+     * @param id 결재관리번호
+     * @return 결재라인명과 결재자 목록. 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public RouteEditForm updateForm(int id) {
+        ProposalRouteEdit edit = proposalRouteMapper.findForUpdate(id);
+        if (edit == null) {
+            return null;
+        }
+        return new RouteEditForm(edit.nickname(), resolveUsers(edit.route()));
+    }
+
+    /**
+     * 결재라인을 등록한다.
+     *
+     * <p>레거시는 결재 순서 맨 앞에 <b>만든 사람 자신</b>을 넣고 고른 결재자들을 이어
+     * 붙였다. 그대로 옮긴다.
+     *
+     * @param userId 만든 사람 사번
+     * @param nickname 결재라인명
+     * @param routeIds 고른 결재자 사번(순서대로)
+     * @return 들어갔으면 {@code true}
+     */
+    @Transactional
+    public boolean create(String userId, String nickname, List<String> routeIds) {
+        String route = userId + ";" + String.join(";", routeIds);
+        return proposalRouteMapper.insertRoute(userId, nickname, route) == 1;
+    }
+
+    /**
+     * 결재라인을 수정한다.
+     *
+     * <p>등록과 달리 만든 사람을 앞에 다시 넣지 않는다 — 표에 이미 들어 있는 순서를
+     * 그대로 저장한다(레거시 그대로).
+     *
+     * @param id 결재관리번호
+     * @param nickname 결재라인명
+     * @param routeIds 결재자 사번(순서대로)
+     * @return 수정됐으면 {@code true}
+     */
+    @Transactional
+    public boolean update(int id, String nickname, List<String> routeIds) {
+        return proposalRouteMapper.updateRoute(id, nickname, String.join(";", routeIds)) == 1;
+    }
+
+    /**
+     * 선택된 결재라인을 지운다.
+     *
+     * @param ids 지울 결재관리번호 목록
+     * @return 전부 지워졌으면 {@code true}
+     */
+    @Transactional
+    public boolean delete(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        boolean all = true;
+        for (int id : ids) {
+            all &= proposalRouteMapper.deleteById(id) == 1;
+        }
+        return all;
+    }
+
+    private List<RouteUser> resolveUsers(String route) {
+        List<RouteUser> users = new ArrayList<>();
+        if (route == null || route.isBlank()) {
+            return users;
+        }
+        for (String sabun : route.split(";")) {
+            UserRow user = userMapper.findUserView(sabun);
+            users.add(user == null
+                    ? new RouteUser(sabun, "", "")
+                    : new RouteUser(user.id(), user.name(), user.jobName()));
+        }
+        return users;
+    }
+
+    /**
      * 결재라인 목록 한 페이지.
      *
      * @param items 이 페이지의 결재라인(가공 후)
      * @param pagination 페이징 정보
      */
     public record RoutePage(List<ProposalRouteListItem> items, Pagination pagination) {
+    }
+
+    /**
+     * 등록 화면 표.
+     *
+     * @param routeUserNames 이름을 이은 문자열
+     * @param users 결재자 목록
+     */
+    public record RouteForm(String routeUserNames, List<RouteUser> users) {
+    }
+
+    /**
+     * 수정 화면 표.
+     *
+     * @param nickname 결재라인명
+     * @param users 결재자 목록
+     */
+    public record RouteEditForm(String nickname, List<RouteUser> users) {
     }
 }
