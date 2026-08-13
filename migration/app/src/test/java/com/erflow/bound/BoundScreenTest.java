@@ -152,4 +152,42 @@ class BoundScreenTest {
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM bound_tbl WHERE type = 1", Integer.class))
                 .isEqualTo(before + 1);
     }
+
+    @Test
+    @DisplayName("입고 수정 화면이 기존 값으로 그려진다")
+    void inboundUpdateFormRenders() throws Exception {
+        Integer id = jdbc.queryForObject(
+                "SELECT id FROM bound_tbl WHERE type = 0 LIMIT 1", Integer.class);
+        assumeTrue(id != null, "입고 데이터가 없어 건너뛴다");
+
+        String html = render("/bound/update?flag=inbound&id=" + id, "bound-update.html");
+
+        assertThat(html).contains("입고 수정").contains("제출").contains("우편 찾기");
+    }
+
+    @Test
+    @DisplayName("수정 조회는 사번 자리에 제품 코드를 채운다 (D-048)")
+    void updateDetailPutsProductIdIntoUserId() throws Exception {
+        Integer id = jdbc.queryForObject(
+                "SELECT id FROM bound_tbl WHERE type = 0 LIMIT 1", Integer.class);
+        assumeTrue(id != null, "입고 데이터가 없어 건너뛴다");
+
+        BoundDetail bound = boundService.get(id, BoundService.INBOUND);
+
+        // 레거시 뷰가 user_id 자리에 product_id 를 읽는다 — userId == productId.
+        assertThat(bound.userId()).isEqualTo(bound.productId());
+    }
+
+    @Test
+    @DisplayName("삭제는 type 이 맞아야 지운다")
+    @Transactional
+    void deleteRespectsType() {
+        Integer inId = jdbc.queryForObject(
+                "SELECT id FROM bound_tbl WHERE type = 0 LIMIT 1", Integer.class);
+        assumeTrue(inId != null, "입고 데이터가 없어 건너뛴다");
+
+        // 입고 건을 출고 type 으로 지우려 하면 걸리는 행이 없다.
+        assertThat(boundService.delete(List.of(inId), BoundService.OUTBOUND)).isFalse();
+        assertThat(boundService.delete(List.of(inId), BoundService.INBOUND)).isTrue();
+    }
 }

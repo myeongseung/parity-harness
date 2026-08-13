@@ -73,4 +73,44 @@
                      #{bound.count}, #{bound.type})
     </insert>
 
+    <!--
+      레거시 getBoundByType: select * from bound_view where id = ? and type = ?
+      bound_view 에 user_id 가 없어 레거시 extract 가 그 자리에 product_id 를 읽는다.
+      그 결함을 그대로 옮긴다 — userId 를 product_id 로 채운다(D-048).
+    -->
+    <select id="findForUpdate" resultType="com.erflow.bound.BoundDetail">
+        SELECT product_id   AS productId,
+               product_name AS productName,
+               product_id   AS userId,
+               user_name    AS userName,
+               postal_code  AS postalCode,
+               address1,
+               address2,
+               count
+          FROM bound_view
+         WHERE id = #{id} AND type = #{type}
+    </select>
+
+    <!--
+      레거시: update bound_tbl set product_tbl_id=?, user_tbl_id=?, postal_code=?,
+              address1=?, address2=?, count=? where id=? and type=?
+      bounded_at 은 바꾸지 않는다(레거시 SQL 에 없다).
+    -->
+    <update id="update">
+        UPDATE bound_tbl
+           SET product_tbl_id = #{bound.productId},
+               user_tbl_id    = #{bound.userId},
+               postal_code    = #{bound.postalCode},
+               address1       = #{bound.address1},
+               address2       = #{bound.address2},
+               count          = #{bound.count}
+         WHERE id = #{bound.id} AND type = #{bound.type}
+    </update>
+
+    <!-- 레거시: delete from bound_tbl where id = ? and type = ? -->
+    <delete id="delete">
+        DELETE FROM bound_tbl
+         WHERE id = #{id} AND type = #{type}
+    </delete>
+
 </mapper>

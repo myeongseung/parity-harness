@@ -48,4 +48,33 @@ public interface BoundMapper {
      * @return 반영된 행 수
      */
     int insert(@Param("bound") Bound bound);
+
+    /**
+     * 수정 화면용으로 한 건을 읽는다.
+     *
+     * <p>레거시 {@code getBoundByType} 처럼 {@code bound_view} 에서 읽는다 —
+     * {@code userId} 자리에 {@code product_id} 가 온다(D-048).
+     *
+     * @param id 번호
+     * @param type 0 입고 / 1 출고
+     * @return 입·출고. 없으면 {@code null}
+     */
+    BoundDetail findForUpdate(@Param("id") int id, @Param("type") int type);
+
+    /**
+     * 본체를 수정한다.
+     *
+     * @param bound 수정 값
+     * @return 반영된 행 수
+     */
+    int update(@Param("bound") BoundUpdate bound);
+
+    /**
+     * 입·출고 한 건을 지운다. type 이 맞아야 지워진다.
+     *
+     * @param id 번호
+     * @param type 0 입고 / 1 출고
+     * @return 반영된 행 수
+     */
+    int delete(@Param("id") int id, @Param("type") int type);
 }

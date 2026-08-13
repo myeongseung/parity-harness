@@ -1,0 +1,120 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "bound-boundUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/bound/boundUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "boundid",
+      "detail": "hidden",
+      "raw": "boundId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "productid",
+      "detail": "hidden",
+      "raw": "productId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제품 찾기",
+      "detail": "button",
+      "raw": "제품 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "userid",
+      "detail": "hidden",
+      "raw": "userId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "직원 찾기",
+      "detail": "button",
+      "raw": "직원 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "우편번호",
+      "detail": "text",
+      "raw": "우편번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "참고항목",
+      "detail": "text",
+      "raw": "참고항목"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편 찾기",
+      "detail": "button",
+      "raw": "우편 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "도로명 주소",
+      "detail": "text",
+      "raw": "도로명 주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "수량",
+      "detail": "text",
+      "raw": "수량"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제출",
+      "detail": "submit",
+      "raw": "제출"
+    }
+  ]
+}

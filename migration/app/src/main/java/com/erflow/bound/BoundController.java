@@ -1,5 +1,6 @@
 package com.erflow.bound;
 
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  * outbound.jsp         GET  /bound/outbound       (출고, type=1)
  * boundRegister.jsp    GET  /bound/register?flag=
  * boundRegisterProc    POST /bound/register-proc
+ * boundUpdate.jsp      GET  /bound/update?flag=&amp;id=
+ * boundUpdateProc      POST /bound/update-proc
+ * boundDeleteProc      POST /bound/delete-proc
  * </pre>
  *
  * <p>입고와 출고는 거의 같은 화면인데 {@code type} 과 권한이 갈린다. 레거시가 파일과
@@ -146,6 +150,97 @@ public class BoundController {
         String label = inbound ? "입고" : "출고";
         model.addAttribute("message",
                 label + (created ? " 정보를 등록하였습니다." : " 정보를 등록하지 못했습니다."));
+        model.addAttribute("nextPage", inbound ? "/bound/inbound" : "/bound/outbound");
+        return "bound/result";
+    }
+
+    /**
+     * 입·출고 수정 화면.
+     *
+     * @param flag inbound 또는 outbound
+     * @param id 번호
+     * @param model 뷰 모델
+     * @return 수정 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/update")
+    public String updateForm(
+            @RequestParam(required = false) String flag,
+            @RequestParam(required = false) Integer id,
+            Model model) {
+        boolean inbound = "inbound".equals(flag);
+        BoundDetail bound = id == null ? null : boundService.get(id, inbound ? 0 : 1);
+        if (bound == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("flag", flag);
+        model.addAttribute("isInbound", inbound);
+        model.addAttribute("boundId", id);
+        model.addAttribute("bound", bound);
+        return "bound/update";
+    }
+
+    /**
+     * 입·출고 수정 처리.
+     *
+     * <p>레거시 {@code boundUpdateProc.jsp} 를 옮겼다. 여덟 값(번호·제품·사번·우편번호·
+     * 도로명·상세주소·날짜·수량)이 모두 있어야 처리한다. 입고 시간은 바꾸지 않는다.
+     *
+     * @param boundId 번호
+     * @param productId 제품 코드
+     * @param userId 입고자(출고자) 사번
+     * @param postalCode 우편번호
+     * @param address1 도로명 주소
+     * @param address2 상세주소
+     * @param boundedAt 입고(출고) 시간(무시된다)
+     * @param count 수량
+     * @param flag inbound 또는 outbound
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/update-proc")
+    public String update(
+            @RequestParam(required = false) Integer boundId,
+            @RequestParam(required = false) String productId,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String postalCode,
+            @RequestParam(required = false) String address1,
+            @RequestParam(required = false) String address2,
+            @RequestParam(required = false) String boundedAt,
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) String flag,
+            Model model) {
+
+        boolean present = boundId != null && productId != null && userId != null
+                && postalCode != null && address1 != null && address2 != null
+                && boundedAt != null && count != null;
+        boolean inbound = "inbound".equals(flag);
+        boolean updated = present && boundService.update(new BoundUpdate(
+                boundId, productId, userId, postalCode, address1, address2,
+                count, inbound ? 0 : 1));
+
+        model.addAttribute("message", updated ? "수정에 성공했습니다." : "수정에 실패했습니다.");
+        model.addAttribute("nextPage", inbound ? "/bound/inbound" : "/bound/outbound");
+        return "bound/result";
+    }
+
+    /**
+     * 선택된 입·출고 삭제.
+     *
+     * @param boundId 지울 번호 목록
+     * @param flag inbound 또는 outbound
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/delete-proc")
+    public String delete(
+            @RequestParam(required = false) List<Integer> boundId,
+            @RequestParam(required = false) String flag,
+            Model model) {
+        boolean inbound = "inbound".equals(flag);
+        boolean valid = boundId != null && flag != null && !flag.isBlank()
+                && boundService.delete(boundId, inbound ? 0 : 1);
+        model.addAttribute("message",
+                valid ? "선택한 내역을 삭제하였습니다." : "선택한 내역을 삭제하지 못했습니다.");
         model.addAttribute("nextPage", inbound ? "/bound/inbound" : "/bound/outbound");
         return "bound/result";
     }

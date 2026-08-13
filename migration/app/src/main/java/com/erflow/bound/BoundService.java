@@ -58,6 +58,48 @@ public class BoundService {
     }
 
     /**
+     * 수정 화면용으로 한 건을 읽는다.
+     *
+     * @param id 번호
+     * @param type 0 입고 / 1 출고
+     * @return 입·출고. 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public BoundDetail get(int id, int type) {
+        return boundMapper.findForUpdate(id, type);
+    }
+
+    /**
+     * 본체를 수정한다.
+     *
+     * @param bound 수정 값
+     * @return 수정됐으면 {@code true}
+     */
+    @Transactional
+    public boolean update(BoundUpdate bound) {
+        return boundMapper.update(bound) == 1;
+    }
+
+    /**
+     * 선택된 입·출고를 지운다. type 이 맞아야 지워진다(입고 목록에서 고른 것은 입고만).
+     *
+     * @param ids 지울 번호 목록
+     * @param type 0 입고 / 1 출고
+     * @return 전부 지워졌으면 {@code true}
+     */
+    @Transactional
+    public boolean delete(List<Integer> ids, int type) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        boolean all = true;
+        for (int id : ids) {
+            all &= boundMapper.delete(id, type) == 1;
+        }
+        return all;
+    }
+
+    /**
      * 목록 한 페이지.
      *
      * @param rows 이 페이지의 입·출고 목록

@@ -1281,6 +1281,41 @@ String sql = "update message_tbl set " + sb + "where id = ?";
 
 ---
 
+## D-048 · 입·출고 수정은 사번 자리에 제품 코드를 채운다
+
+`bound_view` 에는 {@code user_id} 컬럼이 없다. 그런데 뷰를 읽는 코드가 사번 자리에
+제품 코드를 넣는다.
+
+```java
+// ResultSetExtractHelper.extractViewBoundBean
+new ViewBoundBean(
+    rs.getInt("id"),
+    rs.getString("product_id"),   // productId
+    rs.getString("product_name"),
+    rs.getString("product_id"),   // userId  ← 제품 코드다
+    rs.getString("user_name"),
+    ...
+```
+
+수정 화면(`boundUpdate.jsp`)은 이 값을 숨은 `userId` 에 채운다. 사용자가 직원을 다시
+고르지 않고 제출하면, 처리에서 `user_tbl_id = 제품 코드` 로 덮인다 — **조용히 데이터가
+손상된다.** 화면에 보이는 이름(`user_name`)은 멀쩡해서 눈치채기 어렵다.
+
+**결정:** 그대로 옮긴다. `findForUpdate` 가 `bound_view` 에서 `product_id AS userId` 로
+읽어 숨은 필드에 제품 코드를 넣고, 수정 처리는 그 값을 그대로 저장한다.
+
+이것은 «먼저 똑같이» 원칙을 지키느라 손상 버그까지 재현한 예다. D-044(발주 수정 실패)와
+같은 결이지만 그쪽은 눈에 보이는 실패였고, 이쪽은 **조용한 손상**이라 더 위험하다.
+게이트는 못 본다 — 숨은 입력의 값은 signature 에 안 들어간다.
+
+**2단계 최우선 수정 후보.** `bound_tbl.user_tbl_id` 를 직접 읽으면 올바른 사번이 채워져
+손상이 사라진다. 이관을 마치는 대로 이 항목부터 고칠 것을 권한다.
+
+입고 시간(`bounded_at`)은 수정 대상이 아니다 — 레거시 update SQL 에 없고 화면 날짜
+입력도 비어 있다. 그대로 뒀다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |
