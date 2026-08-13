@@ -182,4 +182,55 @@ public interface AdminPermissionMapper {
      * @return 반영된 행 수
      */
     int deleteJob(@Param("jobId") int jobId);
+
+    /**
+     * 프로그램 목록 한 페이지.
+     *
+     * @param keyword 프로그램 이름 검색어. 부분 일치
+     * @param start 조회 시작 위치
+     * @param count 가져올 건수
+     * @return 프로그램 목록
+     */
+    List<ProgramRow> findProgramPage(
+            @Param("keyword") String keyword,
+            @Param("start") int start,
+            @Param("count") int count);
+
+    /**
+     * 조건에 걸리는 프로그램 수.
+     *
+     * <p>목록과 달리 <b>완전 일치</b>로 센다. 레거시가 그렇다(D-064).
+     *
+     * @param keyword 프로그램 이름
+     * @return 건수
+     */
+    int countPrograms(@Param("keyword") String keyword);
+
+    /**
+     * 프로그램 한 행.
+     *
+     * @param id 행 번호
+     * @return 프로그램. 없으면 {@code null}
+     */
+    ProgramRow findProgram(@Param("id") int id);
+
+    /**
+     * 프로그램의 부서 권한을 바꾼다.
+     *
+     * @param programId 프로그램 코드
+     * @param level 새 비트마스크
+     * @return 반영된 행 수
+     */
+    int updateProgramDeptLevel(
+            @Param("programId") String programId, @Param("level") long level);
+
+    /**
+     * 프로그램의 직급 권한을 바꾼다.
+     *
+     * @param programId 프로그램 코드
+     * @param level 새 비트마스크
+     * @return 반영된 행 수
+     */
+    int updateProgramJobLevel(
+            @Param("programId") String programId, @Param("level") long level);
 }

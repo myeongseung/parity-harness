@@ -185,6 +185,12 @@ SCREENS = (
             legacy="admin/permission/deptRegister.jsp"),
     _screen("admin", "deptUpdate", "permission/dept-update", True,
             legacy="admin/permission/deptUpdate.jsp"),
+    _screen("admin", "programList", "permission/program-list", True,
+            legacy="admin/permission/programList.jsp"),
+    _screen("admin", "programDeptUpdate", "permission/program-dept-update", True,
+            legacy="admin/permission/programDeptUpdate.jsp"),
+    _screen("admin", "programJobUpdate", "permission/program-job-update", True,
+            legacy="admin/permission/programJobUpdate.jsp"),
     # 정답이 0건인 화면이다. 글자가 전부 «라벨 : <%=값%>» 이라 추출기가 하나도 잡지
     # 못한다. 대조는 통과하지만 판정한 것이 없다 — 목록에는 둔다(D-056)
     _screen("admin", "userAddress", "user/address", True,

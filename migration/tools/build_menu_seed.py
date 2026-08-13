@@ -305,11 +305,12 @@ def to_sql(seed: dict) -> str:
         "-- 레거시는 utf8mb4_0900_ai_ci(MySQL 8) 였다. MariaDB 에 없는 collation 이라",
         "-- utf8mb4_general_ci 로 옮긴다. 한글 정렬 순서가 달라질 수 있어 별도 확인 대상이다.",
         "",
+        "-- 권한 값(dept_level/job_level)은 여기 두지 않는다. 그 값은 이관 시점의",
+        "-- 스냅샷이 아니라 관리자가 화면에서 바꾸는 운영 데이터이고, 이 표는 통째로",
+        "-- 다시 만들어지는 생성물이다. 판정은 permission_program_tbl 을 읽는다(D-063).",
         "CREATE TABLE IF NOT EXISTS `program` (",
         "  `program_id` VARCHAR(128)  NOT NULL COMMENT '레거시 SHA256 값 보존. 재생성 금지',",
         "  `name`       VARCHAR(255)  NOT NULL COMMENT '권한 프로그램명. 메뉴 라벨과 다를 수 있다',",
-        "  `dept_level` BIGINT        NOT NULL,",
-        "  `job_level`  BIGINT        NOT NULL,",
         "  PRIMARY KEY (`program_id`)",
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
         "",
@@ -342,12 +343,11 @@ def to_sql(seed: dict) -> str:
         "  CONSTRAINT `fk_menu_screen` FOREIGN KEY (`screen_id`) REFERENCES `screen` (`screen_id`)",
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
         "",
-        "INSERT INTO `program` (`program_id`, `name`, `dept_level`, `job_level`) VALUES",
+        "INSERT INTO `program` (`program_id`, `name`) VALUES",
     ]
     lines.append(
         ",\n".join(
-            f"  ({_sql_str(p['program_id'])}, {_sql_str(p['name'])}, "
-            f"{p['dept_level']}, {p['job_level']})"
+            f"  ({_sql_str(p['program_id'])}, {_sql_str(p['name'])})"
             for p in seed["programs"]
         )
         + ";"

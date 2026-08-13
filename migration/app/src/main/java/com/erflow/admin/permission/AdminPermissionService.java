@@ -1,5 +1,7 @@
 package com.erflow.admin.permission;
 
+import com.erflow.auth.Permissions;
+import com.erflow.common.Pagination;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -198,6 +200,117 @@ public class AdminPermissionService {
     }
 
     /**
+     * 프로그램 목록 한 페이지.
+     *
+     * <p>세는 쪽과 가져오는 쪽의 조건이 다르다 — 목록은 부분 일치, 건수는 완전 일치다.
+     * 그래서 검색하면 줄은 나오는데 페이지가 그려지지 않는다. 레거시 그대로다(D-064).
+     *
+     * @param keyword 프로그램 이름 검색어
+     * @param requestedPage 요청된 페이지
+     * @return 목록과 페이징
+     */
+    @Transactional(readOnly = true)
+    public ProgramPage programs(String keyword, int requestedPage) {
+        Pagination pagination = Pagination.of(mapper.countPrograms(keyword), requestedPage);
+        return new ProgramPage(
+                mapper.findProgramPage(keyword, pagination.start(), pagination.numPerPage()),
+                pagination);
+    }
+
+    /**
+     * 프로그램 부서 권한 수정 화면 한 벌.
+     *
+     * <p>부서 수정 화면과 달리 <b>모든 부서</b>가 체크박스로 나온다. 프로그램은 부서가
+     * 아니라 «빼야 할 자기 자신» 이 없기 때문이다.
+     *
+     * @param id 프로그램 행 번호
+     * @return 화면 한 벌. 프로그램이 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public ProgramForm programDeptForm(int id) {
+        ProgramRow program = mapper.findProgram(id);
+        if (program == null) {
+            return null;
+        }
+        return new ProgramForm(program,
+                allChoices(mapper.findDeptPermissions(null), program.deptLevel()));
+    }
+
+    /**
+     * 프로그램 직급 권한 수정 화면 한 벌.
+     *
+     * @param id 프로그램 행 번호
+     * @return 화면 한 벌. 프로그램이 없으면 {@code null}
+     */
+    @Transactional(readOnly = true)
+    public ProgramForm programJobForm(int id) {
+        ProgramRow program = mapper.findProgram(id);
+        if (program == null) {
+            return null;
+        }
+        return new ProgramForm(program,
+                allChoices(mapper.findJobPermissions(null), program.jobLevel()));
+    }
+
+    /**
+     * 프로그램의 부서 권한을 바꾼다.
+     *
+     * <p>시작값이 <b>관리자 비트</b>다. 체크를 다 지워도 관리자는 남는다 — 관리자 부서는
+     * 체크박스로 나오지도 않으므로 이 화면에서 관리자를 뺄 방법이 아예 없다.
+     *
+     * @param id 프로그램 행 번호
+     * @param checked 체크된 부서 번호들
+     * @return 바꿨으면 {@code true}
+     */
+    @Transactional
+    public boolean updateProgramDeptLevel(int id, List<Integer> checked) {
+        ProgramRow program = mapper.findProgram(id);
+        if (program == null) {
+            return false;
+        }
+        long level = levelsOf(mapper.findDeptPermissions(null), checked);
+        return mapper.updateProgramDeptLevel(program.programId(), level) == 1;
+    }
+
+    /**
+     * 프로그램의 직급 권한을 바꾼다.
+     *
+     * @param id 프로그램 행 번호
+     * @param checked 체크된 직급 번호들
+     * @return 바꿨으면 {@code true}
+     */
+    @Transactional
+    public boolean updateProgramJobLevel(int id, List<Integer> checked) {
+        ProgramRow program = mapper.findProgram(id);
+        if (program == null) {
+            return false;
+        }
+        long level = levelsOf(mapper.findJobPermissions(null), checked);
+        return mapper.updateProgramJobLevel(program.programId(), level) == 1;
+    }
+
+    /** 체크된 번호들의 비트를 관리자 비트 위에 얹는다. */
+    private static long levelsOf(List<PermissionRow> all, List<Integer> checked) {
+        List<Long> levels = new ArrayList<>();
+        for (PermissionRow row : all) {
+            if (checked != null && checked.contains(row.classId())) {
+                levels.add(row.level());
+            }
+        }
+        return Levels.combine(Permissions.ADMIN_BIT, levels);
+    }
+
+    /** 프로그램 화면은 자기 자신을 뺄 것이 없다. 전부 내놓는다. */
+    private static List<PermissionChoice> allChoices(List<PermissionRow> all, long level) {
+        List<PermissionChoice> choices = new ArrayList<>();
+        for (PermissionRow row : all) {
+            choices.add(new PermissionChoice(
+                    row.classId(), row.name(), Levels.has(level, row.level())));
+        }
+        return choices;
+    }
+
+    /**
      * 체크된 번호들을 비트마스크로 만든다.
      *
      * <p>시작값은 <b>자기 비트</b>다. 그래서 체크를 다 지워도 자기 자신은 남는다.
@@ -274,5 +387,23 @@ public class AdminPermissionService {
      * @param choices 다른 직급 체크박스
      */
     public record JobForm(int id, String name, List<PermissionChoice> choices) {
+    }
+
+    /**
+     * 프로그램 목록 한 페이지.
+     *
+     * @param rows 이 페이지의 프로그램
+     * @param pagination 페이징 정보
+     */
+    public record ProgramPage(List<ProgramRow> rows, Pagination pagination) {
+    }
+
+    /**
+     * 프로그램 권한 수정 화면 한 벌.
+     *
+     * @param program 고칠 프로그램
+     * @param choices 부서 또는 직급 체크박스
+     */
+    public record ProgramForm(ProgramRow program, List<PermissionChoice> choices) {
     }
 }

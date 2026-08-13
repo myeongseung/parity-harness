@@ -1,0 +1,50 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "admin-programDeptUpdate",
+  "source": "legacy/ERFlow/src/main/webapp/admin/permission/programDeptUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "programid",
+      "detail": "hidden",
+      "raw": "programId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "프로그램 부서 권한 수정",
+      "detail": "",
+      "raw": "프로그램 부서 권한 수정"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "프로그램명",
+      "detail": "text",
+      "raw": "프로그램명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "전체 선택",
+      "detail": "checkbox",
+      "raw": "전체 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "checkbox",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정하기",
+      "detail": "submit",
+      "raw": "수정하기"
+    }
+  ]
+}

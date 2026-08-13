@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.erflow.auth.AuthMapper;
 import com.erflow.auth.Permissions;
 import com.erflow.auth.TestUsers;
 import java.util.List;
@@ -44,6 +45,9 @@ class AdminPermissionScreenTest {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private AuthMapper authMapper;
 
     @BeforeAll
     static void requireLocalConfig() {
@@ -266,6 +270,101 @@ class AdminPermissionScreenTest {
         mockMvc.perform(get("/admin/permission/job-dept-list")
                         .with(user(TestUsers.noPermission())))
                 .andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/permission/program-list")
+                        .with(user(TestUsers.noPermission())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("프로그램 리스트가 그려진다")
+    void programListRenders() throws Exception {
+        String html = mockMvc.perform(
+                        get("/admin/permission/program-list").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).contains("프로그램ID").contains("부서 권한").contains("직급 권한");
+        assertThat(permissionService.programs(null, 1).rows()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("프로그램 검색은 줄은 나오는데 건수가 0이다 — 레거시 그대로다")
+    void programSearchCountsDifferently() {
+        ProgramRow any = permissionService.programs(null, 1).rows().get(0);
+        String part = any.programName().substring(0, 1);
+
+        var page = permissionService.programs(part, 1);
+
+        // 목록은 부분 일치라 걸리고, 건수는 완전 일치라 0 이다(D-064).
+        assertThat(page.rows()).isNotEmpty();
+        assertThat(page.pagination().totalRecord()).isZero();
+    }
+
+    @Test
+    @DisplayName("프로그램 권한은 관리자 비트로 시작한다 — 체크를 다 지워도 남는다")
+    @Transactional
+    void programKeepsAdminBit() {
+        ProgramRow program = permissionService.programs(null, 1).rows().get(0);
+
+        assertThat(permissionService.updateProgramDeptLevel(program.id(), List.of())).isTrue();
+
+        long stored = storedProgramDeptLevel(program.programId());
+        assertThat(stored).isEqualTo(Permissions.ADMIN_BIT);
+        // 관리자는 여전히 들어갈 수 있다.
+        assertThat(Permissions.hasProgramPermission(
+                Permissions.ADMIN_BIT, Permissions.ADMIN_BIT, stored, stored)).isTrue();
+    }
+
+    @Test
+    @DisplayName("체크한 부서만 프로그램에 들어갈 수 있다")
+    @Transactional
+    void programGrantsOnlyCheckedDepartments() {
+        ProgramRow program = permissionService.programs(null, 1).rows().get(0);
+        var depts = permissionService.list(null, null).depts();
+        PermissionRow allowed = depts.get(0);
+        PermissionRow blocked = depts.get(1);
+
+        permissionService.updateProgramDeptLevel(program.id(), List.of(allowed.classId()));
+
+        long stored = storedProgramDeptLevel(program.programId());
+        assertThat(stored).isEqualTo(Permissions.ADMIN_BIT | allowed.level());
+        assertThat(Permissions.hasProgramPermission(
+                allowed.permission(), -1L, stored, -1L)).isTrue();
+        assertThat(Permissions.hasProgramPermission(
+                blocked.permission(), -1L, stored, -1L)).isFalse();
+    }
+
+    @Test
+    @DisplayName("프로그램 권한을 바꾸면 화면 권한 판정이 그 값을 읽는다")
+    @Transactional
+    void programPermissionReachesTheAuthorizationQuery() {
+        // 판정이 생성물(program)이 아니라 레거시 표를 읽는지 확인한다(D-063).
+        ProgramRow program = permissionService.programs(null, 1).rows().get(0);
+        String route = jdbc.queryForObject(
+                "SELECT route FROM screen WHERE program_id = ? LIMIT 1",
+                String.class, program.programId());
+        assumeTrue(route != null, "그 프로그램에 걸린 화면이 없어 건너뛴다");
+
+        permissionService.updateProgramDeptLevel(program.id(), List.of());
+
+        var access = authMapper.findScreenAccess(route);
+        assertThat(access).isNotEmpty();
+        assertThat(access.get(0).deptLevel()).isEqualTo(Permissions.ADMIN_BIT);
+    }
+
+    @Test
+    @DisplayName("프로그램 수정 화면은 번호가 없으면 잘못된 접근으로 보낸다")
+    void programFormWithoutIdRedirects() throws Exception {
+        mockMvc.perform(get("/admin/permission/program-dept-update")
+                        .with(user(TestUsers.admin())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/access-error"));
+    }
+
+    private long storedProgramDeptLevel(String programId) {
+        return jdbc.queryForObject(
+                "SELECT dept_level FROM permission_program_tbl WHERE program_id = ?",
+                Long.class, programId);
     }
 
     private long storedDeptPermission(int deptId) {

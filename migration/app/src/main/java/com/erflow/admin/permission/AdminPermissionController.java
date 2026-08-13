@@ -263,6 +263,110 @@ public class AdminPermissionController {
                 ? "부서를 삭제했습니다." : "부서를 삭제하지 못했습니다.");
     }
 
+    /**
+     * 프로그램 리스트.
+     *
+     * @param keyword 프로그램 이름 검색어
+     * @param nowPage 현재 페이지
+     * @param model 뷰 모델
+     * @return 목록 템플릿
+     */
+    @GetMapping("/program-list")
+    public String programList(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int nowPage,
+            Model model) {
+
+        AdminPermissionService.ProgramPage page = permissionService.programs(keyword, nowPage);
+        model.addAttribute("programs", page.rows());
+        model.addAttribute("page", page.pagination());
+        model.addAttribute("keyword", keyword == null ? "" : keyword);
+        return "admin/permission/program-list";
+    }
+
+    /**
+     * 프로그램 부서 권한 수정 화면.
+     *
+     * @param id 프로그램 행 번호
+     * @param model 뷰 모델
+     * @return 수정 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/program-dept-update")
+    public String programDeptForm(@RequestParam(required = false) Integer id, Model model) {
+        AdminPermissionService.ProgramForm form =
+                id == null ? null : permissionService.programDeptForm(id);
+        if (form == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("form", form);
+        return "admin/permission/program-dept-update";
+    }
+
+    /**
+     * 프로그램 부서 권한 수정 처리.
+     *
+     * <p>레거시 폼에는 {@code method} 가 없어 <b>GET</b> 이었다. 주소만 알면 링크 한 번으로
+     * 권한이 바뀐다. CSRF 방어를 켠 이관에서는 POST 로 받는다(D-031 과 같은 판단, D-065).
+     *
+     * @param programId 프로그램 행 번호
+     * @param permissions 체크된 부서 번호들
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/program-dept-update-proc")
+    public String programDeptUpdate(
+            @RequestParam(required = false) Integer programId,
+            @RequestParam(required = false) List<Integer> permissions,
+            Model model) {
+
+        if (programId == null) {
+            return "redirect:/access-error";
+        }
+        boolean updated = permissionService.updateProgramDeptLevel(programId, permissions);
+        return programResult(model, updated
+                ? "부서 권한 정보를 수정했습니다." : "부서 권한을 수정하지 못했습니다.");
+    }
+
+    /**
+     * 프로그램 직급 권한 수정 화면.
+     *
+     * @param id 프로그램 행 번호
+     * @param model 뷰 모델
+     * @return 수정 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/program-job-update")
+    public String programJobForm(@RequestParam(required = false) Integer id, Model model) {
+        AdminPermissionService.ProgramForm form =
+                id == null ? null : permissionService.programJobForm(id);
+        if (form == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("form", form);
+        return "admin/permission/program-job-update";
+    }
+
+    /**
+     * 프로그램 직급 권한 수정 처리.
+     *
+     * @param programId 프로그램 행 번호
+     * @param permissions 체크된 직급 번호들
+     * @param model 뷰 모델
+     * @return 결과 템플릿
+     */
+    @PostMapping("/program-job-update-proc")
+    public String programJobUpdate(
+            @RequestParam(required = false) Integer programId,
+            @RequestParam(required = false) List<Integer> permissions,
+            Model model) {
+
+        if (programId == null) {
+            return "redirect:/access-error";
+        }
+        boolean updated = permissionService.updateProgramJobLevel(programId, permissions);
+        return programResult(model, updated
+                ? "직급 권한 정보를 수정했습니다." : "직급 권한을 수정하지 못했습니다.");
+    }
+
     /** 레거시가 값을 다듬는 방식. 빈 값은 {@code null} 로 저장된다. */
     private static String blankToNull(String value) {
         String trimmed = value.trim();
@@ -280,6 +384,13 @@ public class AdminPermissionController {
         model.addAttribute("message", message);
         model.addAttribute("nextPage", LIST);
         model.addAttribute("closePopup", true);
+        return RESULT;
+    }
+
+    private String programResult(Model model, String message) {
+        model.addAttribute("message", message);
+        model.addAttribute("nextPage", "/admin/permission/program-list");
+        model.addAttribute("closePopup", false);
         return RESULT;
     }
 }

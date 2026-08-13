@@ -18,17 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminScaffoldController {
 
     /**
-     * 프로그램 리스트. {@code admin/permission/programList.jsp}
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin/permission/program-list")
-    public String programList(Model model) {
-        return scaffold(model, "프로그램 리스트");
-    }
-
-    /**
      * 문서 양식 리스트. {@code admin/document/documentFormList.jsp}
      *
      * @param model 뷰 모델

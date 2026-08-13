@@ -178,4 +178,67 @@
         DELETE FROM job_tbl WHERE id = #{jobId}
     </delete>
 
+    <!--
+      레거시 getPrograms(name, start, cnt):
+        select * from permission_program_tbl [where program_name like '%?%'] limit ?, ?
+
+      ORDER BY 가 없다. 넣지 않는다 — 화면에 찍히는 순서가 달라진다.
+    -->
+    <select id="findProgramPage" resultType="com.erflow.admin.permission.ProgramRow">
+        SELECT id,
+               program_id   AS programId,
+               program_name AS programName,
+               dept_level   AS deptLevel,
+               job_level    AS jobLevel
+          FROM permission_program_tbl
+        <if test="keyword != null and !keyword.trim().equals('')">
+            WHERE program_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!--
+      레거시 getProgramCount(name):
+        select count(*) from permission_program_tbl [where program_name = ?]
+
+      **목록과 조건이 다르다.** 목록은 부분 일치(like)인데 건수는 완전 일치다. 그래서
+      검색하면 줄은 나오는데 페이지 수가 0으로 나온다. 그대로 옮긴다(D-064).
+    -->
+    <select id="countPrograms" resultType="int">
+        SELECT COUNT(*)
+          FROM permission_program_tbl
+        <if test="keyword != null and !keyword.trim().equals('')">
+            WHERE program_name = #{keyword}
+        </if>
+    </select>
+
+    <!-- 레거시 getProgram(id): select * from permission_program_tbl where id = ? -->
+    <select id="findProgram" resultType="com.erflow.admin.permission.ProgramRow">
+        SELECT id,
+               program_id   AS programId,
+               program_name AS programName,
+               dept_level   AS deptLevel,
+               job_level    AS jobLevel
+          FROM permission_program_tbl
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시 changeProgramDeptPermission/changeProgramJobPermission:
+        update permission_program_tbl set dept_level = ? where program_id = ?
+
+      번호(id)가 아니라 **프로그램 코드**로 찾는다. 레거시 그대로다.
+    -->
+    <update id="updateProgramDeptLevel">
+        UPDATE permission_program_tbl
+           SET dept_level = #{level}
+         WHERE program_id = #{programId}
+    </update>
+
+    <update id="updateProgramJobLevel">
+        UPDATE permission_program_tbl
+           SET job_level = #{level}
+         WHERE program_id = #{programId}
+    </update>
+
 </mapper>
