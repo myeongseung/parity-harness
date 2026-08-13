@@ -150,6 +150,23 @@ class TestTemplateSymmetry(unittest.TestCase):
         """과교정 방지. 진짜 고정 문구는 양쪽 다 잡혀야 한다."""
         self.assertEqual(["text:static|고정문구|"], keys("<td>고정문구</td>"))
 
+    def test_label_bound_by_dynamic_id(self) -> None:
+        """`id`/`for` 는 화면에 안 보이지만 라벨을 잇는 끈이다.
+
+        레거시는 반복문 안에서 `id="permission<%=i%>"` 로 label 과 입력을 이었다.
+        신규가 같은 자리를 `th:id` 로 옮겼을 때 한쪽만 정규화되면, 그 입력의 이름이
+        한쪽은 «dyn»(label 을 따라감)이고 다른 쪽은 "permissions"(name 을 따라감)가
+        되어 같은 체크박스가 서로 다른 signature 를 낸다.
+        """
+        self.assertSame(
+            '<input type="checkbox" id="permission<%=i%>" name="permissions"'
+            ' value="<%=id%>">'
+            '<label for="permission<%=i%>"><%=name%></label>',
+            '<input type="checkbox" th:id="|permission${i.count}|" name="permissions"'
+            ' th:value="${dept.classId}">'
+            '<label th:for="|permission${i.count}|">[[${dept.className}]]</label>',
+        )
+
     def test_nested_dynamic_text_does_not_leak_to_parent_label(self) -> None:
         """자식의 시안용 더미가 부모 링크의 라벨이 되면 안 된다.
 

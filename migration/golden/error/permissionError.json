@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "error-permissionError",
   "source": "legacy/ERFlow/src/main/webapp/permissionError.jsp",
   "signatures": [

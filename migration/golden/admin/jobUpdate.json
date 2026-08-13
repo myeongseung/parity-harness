@@ -1,0 +1,50 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-jobUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/jobUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "직급 수정",
+      "detail": "",
+      "raw": "직급 수정"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "jobid",
+      "detail": "hidden",
+      "raw": "jobId"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "전체 선택",
+      "detail": "checkbox",
+      "raw": "전체 선택"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "checkbox",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정하기",
+      "detail": "submit",
+      "raw": "수정하기"
+    }
+  ]
+}

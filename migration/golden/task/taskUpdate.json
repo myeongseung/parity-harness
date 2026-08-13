@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "task-taskUpdate",
-  "source": "../legacy/ERFlow/src/main/webapp/task/taskUpdate.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/task/taskUpdate.jsp",
   "signatures": [
     {
       "kind": "control",

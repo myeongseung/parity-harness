@@ -1,0 +1,29 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-jobRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/jobRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "직급 생성",
+      "detail": "",
+      "raw": "직급 생성"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "직급명",
+      "detail": "text",
+      "raw": "직급명:"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "생성하기",
+      "detail": "submit",
+      "raw": "생성하기"
+    }
+  ]
+}

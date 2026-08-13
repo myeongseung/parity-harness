@@ -1,0 +1,64 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-deptRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/deptRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "부서 생성",
+      "detail": "",
+      "raw": "부서 생성"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "부서 명",
+      "detail": "text",
+      "raw": "부서 명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "우편번호",
+      "detail": "text",
+      "raw": "우편번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "동/읍/면",
+      "detail": "text",
+      "raw": "동/읍/면"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편 번호 찾기",
+      "detail": "button",
+      "raw": "우편 번호 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "도로명 주소",
+      "detail": "text",
+      "raw": "도로명 주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "생성하기",
+      "detail": "submit",
+      "raw": "생성하기"
+    }
+  ]
+}

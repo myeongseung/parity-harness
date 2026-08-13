@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "post-postUpdate",
   "source": "legacy/ERFlow/src/main/webapp/post/postUpdate.jsp",
   "signatures": [

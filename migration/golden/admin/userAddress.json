@@ -1,7 +1,7 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "admin-userAddress",
-  "source": "../legacy/ERFlow/src/main/webapp/admin/user/userAddress.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/admin/user/userAddress.jsp",
   "signatures": []
 }

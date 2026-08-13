@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "task-createModal",
-  "source": "../legacy/ERFlow/src/main/webapp/task/createModal.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/task/createModal.jsp",
   "signatures": [
     {
       "kind": "control",

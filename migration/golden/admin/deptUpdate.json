@@ -1,36 +1,22 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
-  "screen": "bound-boundRegister",
-  "source": "legacy/ERFlow/src/main/webapp/bound/boundRegister.jsp",
+  "extractor": 6,
+  "screen": "admin-deptUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/deptUpdate.jsp",
   "signatures": [
     {
-      "kind": "control",
-      "role": "hidden",
-      "label": "flag",
-      "detail": "hidden",
-      "raw": "flag"
-    },
-    {
-      "kind": "control",
-      "role": "input",
-      "label": "제품명",
-      "detail": "text",
-      "raw": "제품명"
+      "kind": "text",
+      "role": "static",
+      "label": "부서 수정",
+      "detail": "",
+      "raw": "부서 수정"
     },
     {
       "kind": "control",
       "role": "hidden",
-      "label": "productid",
+      "label": "deptid",
       "detail": "hidden",
-      "raw": "productId"
-    },
-    {
-      "kind": "control",
-      "role": "button",
-      "label": "제품 찾기",
-      "detail": "button",
-      "raw": "제품 찾기"
+      "raw": "deptId"
     },
     {
       "kind": "control",
@@ -38,13 +24,6 @@
       "label": "«dyn»",
       "detail": "text",
       "raw": "«dyn»"
-    },
-    {
-      "kind": "control",
-      "role": "button",
-      "label": "직원 찾기",
-      "detail": "button",
-      "raw": "직원 찾기"
     },
     {
       "kind": "control",
@@ -63,9 +42,9 @@
     {
       "kind": "control",
       "role": "button",
-      "label": "우편번호 찾기",
+      "label": "우편 번호 찾기",
       "detail": "button",
-      "raw": "우편번호 찾기"
+      "raw": "우편 번호 찾기"
     },
     {
       "kind": "control",
@@ -84,23 +63,23 @@
     {
       "kind": "control",
       "role": "input",
-      "label": "수량",
-      "detail": "number",
-      "raw": "수량"
+      "label": "전체 선택",
+      "detail": "checkbox",
+      "raw": "전체 선택"
     },
     {
       "kind": "control",
       "role": "input",
       "label": "«dyn»",
-      "detail": "text",
+      "detail": "checkbox",
       "raw": "«dyn»"
     },
     {
       "kind": "control",
       "role": "button",
-      "label": "«dyn»",
+      "label": "수정하기",
       "detail": "submit",
-      "raw": "«dyn»"
+      "raw": "수정하기"
     }
   ]
 }

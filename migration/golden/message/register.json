@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "message-register",
-  "source": "../legacy/ERFlow/src/main/webapp/message/register.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/message/register.jsp",
   "signatures": [
     {
       "kind": "text",

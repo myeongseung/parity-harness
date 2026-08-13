@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "proposal-proposalDocument",
-  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalDocument.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/proposal/proposalDocument.jsp",
   "signatures": [
     {
       "kind": "column",

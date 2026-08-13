@@ -1,0 +1,197 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-jobDeptList",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/permission/jobDeptList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "관리자 > 권한 관리 > 직급·부서 리스트",
+      "detail": "",
+      "raw": "관리자 > 권한 관리 > 직급·부서 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "deptkeyword",
+      "detail": "hidden",
+      "raw": "deptKeyword"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "jobkeyword",
+      "detail": "hidden",
+      "raw": "jobKeyword"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "직급 리스트",
+      "detail": "",
+      "raw": "직급 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "submit",
+      "raw": "삭제"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "추가",
+      "detail": "button",
+      "raw": "추가"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "직급 검색...",
+      "detail": "text",
+      "raw": "직급 검색..."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "button",
+      "raw": "검색"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkalljob",
+      "detail": "checkbox",
+      "raw": "chkAllJob"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직급 번호",
+      "detail": "",
+      "raw": "직급 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직급 명칭",
+      "detail": "",
+      "raw": "직급 명칭"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직급 권한 및 정보",
+      "detail": "",
+      "raw": "직급 권한 및 정보"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "jobid",
+      "detail": "checkbox",
+      "raw": "jobId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "수정",
+      "detail": "jobupdate.jsp",
+      "raw": "수정"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "부서 리스트",
+      "detail": "",
+      "raw": "부서 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "submit",
+      "raw": "삭제"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "추가",
+      "detail": "button",
+      "raw": "추가"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "부서 검색...",
+      "detail": "text",
+      "raw": "부서 검색..."
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "search",
+      "detail": "button",
+      "raw": "search"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkalldept",
+      "detail": "checkbox",
+      "raw": "chkAllDept"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서 번호",
+      "detail": "",
+      "raw": "부서 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서 명칭",
+      "detail": "",
+      "raw": "부서 명칭"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서 권한 및 정보",
+      "detail": "",
+      "raw": "부서 권한 및 정보"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "deptid",
+      "detail": "checkbox",
+      "raw": "deptId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "수정",
+      "detail": "deptupdate.jsp",
+      "raw": "수정"
+    }
+  ]
+}

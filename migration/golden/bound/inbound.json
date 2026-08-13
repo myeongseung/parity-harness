@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "bound-inbound",
-  "source": "../legacy/ERFlow/src/main/webapp/bound/inbound.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/bound/inbound.jsp",
   "signatures": [
     {
       "kind": "text",

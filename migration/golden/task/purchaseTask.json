@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "task-purchaseTask",
-  "source": "../legacy/ERFlow/src/main/webapp/task/purchaseTask.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/task/purchaseTask.jsp",
   "signatures": [
     {
       "kind": "text",

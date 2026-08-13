@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 6,
+  "extractor": 7,
   "screen": "post-boardList",
   "source": "legacy/ERFlow/src/main/webapp/post/boardList.jsp",
   "signatures": [

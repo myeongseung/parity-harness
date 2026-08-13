@@ -28,8 +28,14 @@ from .model import DYNAMIC
 #: 그러려면 `value="<%=id%>"` 와 `th:value="${unit.id}"` 가 같은 모양이 되어야 한다.
 #: 한쪽만 정규화하면 같은 요소가 서로 다른 signature 를 낸다.
 #: `|...|` 는 Thymeleaf 의 리터럴 치환 문법이다. 파이프는 구문이지 내용이 아니다.
+#:
+#: `id` 와 `for` 도 여기 있다. 둘은 화면에 안 보이지만 **라벨을 잇는 끈**이다 —
+#: `<label for="x">이름</label><input id="x">` 에서 입력의 이름은 그 label 이다.
+#: 레거시가 반복문 안에서 `id="permission<%=i%>"` 로 이어 놓은 자리를 신규가
+#: `th:id` 로 옮기면, 한쪽만 정규화될 때 같은 입력이 서로 다른 이름을 갖는다.
 _TH_ATTR = re.compile(
-    r'\bth:(href|src|value|field|action|placeholder|title|alt)\s*=\s*"[|@]?\{?([^"}]*?)\}?\|?"'
+    r'\bth:(href|src|value|field|action|placeholder|title|alt|id|for)'
+    r'\s*=\s*"[|@]?\{?([^"}]*?)\}?\|?"'
 )
 
 #: `@{/path(a=b)}` 의 괄호는 쿼리 파라미터를 적는 Thymeleaf 문법이다.
