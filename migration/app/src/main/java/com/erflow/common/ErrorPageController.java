@@ -69,18 +69,6 @@ public class ErrorPageController {
     }
 
     /**
-     * 관리자 홈. 레거시 {@code admin/admin.jsp} 가 이관되면 이 매핑을 지운다.
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/admin")
-    public String admin(Model model) {
-        model.addAttribute("screenName", "관리자");
-        return "scaffold/not-migrated";
-    }
-
-    /**
      * 프로필. 레거시 {@code profile.jsp} 가 이관되면 이 매핑을 지운다.
      *
      * <p>게시판 목록의 작성자 이름이 여기로 걸린다. 링크를 빼면 레거시에 있던

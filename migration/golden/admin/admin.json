@@ -1,0 +1,141 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "admin-admin",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/admin.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "근무 현황",
+      "detail": "",
+      "raw": "근무 현황"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재",
+      "detail": "",
+      "raw": "결재"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서제목",
+      "detail": "",
+      "raw": "문서제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결재요청시각",
+      "detail": "",
+      "raw": "결재요청시각"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "진행상황",
+      "detail": "",
+      "raw": "진행상황"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "../proposal/proposaldocument.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "수/발주 내역",
+      "detail": "",
+      "raw": "수/발주 내역"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "등록인",
+      "detail": "",
+      "raw": "등록인"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "수주/발주",
+      "detail": "",
+      "raw": "수주/발주"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "요청일",
+      "detail": "",
+      "raw": "요청일"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "상태",
+      "detail": "",
+      "raw": "상태"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "공지사항",
+      "detail": "",
+      "raw": "공지사항"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성일",
+      "detail": "",
+      "raw": "작성일"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "../post/postview.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "출/퇴근관리",
+      "detail": "",
+      "raw": "출/퇴근관리"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    }
+  ]
+}

@@ -1,7 +1,12 @@
+// 근무 현황 원 그래프.
+// 출처: legacy/ERFlow/src/main/webapp/js/admin/adminGraph.js
+//
+// 동작은 레거시 그대로다. 값을 받아 오는 주소만 바꿨다.
+//   /ERFlow/admin/graph/view -> /admin/graph/view
 document.addEventListener('DOMContentLoaded', function() {
 	$.ajax({
 		type: 'get',
-		url: '/ERFlow/admin/graph/view',
+		url: '/admin/graph/view',
 		dataType: 'json',
 		success: function(rows) {
 			const keys = ['결근','출근', '퇴근', '지각', '조퇴', '반차', '연차']

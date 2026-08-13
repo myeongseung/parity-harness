@@ -197,6 +197,7 @@ SCREENS = (
             legacy="admin/document/documentFormList.jsp"),
     _screen("admin", "documentFormRegister", "document/form-register", True,
             legacy="admin/document/documentFormRegister.jsp"),
+    _screen("admin", "admin", "home", True, legacy="admin/admin.jsp"),
     _screen("admin", "adminBoardList", "board/list", True,
             legacy="admin/board/adminBoardList.jsp"),
     _screen("admin", "boardRegister", "board/register", True,
