@@ -213,6 +213,13 @@ SCREENS = (
     _screen("admin", "userAddress", "user/address", True,
             legacy="admin/user/userAddress.jsp"),
 
+    # 공정 — 앞뒤로 이어진 사슬. 수정은 이름만 고치는 작은 창이다
+    _screen("process", "processList", "list", True, legacy="process/processList.jsp"),
+    _screen("process", "processRegister", "register", True,
+            legacy="process/processRegister.jsp"),
+    _screen("process", "processUpdate", "update", True,
+            legacy="process/processUpdate.jsp"),
+
     # 제품 — 원재료·가공품·완제품이 한 표에 type 으로 나뉘고 권한은 셋이 다르다
     _screen("product", "ingredientProduct", "ingredient-product", True,
             legacy="product/ingredientProduct.jsp"),

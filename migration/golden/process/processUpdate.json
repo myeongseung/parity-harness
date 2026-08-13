@@ -1,0 +1,36 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "process-processUpdate",
+  "source": "../legacy/ERFlow/src/main/webapp/process/processUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "공정명 변경",
+      "detail": "",
+      "raw": "공정명 변경"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "processname",
+      "detail": "text",
+      "raw": "processName"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "설정",
+      "detail": "submit",
+      "raw": "설정"
+    }
+  ]
+}

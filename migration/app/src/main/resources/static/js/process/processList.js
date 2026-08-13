@@ -1,3 +1,8 @@
+// 공정 목록 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/process/processList.js
+//
+// 동작은 레거시 그대로다. 이동 주소만 새 라우트로 바꿨다(D-005).
+//   processRegister.jsp -> /process/register
 $(function() {
 	$(".main-search-text[name='keyword']").on("keydown", function(e) {
 		if (e.keyCode == 13) {
@@ -23,11 +28,18 @@ $(function() {
 	});
 	
 	$("#register-button").on("click", function() {
-		document.location.href = "processRegister.jsp";
+		document.location.href = "/process/register";
 	});
 	
 	$('#chkAll').on('click', function() {
 		$('input[name=processId]').prop('checked', $('#chkAll').is(':checked'));
+	});
+
+	// 레거시는 이름 링크에 onclick 으로 창 크기를 적어 두었다. Thymeleaf 가 그 자리에
+	// 값을 끼워 넣지 못해(D-035) 여기서 건다. 크기와 창 이름은 레거시 그대로다.
+	$('.process-name').on('click', function(e) {
+		e.preventDefault();
+		window.open(this.href, 'myWindow', 'width=600, height=400');
 	});
 
 	$('[name=processId]').on('click', function() {

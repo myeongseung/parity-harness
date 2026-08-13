@@ -1,0 +1,92 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "process-processRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/process/processRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 생산관리 > 공정 등록",
+      "detail": "",
+      "raw": "사용자 > 생산관리 > 공정 등록"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "공정id",
+      "detail": "text",
+      "raw": "공정ID"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "공정명",
+      "detail": "text",
+      "raw": "공정명"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "공정 추가",
+      "detail": "button",
+      "raw": "공정 추가"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "공정id",
+      "detail": "",
+      "raw": "공정ID"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "공정명",
+      "detail": "",
+      "raw": "공정명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "우선순위",
+      "detail": "",
+      "raw": "우선순위"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "공정 등록",
+      "detail": "button",
+      "raw": "공정 등록"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "receiver",
+      "detail": "hidden",
+      "raw": "receiver"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "processid",
+      "detail": "hidden",
+      "raw": "processId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nickname",
+      "detail": "hidden",
+      "raw": "nickname"
+    }
+  ]
+}

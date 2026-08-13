@@ -1,3 +1,9 @@
+// 공정 등록 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/process/processRegister.js
+//
+// 동작은 레거시 그대로다. 주소만 새 라우트로 바꿨다(D-005).
+//   /ERFlow/process/processRegister    -> /process/processRegister
+//   /ERFlow/process/processList.jsp    -> /process/list
 document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('process-register-button').addEventListener('click', function() {
 		let processId = document.querySelector('input[name="processId"]').value.trim();
@@ -75,13 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		if (flag) {
 			$.ajax({
-				url: "/ERFlow/process/processRegister", // 서버 측 코드를 처리할 URL
+				url: "/process/processRegister", // 서버 측 코드를 처리할 URL
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify(tableData), // tableData 배열만 전송
 				success: function(response) {
 					if (response.status === 'success') {
-						window.location.href = '/ERFlow/process/processList.jsp';
+						window.location.href = '/process/list';
 					}
 				},
 				error: function(xhr, status, error) {
