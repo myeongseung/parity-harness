@@ -1410,6 +1410,46 @@ proposalCon.createProposal(bean);    // 다음 차례를 만든다
 
 ---
 
+## D-052 · 결재 리스트는 «지금 내 차례»만 보여준다 — SQL 이 아니라 Java 가 거른다
+
+결재 리스트를 옮길 때(B①) 조회 조건만 옮기고 **그 뒤에 오는 거르기를 빠뜨렸다.**
+
+```java
+// ProposalServiceImpl.getProposalViews(userId, result, start, cnt)
+String sql = "select * from proposal_view where (result = 3 and route like ?) "
+        + "or (original_user = ? and user_id= ? and result = ?) " + additional
+        + " order by id desc limit ?, ?";
+...
+return vlist.stream().filter(bean -> {
+    ViewProposalRouteBean routeBean = routeSvc.getProposalRouteView(bean.getRouteId());
+    Vector<ViewUserBean> users = routeBean.getRoute();
+    int step = bean.getStep();
+    return users.size() > step && users.get(step).getId().equals(userId);
+}).collect(Collectors.toCollection(Vector::new));
+```
+
+SQL 의 `route like '%나%'` 는 **결재선 어딘가에 내가 있으면** 걸린다. 넷이 결재하는
+문서라면 진행중인 동안 네 사람 모두의 목록에 뜬다. 거르기가 그중 «지금 차례인
+사람»만 남긴다. 이 조각이 없으면 아직 오지 않은 차례와 이미 지나간 차례가 함께
+보인다 — 승인해도 목록에서 사라지지 않는다.
+
+**결정:** 레거시와 같은 자리에서 같은 방식으로 거른다. 가져온 뒤 Java 에서 한다.
+
+SQL 로 옮기면 «맞는» 결과가 나오지만 레거시와 달라진다. 거르기가 `limit` 뒤에
+일어나므로 한 페이지에 남는 줄 수가 들쭉날쭉하고(10건을 가져와 3건만 남기도 한다),
+페이지 수를 세는 `getProposalViewsCount` 에는 이 거르기가 없어 **세는 것과 보여주는
+것이 애초에 다르다.** SQL 로 내리면 그 어긋남이 사라져 페이지 수가 달라진다.
+
+결재선을 다시 조회하지 않는 것만 다르다. 레거시는 판정을 위해 결재라인을 한 번 더
+읽고 사번마다 사용자를 또 읽었는데, 견주는 값은 뷰가 이미 들고 있는 `route` 컬럼의
+`step` 번째와 같다(D-041 과 같은 판단).
+
+**왜 게이트가 못 잡았나.** 게이트는 화면의 요소를 견준다. 표의 «줄이 몇 개인가»는
+데이터이고 정답에 없다. B③(문서 상세)을 만들며 승인 뒤 목록이 어떻게 달라져야 하는지
+따지다 드러났다 — 화면 하나를 끝냈다고 그 화면이 끝난 것이 아니라는 예다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |

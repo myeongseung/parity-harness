@@ -16,23 +16,46 @@
 
       첫 절은 «내가 결재선에 든 진행중 결재»(상태 필터와 무관), 둘째 절은 «내가 기안한
       결재 중 선택 상태». OR 로 묶여 함께 나온다 — 레거시 그대로다.
+
+      상태 필터가 0(내 차례가 끝난 결재)이면 `and approved_at is null` 이 덧붙는다.
+      레거시는 괄호 없이 이어 붙여 그 AND 가 뒤쪽 절에만 걸린다 — 결합 순서까지
+      그대로 옮겼다. 화면 콤보에는 0 이 없고 주소로만 들어올 수 있다.
+
+      **이 조건만으로는 목록이 좁혀지지 않는다.** 첫 절의 `route like '%나%'` 는
+      결재선 어딘가에 내가 있기만 하면 걸리므로, 아직 오지 않은 차례와 이미 지나간
+      차례까지 함께 나온다. 레거시는 조회한 뒤 Java 에서 «지금 내 차례인 것»만 걸러
+      냈다 — ProposalService.list 가 그 자리다(D-052).
     -->
     <sql id="inbox">
         WHERE (result = 3 AND route LIKE CONCAT('%', #{userId}, '%'))
            OR (original_user = #{userId} AND user_id = #{userId} AND result = #{result})
+        <if test="result == 0">
+            AND approved_at IS NULL
+        </if>
     </sql>
 
+    <!--
+      step 과 route 는 화면에 찍히지 않는다. «지금 내 차례인가»를 가리는 데만 쓴다.
+      레거시는 그 판정을 위해 결재라인을 한 번 더 조회하고 사번마다 사용자를 또
+      조회했다. 뷰가 이미 들고 있는 컬럼을 읽는다(D-041 과 같은 판단).
+    -->
     <select id="findPage" resultType="com.erflow.proposal.ProposalRow">
         SELECT id,
                document_id AS documentId,
                subject,
-               received_at AS receivedAt
+               received_at AS receivedAt,
+               step,
+               route
           FROM proposal_view
         <include refid="inbox"/>
          ORDER BY id DESC
          LIMIT #{start}, #{count}
     </select>
 
+    <!--
+      «내 차례» 거르기가 여기에는 없다. 레거시도 없다 — 그래서 페이지 수는 실제로
+      보이는 건수보다 크게 나온다. 세는 것과 보여주는 것이 다르다(D-052).
+    -->
     <select id="countBy" resultType="int">
         SELECT COUNT(*)
           FROM proposal_view

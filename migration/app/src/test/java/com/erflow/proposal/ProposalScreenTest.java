@@ -115,6 +115,33 @@ class ProposalScreenTest {
     }
 
     @Test
+    @DisplayName("결재선에 들어 있어도 내 차례가 아니면 목록에 없다")
+    @Transactional
+    void listShowsOnlyMyTurn() {
+        Chain chain = freshChain();
+        long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
+
+        // 아직 첫 차례다. 기안자에게는 보이고, 결재선 둘째에게는 보이지 않는다.
+        assertThat(idsOf(chain.route()[0])).contains(first);
+        assertThat(idsOf(chain.route()[1])).doesNotContain(first);
+
+        proposalService.decide(first, "confirm", "확인");
+
+        // 승인하면 자리가 넘어간다 — 첫 사람의 목록에서 사라지고 둘째에게 생긴다.
+        long next = jdbc.queryForObject(
+                "SELECT MAX(id) FROM proposal_tbl WHERE document_tbl_id = ?",
+                Long.class, chain.documentId());
+        assertThat(idsOf(chain.route()[0])).doesNotContain(first, next);
+        assertThat(idsOf(chain.route()[1])).contains(next);
+    }
+
+    /** 그 사람의 결재진행중 인박스에 뜨는 결재번호. */
+    private List<Long> idsOf(String userId) {
+        return proposalService.list(userId, ProposalService.IN_PROGRESS, 1).rows()
+                .stream().map(ProposalRow::id).toList();
+    }
+
+    @Test
     @DisplayName("문서 상세가 그려진다")
     void documentRenders() throws Exception {
         Long id = jdbc.queryForObject("SELECT MAX(id) FROM proposal_tbl", Long.class);

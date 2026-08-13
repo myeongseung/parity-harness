@@ -60,6 +60,13 @@ public class ProposalService {
     /**
      * 결재 리스트 한 페이지.
      *
+     * <p>조회 조건만으로는 목록이 좁혀지지 않는다. 결재선 어딘가에 내가 있기만 하면
+     * 걸리므로 아직 오지 않은 차례와 이미 지나간 차례까지 딸려 온다. <b>가져온 뒤에</b>
+     * «지금 내 차례인 것»만 남긴다 — 레거시가 그 자리에서 그렇게 했다(D-052).
+     *
+     * <p>거르기가 페이지를 자른 <b>뒤에</b> 일어나므로 한 페이지에 남는 줄 수가 들쭉날쭉
+     * 하고, 페이지 수를 세는 쪽에는 이 거르기가 없다. 레거시와 같다.
+     *
      * @param userId 현재 사용자 사번
      * @param result 상태 필터(3/1/2)
      * @param requestedPage 요청된 페이지
@@ -70,7 +77,10 @@ public class ProposalService {
         int total = proposalMapper.countBy(userId, result);
         Pagination pagination = Pagination.of(total, requestedPage);
         List<ProposalRow> rows = proposalMapper.findPage(
-                userId, result, pagination.start(), pagination.numPerPage());
+                        userId, result, pagination.start(), pagination.numPerPage())
+                .stream()
+                .filter(row -> row.isTurnOf(userId))
+                .toList();
         return new ProposalPage(rows, pagination);
     }
 
