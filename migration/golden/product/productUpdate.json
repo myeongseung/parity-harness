@@ -1,0 +1,57 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "product-productUpdate",
+  "source": "legacy/ERFlow/src/main/webapp/product/productUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 제품 > 제품 수정 페이지",
+      "detail": "",
+      "raw": "사용자 > 제품 > 제품 수정 페이지"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품 id",
+      "detail": "text",
+      "raw": "제품 ID"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품명",
+      "detail": "text",
+      "raw": "제품명"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "수량",
+      "detail": "text",
+      "raw": "수량"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정",
+      "detail": "submit",
+      "raw": "수정"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "type",
+      "detail": "hidden",
+      "raw": "type"
+    }
+  ]
+}

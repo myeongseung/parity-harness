@@ -18,4 +18,64 @@
           FROM product_tbl
     </select>
 
+    <!--
+      레거시 getProducts(keyfield, keyword, start, cnt, type):
+        select * from product_tbl where type = ? [and <칸> like ?] order by id limit ?, ?
+
+      검색할 칸은 화면이 주는 둘뿐이다(productId -> id, productName -> name).
+      사원 리스트처럼 칸 이름이 SQL 에 이어 붙지만(D-054) 여기서도 화이트리스트로
+      막는다 — ProductSearch 가 그 둘만 통과시킨다.
+    -->
+    <sql id="searchCondition">
+        WHERE type = #{type}
+        <if test="search.active">
+            AND ${search.column} LIKE #{search.keywordPattern}
+        </if>
+    </sql>
+
+    <select id="findPage" resultType="com.erflow.product.ProductListRow">
+        SELECT id, name, count, type
+          FROM product_tbl
+        <include refid="searchCondition"/>
+         ORDER BY id
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from product_tbl where type = ? [and <칸> like ?] -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM product_tbl
+        <include refid="searchCondition"/>
+    </select>
+
+    <!-- 레거시 getProduct(id): select * from product_tbl where id = ? -->
+    <select id="findById" resultType="com.erflow.product.ProductListRow">
+        SELECT id, name, count, type
+          FROM product_tbl
+         WHERE id = #{id}
+    </select>
+
+    <!--
+      레거시: insert into product_tbl values(?, ?, ?, ?)
+      바인딩 순서는 id, name, count, type 이다.
+    -->
+    <insert id="insertProduct">
+        INSERT INTO product_tbl (id, name, count, type)
+             VALUES (#{id}, #{name}, #{count}, #{type})
+    </insert>
+
+    <!-- 레거시: update product_tbl set name = ?, count = ?, type = ? where id = ? -->
+    <update id="updateProduct">
+        UPDATE product_tbl
+           SET name  = #{name},
+               count = #{count},
+               type  = #{type}
+         WHERE id = #{id}
+    </update>
+
+    <!-- 레거시: delete from product_tbl where id = ? -->
+    <delete id="deleteProduct">
+        DELETE FROM product_tbl WHERE id = #{id}
+    </delete>
+
 </mapper>

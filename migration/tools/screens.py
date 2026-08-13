@@ -213,6 +213,18 @@ SCREENS = (
     _screen("admin", "userAddress", "user/address", True,
             legacy="admin/user/userAddress.jsp"),
 
+    # 제품 — 원재료·가공품·완제품이 한 표에 type 으로 나뉘고 권한은 셋이 다르다
+    _screen("product", "ingredientProduct", "ingredient-product", True,
+            legacy="product/ingredientProduct.jsp"),
+    _screen("product", "processedProduct", "processed-product", True,
+            legacy="product/processedProduct.jsp"),
+    _screen("product", "productedProduct", "producted-product", True,
+            legacy="product/productedProduct.jsp"),
+    _screen("product", "productRegister", "register", True,
+            legacy="product/productRegister.jsp"),
+    _screen("product", "productUpdate", "update", True,
+            legacy="product/productUpdate.jsp"),
+
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),
     _screen("post", "postView", "view", True),

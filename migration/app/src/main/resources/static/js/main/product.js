@@ -1,3 +1,8 @@
+// 제품 목록 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/main/product.js
+//
+// 동작은 레거시 그대로다. 이동 주소만 새 라우트로 바꿨다(D-005).
+//   productRegister.jsp?flag= -> /product/register?flag=
 $(document).ready(function() {
 	$("input.main-search-text[name='keyword']").on("keydown", function(e) {
 		if (e.keyCode == 13) {
@@ -34,7 +39,7 @@ $(document).ready(function() {
 	});
 	
 	$('#register-button').on('click', function() {
-		document.location.href = `productRegister.jsp?flag=${$('#register-button').data('value')}`;
+		document.location.href = `/product/register?flag=${$('#register-button').data('value')}`;
 	});
 });
 

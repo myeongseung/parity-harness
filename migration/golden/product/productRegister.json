@@ -1,0 +1,50 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "product-productRegister",
+  "source": "legacy/ERFlow/src/main/webapp/product/productRegister.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품 id",
+      "detail": "text",
+      "raw": "제품 ID"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품명",
+      "detail": "text",
+      "raw": "제품명"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품 수량",
+      "detail": "text",
+      "raw": "제품 수량"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제품 등록",
+      "detail": "submit",
+      "raw": "제품 등록"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "type",
+      "detail": "hidden",
+      "raw": "type"
+    }
+  ]
+}
