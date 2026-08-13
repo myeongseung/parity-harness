@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.erflow.auth.TestUsers;
@@ -17,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 입·출고 목록이 실제 데이터로 그려지는지 확인한다.
@@ -38,6 +41,9 @@ class BoundScreenTest {
 
     @Autowired
     private BoundService boundService;
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @BeforeAll
     static void requireLocalConfig() {
@@ -107,5 +113,43 @@ class BoundScreenTest {
                 .pagination().totalRecord();
 
         assertThat(junk).isEqualTo(all);
+    }
+
+    @Test
+    @DisplayName("입고 등록 화면이 그려진다")
+    void inboundRegisterFormRenders() throws Exception {
+        String html = render("/bound/register?flag=inbound", "bound-register.html");
+
+        assertThat(html).contains("입고 등록").contains("제품 찾기").contains("우편번호 찾기");
+    }
+
+    @Test
+    @DisplayName("flag 가 없으면 잘못된 접근으로 보낸다")
+    void registerWithoutFlagRedirects() throws Exception {
+        // /bound/register 는 screen 테이블에 flag=inbound·outbound 만 있어, flag 없는
+        // 요청은 화면 권한 판정이 컨트롤러 전에 막는다.
+        mockMvc.perform(get("/bound/register").with(user(TestUsers.admin())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("등록하면 그 type 으로 bound_tbl 에 한 건 쌓인다")
+    @Transactional
+    void createInsertsWithType() throws Exception {
+        // FK 안전한 값을 기존 입고 한 건에서 가져온다(제품·사번이 실재해야 한다). 롤백된다.
+        var refs = jdbc.queryForList(
+                "SELECT product_tbl_id, user_tbl_id FROM bound_tbl WHERE type = 0 LIMIT 1");
+        assumeTrue(!refs.isEmpty(), "입고 데이터가 없어 건너뛴다");
+        String productId = (String) refs.get(0).get("product_tbl_id");
+        String userId = (String) refs.get(0).get("user_tbl_id");
+        int before = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM bound_tbl WHERE type = 1", Integer.class);
+
+        boolean created = boundService.create(new Bound(
+                productId, userId, "12345", "도로명", "상세", "2026-01-01 00:00:00", 7, 1));
+
+        assertThat(created).isTrue();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM bound_tbl WHERE type = 1", Integer.class))
+                .isEqualTo(before + 1);
     }
 }

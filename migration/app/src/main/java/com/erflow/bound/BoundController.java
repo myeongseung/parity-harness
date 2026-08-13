@@ -3,6 +3,7 @@ package com.erflow.bound;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 입·출고 관리 화면.
  *
  * <pre>
- * inbound.jsp   GET /bound/inbound    (입고, type=0)
- * outbound.jsp  GET /bound/outbound   (출고, type=1)
+ * inbound.jsp          GET  /bound/inbound        (입고, type=0)
+ * outbound.jsp         GET  /bound/outbound       (출고, type=1)
+ * boundRegister.jsp    GET  /bound/register?flag=
+ * boundRegisterProc    POST /bound/register-proc
  * </pre>
  *
  * <p>입고와 출고는 거의 같은 화면인데 {@code type} 과 권한이 갈린다. 레거시가 파일과
@@ -81,5 +84,69 @@ public class BoundController {
         model.addAttribute("keyfield", keyfield == null ? "" : keyfield);
         model.addAttribute("keyword", keyword == null ? "" : keyword);
         return view;
+    }
+
+    /**
+     * 입·출고 등록 화면.
+     *
+     * @param flag inbound 또는 outbound
+     * @param model 뷰 모델
+     * @return 등록 템플릿. flag 가 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/register")
+    public String registerForm(@RequestParam(required = false) String flag, Model model) {
+        if (!"inbound".equals(flag) && !"outbound".equals(flag)) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("flag", flag);
+        model.addAttribute("isInbound", "inbound".equals(flag));
+        return "bound/register";
+    }
+
+    /**
+     * 입·출고 등록 처리.
+     *
+     * <p>레거시 {@code boundRegisterProc.jsp} 를 옮겼다. 여덟 값(제품·사번·우편번호·
+     * 도로명·상세주소·날짜·수량·flag)이 모두 있어야 등록한다. 하나라도 없으면 «실패».
+     *
+     * @param productId 제품 코드
+     * @param userId 입고자(출고자) 사번
+     * @param postalCode 우편번호
+     * @param address1 도로명 주소
+     * @param address2 상세주소
+     * @param boundedAt 입고(출고) 시간
+     * @param count 수량
+     * @param flag inbound 또는 outbound
+     * @param model 뷰 모델
+     * @return 결과 템플릿. 값이 없으면 잘못된 접근 화면
+     */
+    @PostMapping("/register-proc")
+    public String register(
+            @RequestParam(required = false) String productId,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String postalCode,
+            @RequestParam(required = false) String address1,
+            @RequestParam(required = false) String address2,
+            @RequestParam(required = false) String boundedAt,
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) String flag,
+            Model model) {
+
+        boolean present = productId != null && userId != null && postalCode != null
+                && address1 != null && address2 != null && boundedAt != null
+                && count != null && flag != null;
+        if (!present) {
+            // 레거시는 하나라도 없으면 accessError 로 보냈다.
+            return "redirect:/access-error";
+        }
+        boolean inbound = "inbound".equals(flag);
+        boolean created = boundService.create(new Bound(productId, userId, postalCode,
+                address1, address2, boundedAt, count, inbound ? 0 : 1));
+
+        String label = inbound ? "입고" : "출고";
+        model.addAttribute("message",
+                label + (created ? " 정보를 등록하였습니다." : " 정보를 등록하지 못했습니다."));
+        model.addAttribute("nextPage", inbound ? "/bound/inbound" : "/bound/outbound");
+        return "bound/result";
     }
 }

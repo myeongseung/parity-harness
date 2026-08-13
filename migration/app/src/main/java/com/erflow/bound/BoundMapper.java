@@ -40,4 +40,12 @@ public interface BoundMapper {
      * @return 전체 건수
      */
     int countBy(@Param("type") int type, @Param("search") BoundSearch search);
+
+    /**
+     * 입·출고 한 건을 넣는다.
+     *
+     * @param bound 등록할 입·출고
+     * @return 반영된 행 수
+     */
+    int insert(@Param("bound") Bound bound);
 }

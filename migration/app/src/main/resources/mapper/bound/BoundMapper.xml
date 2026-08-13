@@ -59,4 +59,18 @@
         <include refid="searchCondition"/>
     </select>
 
+    <!--
+      레거시: insert into bound_tbl values(null, ?, ?, ?, ?, ?, ?, ?, <type>)
+      위치 기반이었다(입고는 마지막이 0, 출고는 1). 컬럼명을 명시하고 type 을 값으로
+      넘겨 한 구문으로 합쳤다 — 넣는 값은 같다.
+    -->
+    <insert id="insert">
+        INSERT INTO bound_tbl
+                    (product_tbl_id, user_tbl_id, postal_code, address1, address2,
+                     bounded_at, count, type)
+             VALUES (#{bound.productId}, #{bound.userId}, #{bound.postalCode},
+                     #{bound.address1}, #{bound.address2}, #{bound.boundedAt},
+                     #{bound.count}, #{bound.type})
+    </insert>
+
 </mapper>

@@ -47,6 +47,17 @@ public class BoundService {
     }
 
     /**
+     * 입·출고 한 건을 등록한다.
+     *
+     * @param bound 등록할 입·출고
+     * @return 들어갔으면 {@code true}
+     */
+    @Transactional
+    public boolean create(Bound bound) {
+        return boundMapper.insert(bound) == 1;
+    }
+
+    /**
      * 목록 한 페이지.
      *
      * @param rows 이 페이지의 입·출고 목록

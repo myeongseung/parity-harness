@@ -137,6 +137,7 @@ SCREENS = (
     # 입·출고 — 목록 둘은 파일이 나뉘어 있다(경로도 /bound/inbound·outbound)
     _screen("bound", "inbound", "inbound", True, legacy="bound/inbound.jsp"),
     _screen("bound", "outbound", "outbound", True, legacy="bound/outbound.jsp"),
+    _screen("bound", "boundRegister", "register", True, legacy="bound/boundRegister.jsp"),
 
     # 쪽지 — 목록만 screen 테이블에 있다(읽기·쓰기·답장은 로그인만 보는 팝업)
     _screen("message", "index", "index", True, legacy="message/index.jsp"),

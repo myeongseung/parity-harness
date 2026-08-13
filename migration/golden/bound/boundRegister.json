@@ -1,0 +1,106 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "bound-boundRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/bound/boundRegister.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "제품명",
+      "detail": "text",
+      "raw": "제품명"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "productid",
+      "detail": "hidden",
+      "raw": "productId"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "제품 찾기",
+      "detail": "button",
+      "raw": "제품 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "직원 찾기",
+      "detail": "button",
+      "raw": "직원 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "우편번호",
+      "detail": "text",
+      "raw": "우편번호"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "동/읍/면",
+      "detail": "text",
+      "raw": "동/읍/면"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편번호 찾기",
+      "detail": "button",
+      "raw": "우편번호 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "도로명 주소",
+      "detail": "text",
+      "raw": "도로명 주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "수량",
+      "detail": "number",
+      "raw": "수량"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "«dyn»",
+      "detail": "submit",
+      "raw": "«dyn»"
+    }
+  ]
+}
