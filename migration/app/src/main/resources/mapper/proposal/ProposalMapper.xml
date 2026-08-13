@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/ProposalServiceImpl.java
+-->
+<mapper namespace="com.erflow.proposal.ProposalMapper">
+
+    <!--
+      레거시 결재 인박스 로직(getProposalViews):
+        select * from proposal_view
+         where (result = 3 and route like '%userId%')
+            or (original_user = userId and user_id = userId and result = ?)
+         order by id desc limit ?, ?
+
+      첫 절은 «내가 결재선에 든 진행중 결재»(상태 필터와 무관), 둘째 절은 «내가 기안한
+      결재 중 선택 상태». OR 로 묶여 함께 나온다 — 레거시 그대로다.
+    -->
+    <sql id="inbox">
+        WHERE (result = 3 AND route LIKE CONCAT('%', #{userId}, '%'))
+           OR (original_user = #{userId} AND user_id = #{userId} AND result = #{result})
+    </sql>
+
+    <select id="findPage" resultType="com.erflow.proposal.ProposalRow">
+        SELECT id,
+               document_id AS documentId,
+               subject,
+               received_at AS receivedAt
+          FROM proposal_view
+        <include refid="inbox"/>
+         ORDER BY id DESC
+         LIMIT #{start}, #{count}
+    </select>
+
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM proposal_view
+        <include refid="inbox"/>
+    </select>
+
+</mapper>

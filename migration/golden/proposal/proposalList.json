@@ -1,0 +1,162 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "proposal-proposalList",
+  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 전자결재 > 결재 리스트",
+      "detail": "",
+      "raw": "사용자 > 전자결재 > 결재 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "생성",
+      "detail": "button",
+      "raw": "생성"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "결재진행중",
+      "detail": "",
+      "raw": "결재진행중"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "승인",
+      "detail": "",
+      "raw": "승인"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "반려",
+      "detail": "",
+      "raw": "반려"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkall",
+      "detail": "checkbox",
+      "raw": "chkAll"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "번호",
+      "detail": "",
+      "raw": "번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서번호",
+      "detail": "",
+      "raw": "문서번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서제목",
+      "detail": "",
+      "raw": "문서제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서보기",
+      "detail": "",
+      "raw": "문서보기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "생성날짜",
+      "detail": "",
+      "raw": "생성날짜"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "proposalid",
+      "detail": "checkbox",
+      "raw": "proposalId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "문서 보기",
+      "detail": "proposaldocument.jsp",
+      "raw": "문서 보기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    }
+  ]
+}
