@@ -114,19 +114,26 @@ def to_route(href: str) -> str:
     가 아니라 그냥 한 단어이므로 건드리면 안 된다.
     남는 게 없으면(work/work) 도메인 루트로 보낸다. 쿼리스트링은 보존한다
     (`?flag=1` 과 `?flag=0` 은 서로 다른 메뉴다).
+
+    폴더가 두 겹인 화면(admin/user/userList)은 폴더를 순서대로 떼어낸다. 관리자
+    화면이 그렇다 — `admin/board/adminBoardList` 는 "admin" 과 "board" 를 차례로
+    떼어 `/admin/board/list` 가 된다. 규칙은 한 겹일 때와 같고 적용 횟수만 다르다.
     """
     path, _, query = href.replace(_CONTEXT, "").partition("?")
-    domain, _, screen = path.removesuffix(".jsp").partition("/")
+    folders, _, screen = path.removesuffix(".jsp").rpartition("/")
 
-    if screen.lower().startswith(domain.lower()):
-        rest = screen[len(domain):]
-        if not rest or rest[0].isupper():
-            screen = rest
+    for folder in folders.split("/"):
+        if folder and screen.lower().startswith(folder.lower()):
+            rest = screen[len(folder):]
+            if not rest or rest[0].isupper():
+                screen = rest
     if screen.lower() == "index":
         screen = ""
 
     kebab = re.sub(r"(?<!^)(?=[A-Z])", "-", screen).strip("-").lower()
-    route = f"/{domain}/{kebab}" if kebab else f"/{domain}"
+    # 최상위 화면(profile.jsp)은 폴더가 없다. 그때는 화면명이 곧 라우트다.
+    prefix = f"/{folders}" if folders else ""
+    route = f"{prefix}/{kebab}" if kebab else (prefix or "/")
 
     # `?id=<%=headerUserId%>` 처럼 값이 동적인 파라미터는 라우트에 담을 수 없다.
     # 현재 사용자는 서버가 세션에서 채운다.

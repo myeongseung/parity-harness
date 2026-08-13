@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  출처: legacy/ERFlow/src/main/java/service/implementation/UserServiceImpl.java
+        (getUserViews(keyfield, keyword, start, cnt) / getUserTotalCount(keyfield, keyword))
+
+  `<>` 는 XML 에서 그대로 쓸 수 없어 `!=` 로 적었다. MariaDB 에서 같은 연산자다.
+-->
+<mapper namespace="com.erflow.admin.user.AdminUserMapper">
+
+    <!--
+      레거시:
+        String additional = keyfield + " like ? and ";
+        "select * from user_view where " + additional + "id <> 'admin' order by dept_name, job_name limit ?, ?"
+
+      **칸 이름이 SQL 에 그대로 이어 붙는다.** 검색어는 `?` 로 묶이지만 칸 이름은
+      묶이지 않는다 — 요청 파라미터가 조건이 된다(D-054). 여기서도 `${}` 로 붙이되,
+      AdminUserSearch 가 화면이 주는 다섯 가지만 통과시킨다. 화이트리스트 밖의 값은
+      `active` 가 거짓이라 조건 자체가 붙지 않는다.
+
+      관리자를 빼는 것은 뷰가 아니라 이 조건이다. 사용자 찾기 팝업과 같다.
+    -->
+    <sql id="searchCondition">
+        WHERE
+        <if test="search.active">
+            ${search.column} LIKE #{search.keywordPattern} AND
+        </if>
+        id != 'admin'
+    </sql>
+
+    <!--
+      정렬은 부서·직급 이름순이다. 사번순도 이름순도 아니다 — 레거시 그대로 둔다.
+      한글 정렬 순서는 라이브 DB 도 general_ci 라 같다(O-005).
+    -->
+    <select id="findPage" resultType="com.erflow.admin.user.AdminUserRow">
+        SELECT id,
+               name,
+               social_number    AS socialNumber,
+               gender,
+               region,
+               dept_name        AS deptName,
+               job_name         AS jobName,
+               extension_phone  AS extensionPhone,
+               mobile_phone     AS mobilePhone,
+               email,
+               hired_at         AS hiredAt
+          FROM user_view
+        <include refid="searchCondition"/>
+         ORDER BY dept_name, job_name
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from user_view where [조건] id <> 'admin' -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM user_view
+        <include refid="searchCondition"/>
+    </select>
+
+    <!--
+      레거시 getUserView(id): select * from user_view where id = ?
+      주소 팝업이 쓰는 칸만 읽는다.
+    -->
+    <select id="findAddress" resultType="com.erflow.admin.user.AdminUserAddress">
+        SELECT name,
+               job_name    AS jobName,
+               postal_code AS postalCode,
+               address1,
+               address2
+          FROM user_view
+         WHERE id = #{id}
+    </select>
+
+</mapper>

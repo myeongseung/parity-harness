@@ -1,5 +1,6 @@
 package com.erflow.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,15 @@ public class ErflowUserDetails implements UserDetails {
 
     /** 정상 로그인한 사용자. */
     public static final String ROLE_USER = "ROLE_USER";
+
+    /**
+     * 관리자.
+     *
+     * <p>레거시 {@code PermissionController.isAdmin(session)} 이 참인 사용자다. 관리자
+     * 화면은 {@code screen} 테이블에 없어 프로그램 권한으로 막을 수 없다 — 이 권한으로
+     * {@code /admin/**} 을 막는다(D-053).
+     */
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     /**
      * 비밀번호를 바꿔야만 하는 상태.
@@ -101,8 +111,16 @@ public class ErflowUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(
-                passwordChangeRequired ? ROLE_PASSWORD_CHANGE : ROLE_USER));
+        if (passwordChangeRequired) {
+            // 비밀번호를 바꾸기 전에는 관리자라도 관리자 화면을 볼 수 없다.
+            return List.of(new SimpleGrantedAuthority(ROLE_PASSWORD_CHANGE));
+        }
+        List<GrantedAuthority> granted = new ArrayList<>();
+        granted.add(new SimpleGrantedAuthority(ROLE_USER));
+        if (admin()) {
+            granted.add(new SimpleGrantedAuthority(ROLE_ADMIN));
+        }
+        return granted;
     }
 
     @Override

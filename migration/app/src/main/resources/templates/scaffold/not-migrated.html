@@ -32,8 +32,7 @@
     <li><a th:href="@{/unit/list}">생산 설비 관리</a> <code>/unit/list</code></li>
 </ul>
 
-<form th:action="@{/login/logout-proc}" method="post">
-    <button type="submit">로그아웃</button>
-</form>
+<!--/* 로그아웃은 레거시대로 링크(GET)다. D-055 */-->
+<p><a th:href="@{/login/logout-proc}">로그아웃</a></p>
 </body>
 </html>

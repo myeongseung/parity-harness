@@ -1,0 +1,78 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-adminSide",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/adminSide.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사원 관리",
+      "detail": "",
+      "raw": "사원 관리"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "사원 리스트",
+      "detail": "/erflow/admin/user/userlist.jsp",
+      "raw": "사원 리스트"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "사원 추가",
+      "detail": "/erflow/admin/user/userregister.jsp",
+      "raw": "사원 추가"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "권한 관리",
+      "detail": "",
+      "raw": "권한 관리"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "직급 및 부서 리스트",
+      "detail": "/erflow/admin/permission/jobdeptlist.jsp",
+      "raw": "직급 및 부서 리스트"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "프로그램 리스트",
+      "detail": "/erflow/admin/permission/programlist.jsp",
+      "raw": "프로그램 리스트"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "문서 관리",
+      "detail": "",
+      "raw": "문서 관리"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "문서 양식 리스트",
+      "detail": "/erflow/admin/document/documentformlist.jsp",
+      "raw": "문서 양식 리스트"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "게시판 관리",
+      "detail": "/erflow/admin/board/adminboardlist.jsp",
+      "raw": "게시판 관리"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "게시판 관리",
+      "detail": "",
+      "raw": "게시판 관리"
+    }
+  ]
+}

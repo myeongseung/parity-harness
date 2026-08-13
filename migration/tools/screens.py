@@ -159,6 +159,23 @@ SCREENS = (
     _screen("message", "register", "register", True, legacy="message/register.jsp"),
     _screen("message", "reply", "reply", True, legacy="message/reply.jsp"),
 
+    # 관리자 — 레이아웃 조각도 화면 목록에 넣는다.
+    #
+    # 사용자 쪽 헤더·사이드메뉴는 DB 에서 오므로 `layout/` 정답(menu·header)이 본다.
+    # 관리자 쪽은 JSP 에 하드코딩돼 있어 그 정답이 닿지 않는다 — 목록에 넣지 않으면
+    # 아무도 보지 않는 마크업이 된다. 조각이라도 대조는 해야 한다.
+    Screen("adminSide", "admin", "admin/adminSide.jsp",
+           "fragments/admin-side.html", True),
+    Screen("adminHeader", "admin", "admin/adminHeader.jsp",
+           "fragments/admin-header.html", True),
+    Screen("adminFooter", "admin", "admin/adminFooter.jsp",
+           "fragments/admin-footer.html", True),
+    _screen("admin", "userList", "user/list", True, legacy="admin/user/userList.jsp"),
+    # 정답이 0건인 화면이다. 글자가 전부 «라벨 : <%=값%>» 이라 추출기가 하나도 잡지
+    # 못한다. 대조는 통과하지만 판정한 것이 없다 — 목록에는 둔다(D-056)
+    _screen("admin", "userAddress", "user/address", True,
+            legacy="admin/user/userAddress.jsp"),
+
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),
     _screen("post", "postView", "view", True),

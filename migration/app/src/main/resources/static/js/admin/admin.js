@@ -1,3 +1,8 @@
+// 관리자 공통 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/admin/admin.js
+//
+// 동작은 레거시 그대로다. 이동 주소만 새 라우트로 바꿨다(D-005).
+//   /ERFlow/admin/admin.jsp -> /admin
 document.addEventListener('DOMContentLoaded', function() {
     var mainMenus = document.querySelectorAll('.sidebar-mainmenu');
 
@@ -15,6 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 $(function() {
 	$('.logo-font2').on('click', function() {
-		document.location.href = '/ERFlow/admin/admin.jsp';
+		document.location.href = '/admin';
 	})
 })

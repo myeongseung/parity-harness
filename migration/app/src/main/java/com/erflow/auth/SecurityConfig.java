@@ -2,9 +2,11 @@ package com.erflow.auth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 /**
  * 보안 설정.
@@ -23,6 +25,12 @@ import org.springframework.security.web.SecurityFilterChain;
  * <p>비밀번호 해시({@link ErflowPasswordEncoder}), 부서·직급 비트마스크
  * ({@link Permissions}), 화면별 권한({@link ScreenAuthorizationManager}) 은 모두
  * 레거시 규칙 그대로다.
+ *
+ * <p>로그아웃도 레거시대로 <b>링크(GET)</b> 다. CSRF 를 켜면 프레임워크 기본 로그아웃이
+ * POST 만 받는데, 레거시 헤더 메뉴는 링크라 그대로 두면 404 가 된다(D-055).
+ *
+ * <p>관리자 화면({@code /admin/**})은 {@code screen} 표에 없어 프로그램 권한으로 막을 수
+ * 없다. 레거시가 화면마다 {@code isAdmin} 을 물었던 자리이므로 경로 규칙으로 막는다(D-053).
  */
 @Configuration
 public class SecurityConfig {
@@ -66,6 +74,10 @@ public class SecurityConfig {
                         // 없는 주소를 열면 레거시도 404 화면을 보여줬다
                         .requestMatchers("/not-found-error", "/internal-server-error", "/error")
                             .permitAll()
+                        // 관리자 화면은 screen 테이블에 없다. 프로그램 권한이 아니라
+                        // isAdmin 으로 지키던 자리라 경로로 막는다(D-053)
+                        .requestMatchers("/admin", "/admin/**")
+                            .hasAuthority(ErflowUserDetails.ROLE_ADMIN)
                         .anyRequest().access(screenAuthorization))
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -77,7 +89,10 @@ public class SecurityConfig {
                         .failureUrl("/login/password-error")
                         .permitAll())
                 .logout(logout -> logout
-                        .logoutUrl("/login/logout-proc")
+                        // 레거시 로그아웃은 헤더 메뉴의 «링크»다. CSRF 를 켜면 기본
+                        // 로그아웃이 POST 만 받아 그 링크가 404 가 된다(D-055)
+                        .logoutRequestMatcher(PathPatternRequestMatcher.withDefaults()
+                                .matcher(HttpMethod.GET, "/login/logout-proc"))
                         .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true))
                 // 미인가는 레거시와 같은 안내 화면으로 보낸다

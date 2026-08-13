@@ -1,0 +1,211 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-userList",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/user/userList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "관리자 > 사원 > 사원관리",
+      "detail": "",
+      "raw": "관리자 > 사원 > 사원관리"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체 조회",
+      "detail": "",
+      "raw": "전체 조회"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "주민등록번호",
+      "detail": "",
+      "raw": "주민등록번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "성별",
+      "detail": "",
+      "raw": "성별"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "내·외국인",
+      "detail": "",
+      "raw": "내·외국인"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직급",
+      "detail": "",
+      "raw": "직급"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "내선 번호",
+      "detail": "",
+      "raw": "내선 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "개인 번호",
+      "detail": "",
+      "raw": "개인 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "이메일",
+      "detail": "",
+      "raw": "이메일"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "입사일",
+      "detail": "",
+      "raw": "입사일"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "주소",
+      "detail": "",
+      "raw": "주소"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "userupdate.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "보기",
+      "detail": "javascript:",
+      "raw": "보기"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    }
+  ]
+}

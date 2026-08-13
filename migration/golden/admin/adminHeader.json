@@ -1,0 +1,36 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "admin-adminHeader",
+  "source": "../legacy/ERFlow/src/main/webapp/admin/adminHeader.jsp",
+  "signatures": [
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "/erflow/admin/admin.jsp",
+      "raw": ""
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "메인페이지",
+      "detail": "/erflow/index.jsp",
+      "raw": "메인페이지"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "메인페이지",
+      "detail": "submit",
+      "raw": "메인페이지"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "로그아웃",
+      "detail": "submit",
+      "raw": "로그아웃"
+    }
+  ]
+}
