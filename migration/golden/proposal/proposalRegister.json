@@ -1,0 +1,113 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "proposal-proposalRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 전자결재 > 결재 생성",
+      "detail": "",
+      "raw": "사용자 > 전자결재 > 결재 생성"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "userid",
+      "detail": "hidden",
+      "raw": "userId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재 문서",
+      "detail": "",
+      "raw": "결재 문서:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "문서 찾기",
+      "detail": "button",
+      "raw": "문서 찾기"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재 문서 명",
+      "detail": "",
+      "raw": "결재 문서 명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재 id",
+      "detail": "",
+      "raw": "결재 ID:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "결재라인 번호",
+      "detail": "text",
+      "raw": "결재라인 번호"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "결재라인 찾기",
+      "detail": "button",
+      "raw": "결재라인 찾기"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재 명",
+      "detail": "",
+      "raw": "결재 명:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "결재 명",
+      "detail": "text",
+      "raw": "결재 명"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결재 라인",
+      "detail": "",
+      "raw": "결재 라인:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "결재라인",
+      "detail": "text",
+      "raw": "결재라인"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "결재 등록",
+      "detail": "submit",
+      "raw": "결재 등록"
+    }
+  ]
+}

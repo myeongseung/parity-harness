@@ -39,4 +39,24 @@ public interface ProposalMapper {
      * @return 전체 건수
      */
     int countBy(@Param("userId") String userId, @Param("result") int result);
+
+    /**
+     * 결재 한 건을 넣는다. step 0·result 3(진행중)·received_at now 는 고정이다.
+     *
+     * @param documentId 문서번호
+     * @param userId 기안자 사번
+     * @param routeId 결재라인 번호
+     * @return 반영된 행 수
+     */
+    int insert(
+            @Param("documentId") long documentId,
+            @Param("userId") String userId,
+            @Param("routeId") int routeId);
+
+    /**
+     * 방금 넣은 결재의 자동 생성 id. 같은 트랜잭션에서 부른다.
+     *
+     * @return {@code LAST_INSERT_ID()}
+     */
+    long lastInsertId();
 }

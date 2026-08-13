@@ -39,4 +39,21 @@
         <include refid="inbox"/>
     </select>
 
+    <!--
+      레거시: insert into proposal_tbl values (null, ?, ?, ?, ?, 3, null, now(), null)
+      바인딩 순서는 documentId, userId, routeId, step 이다. step 0·result 3(진행중)·
+      comment/approved_at null·received_at now 는 등록 시 고정이다.
+    -->
+    <insert id="insert">
+        INSERT INTO proposal_tbl
+                    (document_tbl_id, user_tbl_id, proposal_route_tbl_id,
+                     step, result, received_at)
+             VALUES (#{documentId}, #{userId}, #{routeId}, 0, 3, NOW())
+    </insert>
+
+    <!-- 등록 뒤 문서 상세로 보낼 결재 id 를 읽는다(레거시는 문서로 조회해 첫 건). -->
+    <select id="lastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
 </mapper>

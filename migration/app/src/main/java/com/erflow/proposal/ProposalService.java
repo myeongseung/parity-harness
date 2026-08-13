@@ -50,6 +50,25 @@ public class ProposalService {
     }
 
     /**
+     * 결재를 등록한다.
+     *
+     * <p>레거시는 등록 뒤 그 문서의 결재를 조회해 첫 건의 id 로 문서 상세로 보냈다.
+     * 방금 만든 결재가 그것이므로 {@code LAST_INSERT_ID()} 로 읽는다.
+     *
+     * @param userId 기안자 사번
+     * @param documentId 문서번호
+     * @param routeId 결재라인 번호
+     * @return 만들어진 결재 id. 실패하면 0
+     */
+    @Transactional
+    public long create(String userId, long documentId, int routeId) {
+        if (proposalMapper.insert(documentId, userId, routeId) != 1) {
+            return 0;
+        }
+        return proposalMapper.lastInsertId();
+    }
+
+    /**
      * 결재 리스트 한 페이지.
      *
      * @param rows 이 페이지의 결재 목록
