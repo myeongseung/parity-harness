@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
  * proposalList.jsp      GET  /proposal/list
  * proposalRegister.jsp  GET  /proposal/register
  * proposalRegisterProc  POST /proposal/register-proc
+ * proposalDocument.jsp  GET  /proposal/document?proposalId=
+ * proposalDocumentProc  POST /proposal/document-proc
  * </pre>
  *
  * <p>결재라인 관리({@link ProposalRouteController})와 같은 {@code /proposal} 아래지만
- * 프로그램(권한)이 다르다. 문서 상세·승인/반려는 다음 단계에서 붙인다.
+ * 프로그램(권한)이 다르다.
  */
 @Controller
 public class ProposalController {
@@ -103,6 +105,64 @@ public class ProposalController {
         model.addAttribute("nextPage", created > 0
                 ? "/proposal/document?proposalId=" + created
                 : "/proposal/register");
+        return "proposal/route-result";
+    }
+
+    /**
+     * 문서 상세.
+     *
+     * <p>결재 스탬프 표와 문서 내용, 결재 의견을 함께 보여준다. 결재할 수 있는 상태면
+     * 의견 입력과 승인·반려 버튼이 딸려 나온다.
+     *
+     * @param proposalId 결재번호
+     * @param model 뷰 모델
+     * @return 문서 상세 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @GetMapping("/proposal/document")
+    public String document(@RequestParam(required = false) Long proposalId, Model model) {
+        ProposalDocument document =
+                proposalId == null ? null : proposalService.document(proposalId);
+        if (document == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("document", document);
+        return "proposal/document";
+    }
+
+    /**
+     * 승인/반려 처리.
+     *
+     * <p>레거시 {@code proposalDocumentProc.jsp} 를 옮겼다. 어느 쪽이든 결재 리스트로
+     * 돌아간다. 안내 문구도 레거시 그대로다 — 마지막 차례가 아닌 승인이
+     * «결재완료하였습니다», 마지막 차례의 승인이 «결재하였습니다» 로, 뜻이 뒤집혀
+     * 보이지만 손대지 않는다.
+     *
+     * <p>레거시는 {@code result} 가 <b>없으면</b> 잘못된 접근 화면으로 보내고,
+     * <b>비어 있으면</b> 500 으로 죽었다. 죽는 쪽은 옮기지 않고 둘 다 잘못된 접근으로
+     * 본다(D-033 과 같은 판단).
+     *
+     * @param proposalId 결재번호
+     * @param result 승인이면 {@code confirm}, 반려면 {@code reject}
+     * @param comment 결재 의견
+     * @param model 뷰 모델
+     * @return 결과 템플릿. 대상이 없으면 잘못된 접근 화면
+     */
+    @PostMapping("/proposal/document-proc")
+    public String documentProc(
+            @RequestParam(required = false) Long proposalId,
+            @RequestParam(required = false) String result,
+            @RequestParam(required = false) String comment,
+            Model model) {
+
+        if (proposalId == null || result == null || result.isBlank()) {
+            return "redirect:/access-error";
+        }
+        String message = proposalService.decide(proposalId, result, comment);
+        if (message == null) {
+            return "redirect:/access-error";
+        }
+        model.addAttribute("message", message);
+        model.addAttribute("nextPage", "/proposal/list");
         return "proposal/route-result";
     }
 }

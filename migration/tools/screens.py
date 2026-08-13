@@ -150,6 +150,8 @@ SCREENS = (
     _screen("proposal", "proposalList", "list", True, legacy="proposal/proposalList.jsp"),
     _screen("proposal", "proposalRegister", "register", True,
             legacy="proposal/proposalRegister.jsp"),
+    _screen("proposal", "proposalDocument", "document", True,
+            legacy="proposal/proposalDocument.jsp"),
 
     # 쪽지 — 목록만 screen 테이블에 있다(읽기·쓰기·답장은 로그인만 보는 팝업)
     _screen("message", "index", "index", True, legacy="message/index.jsp"),

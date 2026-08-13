@@ -51,7 +51,9 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico")
+                        // /res 는 글꼴이다. 결재 도장 글꼴을 CSS 가 불러온다
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/res/**",
+                                "/favicon.ico")
                             .permitAll()
                         .requestMatchers("/login", "/login/password-error", "/login/find-password")
                             .permitAll()

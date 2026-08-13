@@ -1,0 +1,99 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 6,
+  "screen": "proposal-proposalDocument",
+  "source": "../legacy/ERFlow/src/main/webapp/proposal/proposalDocument.jsp",
+  "signatures": [
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결 재 라 인",
+      "detail": "",
+      "raw": "결 재 라 인"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "담당",
+      "detail": "",
+      "raw": "담당"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "검토",
+      "detail": "",
+      "raw": "검토"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "승인",
+      "detail": "",
+      "raw": "승인"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결재자",
+      "detail": "",
+      "raw": "결재자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "코멘트",
+      "detail": "",
+      "raw": "코멘트"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "proposalid",
+      "detail": "hidden",
+      "raw": "proposalId"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "step",
+      "detail": "hidden",
+      "raw": "step"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "코멘트",
+      "detail": "",
+      "raw": "코멘트"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "with textarea",
+      "detail": "",
+      "raw": "With textarea"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "result",
+      "detail": "hidden",
+      "raw": "result"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "승인",
+      "detail": "button",
+      "raw": "승인"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "반려",
+      "detail": "button",
+      "raw": "반려"
+    }
+  ]
+}

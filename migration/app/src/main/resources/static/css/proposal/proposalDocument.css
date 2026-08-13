@@ -2,7 +2,7 @@
   font-family: 'Stamp';
   font-style: normal;
   font-weight: 400;
-  src: url('/ERFlow/res/font/stamp.ttf') format('truetype');
+  src: url('/res/font/stamp.ttf') format('truetype');
 }
 
 .proposal-insert-wrap {
