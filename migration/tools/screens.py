@@ -140,6 +140,10 @@ SCREENS = (
     _screen("bound", "boundRegister", "register", True, legacy="bound/boundRegister.jsp"),
     _screen("bound", "boundUpdate", "update", True, legacy="bound/boundUpdate.jsp"),
 
+    # 전자결재 — 결재라인(route) + 결재(proposal) 두 갈래
+    _screen("proposal", "proposalRouteList", "route-list", True,
+            legacy="proposal/proposalRouteList.jsp"),
+
     # 쪽지 — 목록만 screen 테이블에 있다(읽기·쓰기·답장은 로그인만 보는 팝업)
     _screen("message", "index", "index", True, legacy="message/index.jsp"),
     _screen("message", "read", "read", True, legacy="message/read.jsp"),

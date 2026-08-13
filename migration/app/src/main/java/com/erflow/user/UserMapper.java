@@ -49,4 +49,15 @@ public interface UserMapper {
      * @return 이름. 없으면 {@code null}
      */
     String findUserName(@Param("id") String id);
+
+    /**
+     * 한 사용자의 부서·직급·이름.
+     *
+     * <p>레거시 {@code getUserView(id)} 가 쓰던 것이다 — 결재라인이 사번을 «[부서/직급]
+     * 이름(사번)» 으로 풀 때 쓴다.
+     *
+     * @param id 사번
+     * @return 사용자. 없으면 {@code null}
+     */
+    UserRow findUserView(@Param("id") String id);
 }

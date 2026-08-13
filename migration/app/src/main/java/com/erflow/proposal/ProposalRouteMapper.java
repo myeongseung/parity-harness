@@ -22,4 +22,28 @@ public interface ProposalRouteMapper {
      * @return 결재라인 목록. 번호 순이다
      */
     List<ProposalRouteRow> findByUser(@Param("userId") String userId);
+
+    /**
+     * 내 결재라인을 검색·페이지 단위로 조회한다.
+     *
+     * @param userId 사번
+     * @param search 검색 조건
+     * @param start 조회 시작 위치
+     * @param count 가져올 건수
+     * @return 결재라인 목록(가공 전)
+     */
+    List<ProposalRouteListRow> findPage(
+            @Param("userId") String userId,
+            @Param("search") ProposalRouteSearch search,
+            @Param("start") int start,
+            @Param("count") int count);
+
+    /**
+     * 검색 조건에 걸리는 내 결재라인 수.
+     *
+     * @param userId 사번
+     * @param search 검색 조건
+     * @return 전체 건수
+     */
+    int countBy(@Param("userId") String userId, @Param("search") ProposalRouteSearch search);
 }

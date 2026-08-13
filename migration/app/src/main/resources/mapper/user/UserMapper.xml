@@ -59,4 +59,14 @@
          WHERE id = #{id}
     </select>
 
+    <!-- 레거시 getUserView(id): select * from user_view where id = ? -->
+    <select id="findUserView" resultType="com.erflow.user.UserRow">
+        SELECT dept_name AS deptName,
+               job_name  AS jobName,
+               id,
+               name
+          FROM user_view
+         WHERE id = #{id}
+    </select>
+
 </mapper>

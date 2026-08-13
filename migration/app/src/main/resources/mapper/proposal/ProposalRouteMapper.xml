@@ -25,4 +25,37 @@
          LIMIT 0, 1000
     </select>
 
+    <!--
+      레거시 검색 분기(getProposalRoutes / getProposalRoutesCount)
+        id    where id = ?        (정확 일치)
+        route where route like ?
+      항상 user_id = ? 가 함께 걸린다(내 결재라인만).
+    -->
+    <sql id="searchCondition">
+        <if test="search != null and search.active">
+            <choose>
+                <when test="search.id">AND id = #{search.idValue}</when>
+                <when test="search.route">AND route LIKE #{search.routePattern}</when>
+            </choose>
+        </if>
+    </sql>
+
+    <!-- 레거시: select * from proposal_route_view where [조건 and] user_id = ? order by id limit ?, ? -->
+    <select id="findPage" resultType="com.erflow.proposal.ProposalRouteListRow">
+        SELECT id, nickname, route, created_at AS createdAt
+          FROM proposal_route_view
+         WHERE user_id = #{userId}
+        <include refid="searchCondition"/>
+         ORDER BY id
+         LIMIT #{start}, #{count}
+    </select>
+
+    <!-- 레거시: select count(*) from proposal_route_view where [조건 and] user_id = ? -->
+    <select id="countBy" resultType="int">
+        SELECT COUNT(*)
+          FROM proposal_route_view
+         WHERE user_id = #{userId}
+        <include refid="searchCondition"/>
+    </select>
+
 </mapper>
