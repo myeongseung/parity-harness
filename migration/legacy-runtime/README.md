@@ -17,7 +17,7 @@ Gradle 이 원본을 읽어 `build/patched-src` 로 복사하면서 DB 접속 �
 복사를 건너뛰고, 접속 대상을 바꿨는데도 예전 스키마를 보는 WAR 가 나온다. 실제로 한 번
 당했다 — 그런 WAR 로 비교하면 무엇을 비교했는지 알 수 없다.
 
-## 빌드
+## 띄우기
 
 ```bash
 cd migration/legacy-runtime
@@ -26,8 +26,26 @@ export ERFLOW_LEGACY_DB_URL="호스트:포트/스키마"
 export ERFLOW_LEGACY_DB_USER="..."
 export ERFLOW_LEGACY_DB_PASSWORD="..."
 
-./gradlew war          # build/libs/ERFlow.war
+./gradlew deployLegacy       # 통을 받고 + WAR 를 만들고 + 올린다
+CATALINA_HOME=$PWD/tomcat tomcat/bin/catalina.bat run
 ```
+
+`deployLegacy` 가 하는 일은 셋이다.
+
+| | |
+|---|---|
+| `fetchTomcat` | Tomcat 9 를 받아 `tomcat/` 에 편다. 포트도 옮긴다 |
+| `war` | 레거시 소스에 접속 정보를 채워 `build/libs/ERFlow.war` 를 만든다 |
+| (복사) | 그 WAR 를 `tomcat/webapps/` 에 올린다 |
+
+**통은 커밋하지 않는다.** 14MB 짜리 바이너리라 git 에 넣을 것이 아니고, 그래서 새로
+받은 작업 공간에는 언제나 없다. 없으면 `fetchTomcat` 이 받아 온다 — «레거시를 띄우자»
+가 «먼저 Tomcat 을 받으세요» 로 바뀌는 자리를 없애기 위해서다. 이미 있으면 건너뛴다.
+
+자리를 잡았는지는 폴더가 있는지가 아니라 `conf/server.xml` 이 있는지로 본다. 폴더
+유무로 보면 한 번 실패해 빈 폴더가 남았을 때 영영 건너뛴다 — 실제로 그렇게 당했다.
+
+WAR 만 필요하면 `./gradlew war` 다.
 
 의존성은 `WEB-INF/lib` 이 비어 있어 소스의 `import` 로 역추적했다 — Gson, JavaMail,
 commons-fileupload, MySQL 커넥터 넷뿐이다.
@@ -36,14 +54,18 @@ commons-fileupload, MySQL 커넥터 넷뿐이다.
 JDK 를 쓰면 설치를 하나만 두면 되고 Tomcat 9 도 21 위에서 돈다. 레거시 코드는 17 문법을
 넘지 않으므로 결과가 같다. 이 프로젝트에서 레거시는 *비교 대상*이지 운영 배포물이 아니다.
 
-## 실행
+## 알아둘 것
 
-Tomcat 9 를 받아 WAR 를 올린다. 신규 앱(18080)과 겹치지 않게 포트를 옮긴다.
+포트는 신규 앱(18080)과 겹치지 않게 옮겨 둔다. `fetchTomcat` 이 `conf/server.xml` 에서
+`8080 -> 19090`, `8005 -> 19005`, `8009 -> 19009` 로 바꾼다.
 
-```
-conf/server.xml   8080 -> 19090,  8005 -> 19005,  8009 -> 19009
-webapps/          ERFlow.war
-```
+| | |
+|---|---|
+| 레거시 | http://localhost:19090/ERFlow/login/login.jsp |
+| 신규 | http://localhost:18080/login |
+
+Tomcat 10 이상으로 못 올린다. 레거시가 `javax.servlet` 을 쓰는데 10 부터
+`jakarta.servlet` 이다.
 
 Windows 에서는 `catalina.bat` 을 쓴다. `catalina.sh` 는 `CATALINA_HOME` 에 콜론(`C:`)이
 있으면 실행을 거부한다.

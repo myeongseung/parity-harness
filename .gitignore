@@ -42,6 +42,11 @@ Thumbs.db
 migration/legacy-runtime/.gradle/
 migration/legacy-runtime/build/
 
+# Tomcat 설치본. 14MB 짜리 바이너리라 커밋하지 않는다.
+# 대신 `./gradlew tomcat` 이 없으면 받아서 자리를 잡아 준다 — 사람이 매번
+# 같은 자리에서 막히지 않도록.
+migration/legacy-runtime/tomcat/
+
 ### 레거시 DB 덤프 — 개인정보가 있어 커밋하지 않는다 ###
 # 사용자 55명의 이름·주민등록번호·주소·휴대전화·이메일이 들어 있다.
 # 이관에 필요한 권한 프로그램 20건은 migration/tools/extract_programs.py 가
