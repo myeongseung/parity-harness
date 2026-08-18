@@ -11,7 +11,7 @@
   칸이 «참고항목» 이며 직원 찾기가 find-user 다. 라벨 for 값도 레거시 그대로다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:with="isInbound=${flag == 'inbound'}">
-<head th:replace="~{fragments/head :: head(${isInbound ? '입고수정 페이지' : '출고수정 페이지'}, ${ {'/css/main/boundRegister.css'} }, ${ {'/js/main/bound.js','/js/datepicker.js'} })}">
+<head th:replace="~{fragments/head :: head(${isInbound ? '입고수정 페이지' : '출고수정 페이지'}, ${ {'http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/bootcss/bootstrap.css', '/css/common/common.css', '/css/main/aside.css', '/css/main/header.css', '/css/main/boundRegister.css'} }, ${ {'/js/main/bound.js','/js/datepicker.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

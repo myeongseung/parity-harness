@@ -9,7 +9,7 @@
   registerProc 로 넘어가던 것을 POST /task/register 로 받는다(CSRF 켜짐, D-013).
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:with="isSell=${flag == 'sell'}">
-<head th:replace="~{fragments/head :: head(${isSell ? '수주 등록 페이지' : '발주 등록 페이지'}, ${ {'/css/main/taskRegister.css'} }, ${ {'/js/main/task.js','/js/datepicker.js'} })}">
+<head th:replace="~{fragments/head :: head(${isSell ? '수주 등록 페이지' : '발주 등록 페이지'}, ${ {'/css/bootcss/bootstrap.css', '/css/jquery-ui.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/taskRegister.css'} }, ${ {'/js/main/task.js','/js/datepicker.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

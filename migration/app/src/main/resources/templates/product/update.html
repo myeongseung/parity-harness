@@ -9,7 +9,7 @@
   제품 ID 는 고칠 수 없다(기본키). 고치면 다른 제품이 되므로 readonly 다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('제품 수정 페이지', ${ {'/css/main/productRegister.css'} }, ${ {} })}">
+<head th:replace="~{fragments/head :: head('제품 수정 페이지', ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/bootcss/bootstrap.css', '/css/common/common.css', '/css/main/aside.css', '/css/main/header.css', '/css/main/productRegister.css'} }, ${ {} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

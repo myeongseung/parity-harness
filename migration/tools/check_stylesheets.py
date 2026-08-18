@@ -29,7 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from screens import MIGRATED, TEMPLATES  # noqa: E402
 
-_LINK = re.compile(r'<link[^>]+href="([^"]+\.css)"', re.I)
+#: `href="..."` 와 `th:href="@{...}"` 를 함께 읽는다. 신규 템플릿은 뒤쪽 모양이다.
+_LINK = re.compile(r'<link[^>]+href="@?\{?([^"}]+\.css)\}?"', re.I)
 _FRAGMENT = re.compile(r"~\{fragments/head\s*::\s*head\(([^)]*)\)\}", re.S)
 
 #: 공용 `fragments/head` 가 고정으로 싣는 목록. 순서까지 그대로다.
@@ -47,14 +48,14 @@ def legacy_sheets(path: Path) -> list[str]:
 def new_sheets(path: Path) -> list[str]:
     """신규 템플릿이 싣는 목록.
 
-    공용 조각을 쓰면 그 고정 목록이 앞에 붙고 화면이 넘긴 것이 뒤에 붙는다.
+    공용 조각을 쓰면 화면이 넘긴 목록이 곧 전부다 — 조각은 고정 목록을 갖지 않는다.
     """
     text = path.read_text(encoding="utf-8", errors="replace")
     fragment = _FRAGMENT.search(text)
     if not fragment:
         return [u.split("/")[-1] for u in _LINK.findall(text)]
-    page = [u.split("/")[-1] for u in re.findall(r"'(/css/[^']+\.css)'", fragment.group(1))]
-    return list(_SHARED) + page
+    return [u.split("/")[-1]
+            for u in re.findall(r"'((?:/css/|https?://)[^']+\.css)'", fragment.group(1))]
 
 
 def main() -> int:
@@ -64,8 +65,8 @@ def main() -> int:
         template = TEMPLATES / screen.template
         if not screen.legacy_file.exists() or not template.exists():
             continue
-        before = [s for s in legacy_sheets(screen.legacy_file) if not s.startswith("all.min")]
-        after = [s for s in new_sheets(template) if not s.startswith("all.min")]
+        before = legacy_sheets(screen.legacy_file)
+        after = new_sheets(template)
         if before == after:
             same += 1
             continue

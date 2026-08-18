@@ -10,7 +10,7 @@
   숨은 type 은 삭제 처리가 돌아갈 목록을 고르는 데 쓴다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('원재료 관리 페이지', ${ {'/css/main/product.css'} }, ${ {'/js/main/product.js'} })}">
+<head th:replace="~{fragments/head :: head('원재료 관리 페이지', ${ {'/css/bootcss/bootstrap.css', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/bootcss/bootstrap.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/product.css'} }, ${ {'/js/main/product.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

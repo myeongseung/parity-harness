@@ -11,7 +11,7 @@
   placeholder 가 라벨이 된다. 맞추면 게이트가 어긋난다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:with="isInbound=${flag == 'inbound'}">
-<head th:replace="~{fragments/head :: head(${isInbound ? '입고 등록 페이지' : '출고 등록 페이지'}, ${ {'/css/main/boundRegister.css'} }, ${ {'/js/main/bound.js','/js/datepicker.js'} })}">
+<head th:replace="~{fragments/head :: head(${isInbound ? '입고 등록 페이지' : '출고 등록 페이지'}, ${ {'/css/bootcss/bootstrap.css', '/css/jquery-ui.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/boundRegister.css'} }, ${ {'/js/main/bound.js','/js/datepicker.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

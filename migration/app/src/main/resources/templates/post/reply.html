@@ -7,7 +7,7 @@
   (D-032), 제목 입력에 placeholder 가 없다. 없는 것을 붙이지 않는다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('답변 등록', ${ {'/css/post/postRegister.css'} }, ${ {'/js/post/postReply.js'} })}">
+<head th:replace="~{fragments/head :: head('답변 등록', ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/index.css', '/css/main/aside.css', '/css/bootcss/bootstrap.css', '/css/post/postRegister.css'} }, ${ {'/js/post/postReply.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

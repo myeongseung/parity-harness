@@ -10,7 +10,7 @@
   모든 갈래가 들어 있다. th:if 도 같아서 템플릿끼리 견주면 짝이 맞는다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(${post.subject}, ${ {'/css/post/postView.css'} }, ${ {'/js/post/postView.js'} })}">
+<head th:replace="~{fragments/head :: head(${post.subject}, ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/index.css', '/css/main/aside.css', '/css/bootcss/bootstrap.css', '/css/post/postView.css'} }, ${ {'/js/post/postView.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>
