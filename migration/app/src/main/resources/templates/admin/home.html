@@ -105,7 +105,7 @@
                                     <tr th:each="task : ${tasks}">
                                         <td th:text="${task.userName}">등록인</td>
                                         <td th:text="${task.typeLabel()}">수주</td>
-                                        <td th:text="${task.createdAt}">요청일</td>
+                                        <td th:text="${task.createdAtLabel}">요청일</td>
                                         <td th:text="${task.statusLabel()}">상태</td>
                                     </tr>
                                 </table>
@@ -130,7 +130,8 @@
                                         <td><a th:href="@{/post/view(boardId=1,id=${row.post.id})}"
                                                style="text-decoration: none;"
                                                th:text="${row.post.subject}">제목</a></td>
-                                        <td class="notification-date" th:text="${row.post.createdAt}">작성일</td>
+                                        <td class="notification-date"
+                                            th:text="${#temporals.format(row.post.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성일</td>
                                     </tr>
                                     </tbody>
                                 </table>

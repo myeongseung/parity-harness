@@ -41,10 +41,17 @@ public class LoginController {
     /**
      * 로그인 화면.
      *
-     * @return 로그인 템플릿
+     * <p>이미 로그인한 사람은 화면을 보지 못하고 되돌아간다 — 관리자는 관리자 화면으로,
+     * 나머지는 메인으로. 레거시가 화면 맨 위에서 그렇게 갈랐다(D-090).
+     *
+     * @param user 로그인 사용자. 로그인 전이면 {@code null}
+     * @return 로그인 템플릿, 또는 되돌아갈 곳
      */
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(@AuthenticationPrincipal ErflowUserDetails user) {
+        if (user != null && !user.passwordChangeRequired()) {
+            return user.admin() ? "redirect:/admin" : "redirect:/index";
+        }
         return "login/login";
     }
 

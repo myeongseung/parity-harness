@@ -24,6 +24,19 @@ public record TaskRow(
         int status) {
 
     /**
+     * 화면에 찍히는 문서 제목.
+     *
+     * <p>문서가 딸리지 않은 수·발주가 있다. 레거시는 그 자리를 {@code <%=subject%>}
+     * 로 찍으므로 <b>«null» 이라는 네 글자가 화면에 뜬다</b>(D-089). 빈칸이 아니라
+     * 글자다 — 그대로 옮긴다.
+     *
+     * @return 제목. 없으면 «null»
+     */
+    public String subjectLabel() {
+        return String.valueOf(subject);
+    }
+
+    /**
      * 화면에 찍히는 상태 글자.
      *
      * @return 레거시 {@code TaskRepository.getTaskStatusCode(status)} 와 같은 값

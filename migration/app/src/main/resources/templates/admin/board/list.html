@@ -190,7 +190,7 @@
                                        th:text="${row.post.subject}">제목</a></td>
                                 <td><a th:href="@{/profile(id=${row.post.userId})}"
                                        th:text="${row.post.name}">작성자</a></td>
-                                <td th:text="${row.post.createdAt}">작성날짜</td>
+                                <td th:text="${#temporals.format(row.post.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성날짜</td>
                                 <td th:text="${row.post.count}">0</td>
                                 <td th:text="${row.commentCount}">0</td>
                             </tr>

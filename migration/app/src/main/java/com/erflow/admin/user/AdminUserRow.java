@@ -1,5 +1,7 @@
 package com.erflow.admin.user;
 
+import com.erflow.common.LegacyDates;
+
 /**
  * 사원 리스트 한 줄. {@code user_view} 한 행 중 표가 찍는 칸.
  *
@@ -30,4 +32,16 @@ public record AdminUserRow(
         String mobilePhone,
         String email,
         String hiredAt) {
+
+    /**
+     * 화면에 찍히는 입사일.
+     *
+     * <p>레거시는 «2004년 10월 01일» 로 보여준다. JSP 는 값을 그대로 찍고
+     * {@code ResultSetExtractHelper} 가 미리 바꿔 둔다(D-088).
+     *
+     * @return 한글 날짜
+     */
+    public String hiredAtLabel() {
+        return LegacyDates.korean(hiredAt);
+    }
 }

@@ -7,6 +7,14 @@
 두 앱을 띄워 같은 계정으로 로그인하고, 같은 화면을 받아 표 내용을 견준다.
 레거시가 살아 있어야 성립하는 검증이다.
 
+견줄 화면은 **대조표(`03-screen-map.md`)에서 뽑는다.** 손으로 적으면 화면이 늘 때마다
+어긋난다. 표로 볼 수 없는 화면(게시글 보기·글쓰기)만 여기 따로 적는다.
+
+이 도구가 실제로 잡은 것: 날짜 형식 넷(D-088), «null» 글자(D-089), 로그인 화면
+되돌리기(D-090). 셋 다 정합성 게이트가 원리상 통과시키는 자리다.
+
+**권한이 넉넉한 계정으로 돌려야 의미가 있다.** 권한이 없으면 «양쪽 다 막힘» 만 쌓인다.
+
 준비
     1. 레거시  migration/legacy-runtime 에서 WAR 를 만들어 Tomcat 에 올린다
     2. 신규    migration/app 에서 bootRun
@@ -27,36 +35,89 @@ exit code 는 게이트 규약을 따른다(0 PASS / 1 FAIL / 2 ERROR).
 
 from __future__ import annotations
 
+import html
 import http.cookiejar
 import os
+import pathlib
 import re
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 
+MAP = pathlib.Path(__file__).resolve().parents[1] / "design" / "03-screen-map.md"
+
 LEGACY = os.environ.get("ERFLOW_LEGACY_BASE", "http://localhost:19090/ERFlow")
 NEW = os.environ.get("ERFLOW_NEW_BASE", "http://localhost:18080")
 
-#: (이름, 레거시 경로, 신규 경로, 비교 방식)
+#: 표로 견줄 수 없는 화면. 손으로 적는다.
 #:
 #: 방식이 여럿인 이유가 있다. 목록 화면은 표를 견주면 되지만, 게시글 보기는 표가
 #: 아니다. 값이 <div> 에 흩어져 있어 표 비교로는 아무것도 잡지 못한다.
-SCREENS = (
-    ("생산 설비 관리", "/unit/unitList.jsp", "/unit/list", "rows"),
-    ("사용자 찾기 팝업", "/findUser.jsp", "/find/user", "rows"),
-    ("사용자 찾기 팝업 (한 명)", "/findEachUser.jsp", "/find/each-user", "rows"),
-    # 검색어를 비운 채 누른 것으로 열어야 표가 나온다. 파라미터가 없으면 도움말이다
-    ("여러 제품 찾기 팝업", "/findMultiProduct.jsp?search=", "/find/multi-product?search=", "rows"),
-    ("협력업체 관리 (구매)", "/company/companyList.jsp?flag=1", "/company/list?flag=1", "rows"),
-    ("협력업체 관리 (영업)", "/company/companyList.jsp?flag=0", "/company/list?flag=0", "rows"),
-    ("게시판 목록", "/post/boardList.jsp", "/post/board-list", "rows"),
-    ("게시글 목록 (공지사항)", "/post/postList.jsp?boardId=1", "/post/list?boardId=1", "rows"),
-    ("게시글 목록 (자유게시판)", "/post/postList.jsp?boardId=2", "/post/list?boardId=2", "rows"),
+SPECIAL = (
     ("게시글 보기", "/post/postView.jsp?boardId=2&id={post}", "/post/view?boardId=2&id={post}", "blocks"),
     ("글쓰기", "/post/postRegister.jsp?boardId=2", "/post/register?boardId=2", "readonly"),
     ("답변쓰기", "/post/postReply.jsp?boardId=2&postId={post}", "/post/reply?boardId=2&postId={post}", "readonly"),
+    # 검색어를 비운 채 눌러야 표가 나온다. 파라미터가 없으면 도움말 화면이다
+    ("여러 제품 찾기 팝업", "/findMultiProduct.jsp?search=", "/find/multi-product?search=", "rows"),
+    ("게시글 목록 (공지사항)", "/post/postList.jsp?boardId=1", "/post/list?boardId=1", "rows"),
+    ("게시글 목록 (자유게시판)", "/post/postList.jsp?boardId=2", "/post/list?boardId=2", "rows"),
 )
+
+#: 위에서 따로 다루므로 대조표에서 뽑을 때 빼는 경로.
+_HANDLED = {"/post/view", "/post/register", "/post/reply",
+            "/find/multi-product", "/post/list"}
+
+#: 순서가 정해지지 않은 화면과 그 이유.
+#:
+#: 레거시 SQL 이 `order by dept_name, job_name` 인데 그 둘이 같은 사람이 여럿 있다.
+#: 동순위의 순서는 DB 가 정하지 않으므로 같은 질의도 실행마다 달라질 수 있다 —
+#: **레거시끼리도 달라진다.** 우리가 정렬을 하나 더 붙이면 레거시와 다른 SQL 이 된다.
+#:
+#: 그래서 «줄의 내용이 같고 순서만 다르면» 결함이 아니라고 본다. 내용이 다르면
+#: 그대로 FAIL 이다 — 이 예외가 진짜 차이를 덮지 않는다(D-091).
+UNORDERED = {
+    "/admin/user/list": "레거시 정렬 키(부서·직급)가 동순위를 가리지 못한다(D-091)",
+}
+
+#: 대조에서 뺄 화면과 그 이유. **조용히 빼지 않는다** — 돌릴 때마다 이유를 찍는다.
+SKIPPED = {
+    "/login": "이미 로그인한 채로는 열리지 않는다(D-090)",
+    "/login/change-password": "비밀번호를 바꿔야 하는 상태에서만 열린다",
+    "/login/find-password": "여는 것이 아니라 «보내기» 가 code_tbl 에 행을 남긴다",
+    "/message/read": "여는 것만으로 «읽음» 이 된다",
+}
+
+
+def screens_from_map():
+    """대조표에서 «표로 견줄 화면» 을 뽑는다.
+
+    손으로 적으면 화면이 늘 때마다 어긋난다. 대조표는
+    `build_screen_map.py` 가 화면 목록에서 만들고, 여기서는 그것을 읽기만 한다 —
+    목록이 두 군데 있으면 어긋난다는 규칙이 여기에도 적용된다.
+
+    파라미터가 있어야 열리는 화면(`?id=`)은 대조표에 주소가 없으므로 자연히 빠진다.
+    """
+    pattern = re.compile(r"\| (\S+)[^|]*\| `/ERFlow([^`]+)` \| `(/[^`]*)` \|")
+    found = []
+    for line in MAP.read_text(encoding="utf-8").splitlines():
+        matched = pattern.match(line)
+        if not matched:
+            continue
+        label, legacy_path, new_path = matched.groups()
+        if not legacy_path.split("?", 1)[0].endswith((".jsp", ".html")):
+            # «화면이 아닌 대조» 절의 JSON 창구다. 표가 없다.
+            continue
+        base = new_path.split("?", 1)[0]
+        if base in _HANDLED or base in SKIPPED:
+            continue
+        if base.endswith(("update", "view", "address")):
+            # 고칠 대상(`?id=`)을 지정하지 않으면 열리지 않는다. 갈래(`?flag=`)만
+            # 붙여도 마찬가지다 — 목록에서 눌러 들어가는 화면이다.
+            continue
+        found.append((label, legacy_path, new_path, "rows"))
+    return tuple(found)
+
 
 #: 조회수를 올리지 않게 만드는 쿠키 값. 어떤 글 번호와도 겹치지 않으면 된다.
 #: D-029 의 뒤집힌 조건 때문에 "이미 본 목록에 없는 글"은 세지 않는다.
@@ -134,8 +195,13 @@ def login(client, base: str, path: str, account: str, password: str, csrf: bool)
 
 
 def _text(chunk: str) -> str:
-    """태그를 걷어내고 공백을 하나로 줄인다."""
-    bare = _TAG.sub(" ", chunk).replace("&nbsp;", " ").replace("&gt;", ">").replace("&lt;", "<")
+    """태그를 걷어내고 공백을 하나로 줄인다.
+
+    문자 참조는 푼다. 브라우저가 그리는 글자를 견주는 도구이므로 `&#91;` 와 `[` 는
+    같은 것이다 — 풀지 않으면 실체 참조를 쓴 자리마다 없던 차이가 보고된다.
+    메인 화면의 «[댓글수]» 가 그랬다.
+    """
+    bare = html.unescape(_TAG.sub(" ", chunk))
     return " ".join(bare.split())
 
 
@@ -350,13 +416,25 @@ def main() -> int:
 
     ids = probe_ids(legacy)
     worst = 0
-    for label, legacy_path, new_path, mode in SCREENS:
+    screens = screens_from_map() + SPECIAL
+    for path, reason in sorted(SKIPPED.items()):
+        print(f"  SKIP  {path}: {reason}")
+    for label, legacy_path, new_path, mode in screens:
         legacy_path = legacy_path.format(**ids)
         new_path = new_path.format(**ids)
         read = {"rows": table_rows, "blocks": blocks, "readonly": readonly_values}[mode]
         try:
             legacy_html, legacy_denied = fetch_or_denial(legacy, LEGACY + legacy_path)
             new_html, new_denied = fetch_or_denial(new, NEW + new_path)
+        except urllib.error.HTTPError as e:
+            if e.code == 500:
+                # 레거시가 파라미터 없이는 그 자리에서 죽는다. 목록에서 눌러
+                # 들어가는 화면이며, 이 도구로는 볼 것이 없다.
+                print(f"  SKIP  {label}: 레거시가 파라미터 없이는 죽는다(500)")
+                continue
+            print(f"  ERROR {label}: {e}")
+            worst = max(worst, 2)
+            continue
         except OSError as e:
             print(f"  ERROR {label}: {e}")
             worst = max(worst, 2)
@@ -373,6 +451,11 @@ def main() -> int:
 
         before, after = read(legacy_html), read(new_html)
 
+        if not before and not after:
+            # 폼 화면·안내 화면처럼 표가 없는 자리다. 이 도구로는 볼 것이 없다 —
+            # «틀렸다» 가 아니라 «못 봤다» 이므로 조용히 넘기지 말고 그렇게 적는다.
+            print(f"  SKIP  {label}: 표가 없어 이 도구로는 못 본다")
+            continue
         if not before:
             print(f"  ERROR {label}: 레거시에서 내용을 읽지 못했다")
             worst = max(worst, 2)
@@ -389,7 +472,11 @@ def main() -> int:
         mismatched = [
             (index, a, b) for index, (a, b) in enumerate(zip(before, after)) if a != b
         ]
-        if mismatched:
+        reason = UNORDERED.get(new_path.split("?", 1)[0])
+        if mismatched and reason and sorted(before) == sorted(after):
+            # 같은 줄이 자리만 바뀌었다. 내용이 다르면 아래로 내려가 FAIL 이 된다.
+            print(f"  KNOWN {label}: 순서만 다름 — {reason}")
+        elif mismatched:
             print(f"  FAIL  {label}: {len(mismatched)}/{len(before)}행 다름")
             for index, a, b in mismatched[:3]:
                 print(f"          [{index}] 레거시 {a}")
