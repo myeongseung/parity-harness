@@ -87,9 +87,12 @@
 
 | 화면 | 레거시 | 신규 |
 |---|---|---|
-| company/list | `/ERFlow/company/companyList.jsp` | `/company/list` |
-| company/register | `/ERFlow/company/companyRegister.jsp` | `/company/register` |
-| company/update | `/ERFlow/company/companyUpdate.jsp` | `/company/update` |
+| company/list (`flag=1`) | `/ERFlow/company/companyList.jsp?flag=1` | `/company/list?flag=1` |
+| company/list (`flag=0`) | `/ERFlow/company/companyList.jsp?flag=0` | `/company/list?flag=0` |
+| company/register (`flag=1`) | `/ERFlow/company/companyRegister.jsp?flag=1` | `/company/register?flag=1` |
+| company/register (`flag=0`) | `/ERFlow/company/companyRegister.jsp?flag=0` | `/company/register?flag=0` |
+| company/update (`flag=1`) | `/ERFlow/company/companyUpdate.jsp?flag=1` | `/company/update?flag=1` |
+| company/update (`flag=0`) | `/ERFlow/company/companyUpdate.jsp?flag=0` | `/company/update?flag=0` |
 
 ## 제품
 
@@ -115,9 +118,11 @@
 |---|---|---|
 | task/history-modal | `/ERFlow/task/createModal.jsp` | — 수·발주 목록에서 «이력» 을 누르면 뜬다 |
 | task/purchase-task | `/ERFlow/task/purchaseTask.jsp` | `/task/purchase-task` |
-| task/register | `/ERFlow/task/taskRegister.jsp` | `/task/register` |
+| task/register (`flag=sell`) | `/ERFlow/task/taskRegister.jsp?flag=sell` | `/task/register?flag=sell` |
+| task/register (`flag=purchase`) | `/ERFlow/task/taskRegister.jsp?flag=purchase` | `/task/register?flag=purchase` |
 | task/sell-task | `/ERFlow/task/sellTask.jsp` | `/task/sell-task` |
-| task/update | `/ERFlow/task/taskUpdate.jsp` | `/task/update` |
+| task/update (`flag=sell`) | `/ERFlow/task/taskUpdate.jsp?flag=sell` | `/task/update?flag=sell` |
+| task/update (`flag=purchase`) | `/ERFlow/task/taskUpdate.jsp?flag=purchase` | `/task/update?flag=purchase` |
 
 ## 입·출고
 
@@ -125,8 +130,10 @@
 |---|---|---|
 | bound/inbound | `/ERFlow/bound/inbound.jsp` | `/bound/inbound` |
 | bound/outbound | `/ERFlow/bound/outbound.jsp` | `/bound/outbound` |
-| bound/register | `/ERFlow/bound/boundRegister.jsp` | `/bound/register` |
-| bound/update | `/ERFlow/bound/boundUpdate.jsp` | `/bound/update` |
+| bound/register (`flag=inbound`) | `/ERFlow/bound/boundRegister.jsp?flag=inbound` | `/bound/register?flag=inbound` |
+| bound/register (`flag=outbound`) | `/ERFlow/bound/boundRegister.jsp?flag=outbound` | `/bound/register?flag=outbound` |
+| bound/update (`flag=inbound`) | `/ERFlow/bound/boundUpdate.jsp?flag=inbound` | `/bound/update?flag=inbound` |
+| bound/update (`flag=outbound`) | `/ERFlow/bound/boundUpdate.jsp?flag=outbound` | `/bound/update?flag=outbound` |
 
 ## 찾기 팝업
 
@@ -194,4 +201,4 @@
 
 **로그인하지 않고 열면 세 화면은 404 가 뜬다.** `passwordCheck`, `findProposalRoute`, 그리고 `profile` 의 날짜 오류 경로다. 레거시가 안내 화면을 한 칸 위에서 찾는다 — 신규는 제대로 보내므로 여기서만 다르다(D-087).
 
-**한 화면이 파라미터로 갈리는 곳이 있다.** 협력업체 관리는 `?flag=1` 이 구매, `?flag=0` 이 영업이고 요구 권한도 다르다.
+**한 화면이 파라미터로 갈리는 곳이 있다.** 위 표에 갈래마다 한 줄씩 적어 두었다. 파라미터를 빼고 열면 **어느 갈래에도 걸리지 않아 막힌다** — 없는 화면이 아니라 갈래를 못 고른 것이다(D-016).

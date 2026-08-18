@@ -13,13 +13,14 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from screens import ROOT, SCREENS, TEMPLATES, Screen  # noqa: E402
+from screens import ROOT, SCREENS, SEED, TEMPLATES, Screen  # noqa: E402
 
 APP = ROOT / "migration" / "app" / "src" / "main" / "java" / "com" / "erflow"
 OUT = ROOT / "migration" / "design" / "03-screen-map.md"
@@ -114,6 +115,27 @@ def routes_by_view() -> dict[str, str]:
     return found
 
 
+def required_params() -> dict[str, list[tuple[str, str]]]:
+    """«주소 -> 붙여야 하는 파라미터» 를 `screen` 표에서 읽는다.
+
+    한 주소가 파라미터로 권한이 갈리는 화면이 있다. 협력업체 관리는 `flag=1` 이 구매,
+    `flag=0` 이 영업이고 요구 권한이 다르다.
+
+    **파라미터 없이 열면 막힌다.** 갈림 규칙이 있는데 어느 것에도 걸리지 않으면
+    거절하기 때문이다(`ScreenAuthorizationManager`). 그래서 대조표에 주소만 적으면
+    그대로 따라간 사람이 «권한이 없거나 존재하지 않는 페이지» 를 본다 — 실제로 그랬다.
+
+    판정에 쓰는 것과 같은 자료를 본다. 손으로 적으면 어긋난다.
+    """
+    seed = json.loads(SEED.read_text(encoding="utf-8"))
+    found: dict[str, list[tuple[str, str]]] = {}
+    for row in seed["screens"]:
+        if row.get("param_name"):
+            found.setdefault(row["route"], []).append(
+                (row["param_name"], row["param_value"]))
+    return found
+
+
 def group_of(screen: Screen) -> str:
     for key, _ in GROUPS:
         if screen.domain == key:
@@ -123,6 +145,7 @@ def group_of(screen: Screen) -> str:
 
 def main() -> int:
     by_view = routes_by_view()
+    params = required_params()
     unknown = 0
     lines: list[str] = []
 
@@ -154,16 +177,28 @@ def main() -> int:
         lines.append("|---|---|---|")
         for screen in sorted(rows, key=lambda s: s.template):
             manual = MANUAL.get(screen.template)
+            route = None
             if manual is not None:
                 route, note = manual
                 new = f"`{route}`" if route else f"— {note}"
             elif screen.template in by_view:
-                new = f"`{by_view[screen.template]}`"
+                route = by_view[screen.template]
+                new = f"`{route}`"
             else:
                 new = "**?**"
                 unknown += 1
-            lines.append(
-                f"| {screen.label} | `{LEGACY_BASE}/{screen.legacy}` | {new} |")
+
+            variants = params.get(route or "", [])
+            if not variants:
+                lines.append(
+                    f"| {screen.label} | `{LEGACY_BASE}/{screen.legacy}` | {new} |")
+                continue
+            # 파라미터로 갈리는 화면은 갈래마다 한 줄씩. 붙이지 않으면 막힌다.
+            for name, value in variants:
+                lines.append(
+                    f"| {screen.label} (`{name}={value}`) "
+                    f"| `{LEGACY_BASE}/{screen.legacy}?{name}={value}` "
+                    f"| `{route}?{name}={value}` |")
         lines.append("")
 
     lines.append("## 화면이 아닌 대조")
@@ -187,8 +222,9 @@ def main() -> int:
                  "레거시가 안내 화면을 한 칸 위에서 찾는다 — 신규는 제대로 "
                  "보내므로 여기서만 다르다(D-087).")
     lines.append("")
-    lines.append("**한 화면이 파라미터로 갈리는 곳이 있다.** 협력업체 관리는 "
-                 "`?flag=1` 이 구매, `?flag=0` 이 영업이고 요구 권한도 다르다.")
+    lines.append("**한 화면이 파라미터로 갈리는 곳이 있다.** 위 표에 갈래마다 한 줄씩 "
+                 "적어 두었다. 파라미터를 빼고 열면 **어느 갈래에도 걸리지 않아 "
+                 "막힌다** — 없는 화면이 아니라 갈래를 못 고른 것이다(D-016).")
     lines.append("")
 
     if unknown:
