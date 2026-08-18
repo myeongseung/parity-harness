@@ -1,0 +1,160 @@
+"""가동 중인 두 앱의 화면을 **그려서** 견준다.
+
+`compare_live.py` 는 표에 찍히는 글자를 본다. 그것으로는 <b>어디에 놓였는지</b>를 못
+본다 — 글자가 같아도 배치가 다를 수 있다. 실제로 그렇게 놓쳤다(D-092): 관리자 게시판
+관리 화면이 레거시에서는 좌우 2단인데 신규는 세로로 쌓여 있었고, 게이트도 글자 대조도
+전부 통과했다.
+
+레거시는 여는 태그와 닫는 태그를 교차해 쓴다. 브라우저는 그것을 나름의 규칙으로
+바로잡아 트리를 만든다 — **그 트리가 기준이다**(D-037). 파이썬 파서는 브라우저와 다르게
+바로잡으므로 원문을 아무리 견줘도 이 차이가 보이지 않는다. 그려 봐야 보인다.
+
+준비
+    1. 두 앱을 띄운다(compare_live.py 와 같다)
+    2. Chrome 이 있어야 한다. 없으면 건너뛴다
+
+환경변수
+    ERFLOW_TEST_ID / ERFLOW_TEST_PASSWORD   비교에 쓸 계정
+    ERFLOW_CHROME                           크롬 경로. 없으면 흔한 자리를 찾는다
+
+사용법::
+
+    python migration/tools/compare_render.py
+
+exit code 는 게이트 규약을 따른다(0 PASS / 1 FAIL / 2 ERROR).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import os
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+
+from compare_live import (  # noqa: E402
+    LEGACY, NEW, login, opener, screens_from_map, set_cookie, _NO_COUNT_COOKIE,
+)
+
+#: 크롬이 흔히 놓이는 자리.
+_CHROME_GUESSES = (
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+    "/usr/bin/google-chrome",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+)
+
+#: 그릴 창 크기. 좌우 2단이 접히지 않을 만큼 넓어야 한다.
+_WINDOW = "1600,1300"
+
+
+def find_chrome() -> str | None:
+    named = os.environ.get("ERFLOW_CHROME")
+    if named and pathlib.Path(named).exists():
+        return named
+    for guess in _CHROME_GUESSES:
+        if pathlib.Path(guess).exists():
+            return guess
+    return shutil.which("google-chrome") or shutil.which("chromium")
+
+
+def with_base(html: str, base: str) -> str:
+    """`<base>` 를 심어 상대 경로가 원래 서버를 가리키게 한다.
+
+    화면을 파일로 저장해 여는데, 그대로 두면 CSS 와 그림이 붙지 않아 아무것도
+    아닌 차이가 생긴다. 경로를 하나하나 고치는 것보다 `<base>` 가 확실하다.
+    """
+    return re.sub(r"(<head[^>]*>)", r"\1<base href=" + f'"{base}">', html, count=1)
+
+
+def shot(chrome: str, page: pathlib.Path, image: pathlib.Path) -> bool:
+    url = "file:///" + str(page).replace("\\", "/")
+    subprocess.run(
+        [chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+         f"--window-size={_WINDOW}", "--virtual-time-budget=8000",
+         f"--screenshot={image}", url],
+        capture_output=True, timeout=120)
+    return image.exists() and image.stat().st_size > 0
+
+
+def digest(path: pathlib.Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main() -> int:
+    account = os.environ.get("ERFLOW_TEST_ID")
+    password = os.environ.get("ERFLOW_TEST_PASSWORD")
+    if not account or not password:
+        print("ERROR 환경변수 필요: ERFLOW_TEST_ID, ERFLOW_TEST_PASSWORD", file=sys.stderr)
+        return 2
+
+    chrome = find_chrome()
+    if not chrome:
+        print("SKIP  크롬을 찾지 못했다. ERFLOW_CHROME 으로 경로를 준다")
+        return 0
+
+    legacy, new = opener(), opener()
+    login(legacy, LEGACY, "/login/Login", account, password, csrf=False)
+    login(new, NEW, "/login", account, password, csrf=True)
+    for client in (legacy, new):
+        set_cookie(client, "postId", _NO_COUNT_COOKIE)
+
+    work = pathlib.Path(tempfile.mkdtemp(prefix="erflow-render-"))
+    same = differ = skipped = 0
+
+    for label, legacy_path, new_path, _mode in screens_from_map():
+        pages = {}
+        for side, client, root, path in (
+                ("legacy", legacy, LEGACY, legacy_path), ("new", new, NEW, new_path)):
+            try:
+                with client.open(root + path, None, timeout=30) as response:
+                    html = response.read().decode("utf-8", errors="replace")
+            except OSError:
+                pages = {}
+                break
+            # `<base>` 는 그 화면이 있던 폴더를 가리켜야 한다.
+            folder = (root + path).split("?", 1)[0].rsplit("/", 1)[0] + "/"
+            page = work / f"{side}.html"
+            page.write_text(with_base(html, folder), encoding="utf-8")
+            pages[side] = page
+
+        if len(pages) != 2:
+            skipped += 1
+            print(f"  SKIP  {label}: 화면을 받지 못했다")
+            continue
+
+        images = {}
+        for side, page in pages.items():
+            image = work / f"{side}.png"
+            image.unlink(missing_ok=True)
+            if not shot(chrome, page, image):
+                images = {}
+                break
+            images[side] = image
+        if len(images) != 2:
+            skipped += 1
+            print(f"  SKIP  {label}: 그리지 못했다")
+            continue
+
+        if digest(images["legacy"]) == digest(images["new"]):
+            same += 1
+            print(f"  PASS  {label}: 화면이 같다")
+        else:
+            differ += 1
+            kept = work / f"{label.replace('/', '-')}"
+            for side, image in images.items():
+                shutil.copy(image, f"{kept}-{side}.png")
+            print(f"  FAIL  {label}: 화면이 다르다 — {kept}-legacy.png / -new.png")
+
+    print(f"\n같음 {same} / 다름 {differ} / 못 봄 {skipped}")
+    print(f"그림: {work}")
+    return 1 if differ else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
