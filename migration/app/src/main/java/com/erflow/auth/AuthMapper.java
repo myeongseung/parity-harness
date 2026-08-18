@@ -36,6 +36,18 @@ public interface AuthMapper {
     List<ScreenAccess> findScreenAccess(@Param("route") String route);
 
     /**
+     * 프로그램 코드로 요구 권한을 읽는다.
+     *
+     * <p>경로가 아니라 <b>코드</b>로 묻는 자리가 하나 있다. 부서 일정 만들기는 화면이
+     * 아니라 {@code CalendarController} 안에 프로그램 코드가 박혀 있어 {@code screen}
+     * 표로 닿지 않는다.
+     *
+     * @param programId 프로그램 코드
+     * @return 요구 권한. 권한 행이 없으면 0 이 되어 아무도 통과하지 못한다
+     */
+    ScreenAccess findProgramAccess(@Param("programId") String programId);
+
+    /**
      * 비밀번호를 바꾼다.
      *
      * @param id 사번

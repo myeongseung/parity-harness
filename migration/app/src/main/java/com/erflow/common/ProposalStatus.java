@@ -1,4 +1,4 @@
-package com.erflow.admin.home;
+package com.erflow.common;
 
 import java.util.Map;
 
@@ -14,6 +14,8 @@ import java.util.Map;
  * 2  반려          #EA7B86
  * 3  결재 진행 중   #FFFF40
  * </pre>
+ *
+ * <p>대시보드와 메인 화면이 함께 쓴다. 코드표를 두 벌 두면 한쪽만 고쳐진다.
  *
  * <p>상태 0 은 색이 따로 없어 기본색으로 남는다. 결재 화면에서 «내 차례가 끝났다» 를
  * 뜻하는 값인데(D-051) 여기서는 «결재 대기 중» 으로 읽힌다 — 레거시 그대로다.

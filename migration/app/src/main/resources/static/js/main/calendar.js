@@ -1,3 +1,9 @@
+/*
+ * 레거시 대비 바뀐 것은 주소뿐이다.
+ *   /ERFlow/calendar/*  ->  /calendar/*
+ *
+ * CSRF 토큰은 js/common/csrf.js 가 모든 ajax 에 붙여 준다(D-086).
+ */
 function mapEvent(eventData) {
 	var color;
 	switch (eventData.type) {
@@ -78,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	$.ajax({
 		type: "get",
-		url: "/ERFlow/calendar/view",
+		url: "/calendar/view",
 		dataType: "json",
 		success: function(data) {
 			console.log(data);
@@ -104,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (confirm('이 이벤트를 삭제하시겠습니까?')) {
 			$.ajax({
 				type: "post",
-				url: "/ERFlow/calendar/delete",
+				url: "/calendar/delete",
 				data: JSON.stringify({
 					eventId: deleteEventId,
 					userId: deleteUserId
@@ -152,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (confirm('이 이벤트를 변경하시겠습니까?')) {
 				$.ajax({
 					type: "post",
-					url: "/ERFlow/calendar/update",
+					url: "/calendar/update",
 					data: JSON.stringify({
 						eventId: updateEventId,
 						userId: updateUserId,

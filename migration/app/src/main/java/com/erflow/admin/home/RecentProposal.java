@@ -1,5 +1,7 @@
 package com.erflow.admin.home;
 
+import com.erflow.common.ProposalStatus;
+
 /**
  * 대시보드 «결재» 칸 한 줄. {@code recent_proposal_view} 한 행.
  *

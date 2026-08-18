@@ -238,6 +238,10 @@ SCREENS = (
     _screen("product", "productUpdate", "update", True,
             legacy="product/productUpdate.jsp"),
 
+    # 메인 — 위젯 넷과 달력. 레이아웃 조각인 footer 도 여기서만 쓰인다
+    Screen("index", "index", "index.jsp", "index.html", True),
+    Screen("footer", "index", "footer.jsp", "fragments/footer.html", True),
+
     # 프로필 — 레거시는 최상위에 있다. 보기 화면은 남의 것도 열리고, 수정으로
     # 들어가는 길목에만 비밀번호를 다시 묻는다
     _screen("profile", "profile", "view", True, legacy="profile.jsp"),

@@ -1,14 +1,15 @@
 package com.erflow.common;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * 레거시 안내 화면과, 아직 옮기지 않은 화면의 임시 발판.
+ * 레거시 안내 화면.
  *
  * <p>레거시는 화면마다 {@code response.sendRedirect("../permissionError.jsp")} 처럼
  * 안내 화면으로 보냈다. 도메인마다 필요하므로 공통으로 둔다.
+ *
+ * <p>이관 전 화면을 대신하던 발판은 더 없다. 마지막 둘이 프로필과 메인이었다.
  */
 @Controller
 public class ErrorPageController {
@@ -54,17 +55,5 @@ public class ErrorPageController {
     @GetMapping("/internal-server-error")
     public String internalServerError() {
         return "error/internal-server-error";
-    }
-
-    /**
-     * 홈. 레거시 {@code index.jsp} 가 이관되면 이 매핑을 지운다.
-     *
-     * @param model 뷰 모델
-     * @return 이관 전 안내 발판
-     */
-    @GetMapping("/index")
-    public String index(Model model) {
-        model.addAttribute("screenName", "메인");
-        return "scaffold/not-migrated";
     }
 }

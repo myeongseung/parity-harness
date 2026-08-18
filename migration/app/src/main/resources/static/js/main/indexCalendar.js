@@ -1,3 +1,9 @@
+/*
+ * 레거시 대비 바뀐 것은 주소뿐이다.
+ *   /ERFlow/calendar/*  ->  /calendar/*
+ *
+ * CSRF 토큰은 js/common/csrf.js 가 모든 ajax 에 붙여 준다(D-086).
+ */
 $(function() {
 	function formatDateToYYYYMMDDHHMMSS(date) {
 		// 날짜 포맷을 YYYY-MM-DD hh:mm:ss로 변경
@@ -48,7 +54,7 @@ $(function() {
 		if (flag) {
 			// Ajax 호출로 서버에 데이터 전송
 			$.ajax({
-				url: "/ERFlow/calendar/insert",
+				url: "/calendar/insert",
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify({

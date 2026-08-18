@@ -1,0 +1,36 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 8,
+  "screen": "index-footer",
+  "source": "legacy/ERFlow/src/main/webapp/footer.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "47340 부산광역시 부산진구 엄광로 176 (가야동)",
+      "detail": "",
+      "raw": "47340 부산광역시 부산진구 엄광로 176 (가야동)"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "tel : 051-890-2414, 051-890-2419 fax : 0502-600-9396",
+      "detail": "",
+      "raw": "Tel : 051-890-2414, 051-890-2419 Fax : 0502-600-9396"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "copyrightc 2021 dong-eui university all rights reserved.",
+      "detail": "",
+      "raw": "Copyrightⓒ 2021 Dong-eui University All Rights Reserved."
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "본 사이트는 '자바기반 iot 융합서비스 개발자' 훈련과정을 이수하는 2기생들(b팀)이 만든 사이트입니다.",
+      "detail": "",
+      "raw": "본 사이트는 '자바기반 IoT 융합서비스 개발자' 훈련과정을 이수하는 2기생들(B팀)이 만든 사이트입니다."
+    }
+  ]
+}

@@ -1,0 +1,498 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 8,
+  "screen": "index-index",
+  "source": "legacy/ERFlow/src/main/webapp/index.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "widget",
+      "label": "공지사항",
+      "detail": "widget",
+      "raw": "공지사항"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "post/postlist.jsp",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "번호",
+      "detail": "",
+      "raw": "번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성자",
+      "detail": "",
+      "raw": "작성자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성일",
+      "detail": "",
+      "raw": "작성일"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "조회수",
+      "detail": "",
+      "raw": "조회수"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "post/postview.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "widget",
+      "label": "전자결재",
+      "detail": "widget",
+      "raw": "전자결재"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "proposal/proposallist.jsp",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결재 번호",
+      "detail": "",
+      "raw": "결재 번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서 상세",
+      "detail": "",
+      "raw": "문서 상세"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결재 상태",
+      "detail": "",
+      "raw": "결재 상태"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "도착 시각",
+      "detail": "",
+      "raw": "도착 시각"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "문서 보기",
+      "detail": "proposal/proposaldocument.jsp",
+      "raw": "문서 보기"
+    },
+    {
+      "kind": "control",
+      "role": "widget",
+      "label": "자유게시판",
+      "detail": "widget",
+      "raw": "자유게시판"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "post/postlist.jsp",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "번호",
+      "detail": "",
+      "raw": "번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성자",
+      "detail": "",
+      "raw": "작성자"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "작성일",
+      "detail": "",
+      "raw": "작성일"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "조회수",
+      "detail": "",
+      "raw": "조회수"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "post/postview.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "widget",
+      "label": "받은 쪽지함",
+      "detail": "widget",
+      "raw": "받은 쪽지함"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "message/index.jsp",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "번호",
+      "detail": "",
+      "raw": "번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "보낸이",
+      "detail": "",
+      "raw": "보낸이"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "내용",
+      "detail": "",
+      "raw": "내용"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "수신 시각",
+      "detail": "",
+      "raw": "수신 시각"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "message/read.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "widget",
+      "label": "일정관리",
+      "detail": "widget",
+      "raw": "일정관리"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "",
+      "detail": "http://localhost:5501/index.html",
+      "raw": ""
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "일정 정하기 시작일 종료일 개인일정 부서일정 전체일정 제목 내용 설정 취소",
+      "detail": "",
+      "raw": "일정 정하기 시작일 종료일 개인일정 부서일정 전체일정 제목 내용 설정 취소"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "userid",
+      "detail": "hidden",
+      "raw": "userId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "일정 정하기",
+      "detail": "",
+      "raw": "일정 정하기"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "close",
+      "detail": "button",
+      "raw": "Close"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "시작일",
+      "detail": "",
+      "raw": "시작일"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "datetime-local",
+      "raw": ""
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "종료일",
+      "detail": "",
+      "raw": "종료일"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "datetime-local",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "개인일정",
+      "detail": "",
+      "raw": "개인일정"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "부서일정",
+      "detail": "",
+      "raw": "부서일정"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체일정",
+      "detail": "",
+      "raw": "전체일정"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "text",
+      "raw": ""
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "내용",
+      "detail": "",
+      "raw": "내용"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "text",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "설정",
+      "detail": "button",
+      "raw": "설정"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "취소",
+      "detail": "button",
+      "raw": "취소"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "수정",
+      "detail": "button",
+      "raw": "수정"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "button",
+      "raw": "삭제"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "×",
+      "detail": "",
+      "raw": "×"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사번",
+      "detail": "",
+      "raw": "사번"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "userid",
+      "detail": "text",
+      "raw": "userId"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "modaltitle",
+      "detail": "text",
+      "raw": "modalTitle"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "내용",
+      "detail": "",
+      "raw": "내용"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "modalcontent",
+      "detail": "text",
+      "raw": "modalContent"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "시작",
+      "detail": "",
+      "raw": "시작"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "modalstartdate",
+      "detail": "datetime-local",
+      "raw": "modalStartDate"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "종료",
+      "detail": "",
+      "raw": "종료"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "modalenddate",
+      "detail": "datetime-local",
+      "raw": "modalEndDate"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "calendar-type",
+      "detail": "",
+      "raw": "calendar-type"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "개인일정",
+      "detail": "",
+      "raw": "개인일정"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "부서일정",
+      "detail": "",
+      "raw": "부서일정"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체일정",
+      "detail": "",
+      "raw": "전체일정"
+    }
+  ]
+}

@@ -11,6 +11,12 @@
 <head th:fragment="head(title, pageCss, pageJs)" xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--/*
+      JSON 을 보내는 ajax 가 실어 보낼 CSRF 토큰. form 은 Thymeleaf 가 알아서
+      hidden 입력을 넣지만 ajax 는 form 이 아니다(D-086).
+    */-->
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
     <title th:text="${title}">ERFlow</title>
 
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -28,6 +34,7 @@
     <link rel="stylesheet" th:each="css : ${pageCss}" th:href="@{${css}}">
 
     <script th:src="@{/js/bootjs/bootstrap.js}"></script>
+    <script th:src="@{/js/common/csrf.js}"></script>
     <script th:src="@{/js/main/index.js}"></script>
     <script th:each="js : ${pageJs}" th:src="@{${js}}"></script>
 </head>
