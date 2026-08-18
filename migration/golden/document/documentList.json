@@ -1,0 +1,204 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "document-documentList",
+  "source": "../legacy/ERFlow/src/main/webapp/document/documentList.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 문서 관리 > 문서 리스트",
+      "detail": "",
+      "raw": "사용자 > 문서 관리 > 문서 리스트"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "삭제",
+      "detail": "button",
+      "raw": "삭제"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "추가",
+      "detail": "button",
+      "raw": "추가"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체조회",
+      "detail": "",
+      "raw": "전체조회"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "문서id",
+      "detail": "",
+      "raw": "문서ID"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "문서명",
+      "detail": "",
+      "raw": "문서명"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "양식명",
+      "detail": "",
+      "raw": "양식명"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "chkall",
+      "detail": "checkbox",
+      "raw": "chkAll"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서번호",
+      "detail": "",
+      "raw": "문서번호"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "양식명",
+      "detail": "",
+      "raw": "양식명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "생성시각",
+      "detail": "",
+      "raw": "생성시각"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "수정시각",
+      "detail": "",
+      "raw": "수정시각"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "문서 상태",
+      "detail": "",
+      "raw": "문서 상태"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "결재 상태",
+      "detail": "",
+      "raw": "결재 상태"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "docid",
+      "detail": "checkbox",
+      "raw": "docId"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "documentregister.jsp",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    }
+  ]
+}

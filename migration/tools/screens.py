@@ -213,6 +213,12 @@ SCREENS = (
     _screen("admin", "userAddress", "user/address", True,
             legacy="admin/user/userAddress.jsp"),
 
+    # 문서 — 결재에 올릴 서식. 목록은 내 문서만 보이고 작성은 양식을 골라 쓴다
+    _screen("document", "documentList", "list", True,
+            legacy="document/documentList.jsp"),
+    _screen("document", "documentRegister", "register", True,
+            legacy="document/documentRegister.jsp"),
+
     # 공정 — 앞뒤로 이어진 사슬. 수정은 이름만 고치는 작은 창이다
     _screen("process", "processList", "list", True, legacy="process/processList.jsp"),
     _screen("process", "processRegister", "register", True,

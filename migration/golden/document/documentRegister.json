@@ -1,0 +1,113 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 7,
+  "screen": "document-documentRegister",
+  "source": "../legacy/ERFlow/src/main/webapp/document/documentRegister.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 문서 관리 > 기안 작성",
+      "detail": "",
+      "raw": "사용자 > 문서 관리 > 기안 작성"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "양식분류",
+      "detail": "",
+      "raw": "양식분류"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "templateid",
+      "detail": "",
+      "raw": "templateId"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "빈 문서",
+      "detail": "",
+      "raw": "빈 문서"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "제목",
+      "detail": "",
+      "raw": "제목"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "subject",
+      "detail": "text",
+      "raw": "subject"
+    },
+    {
+      "kind": "control",
+      "role": "textarea",
+      "label": "content",
+      "detail": "",
+      "raw": "content"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "확인",
+      "detail": "submit",
+      "raw": "확인"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "다시입력",
+      "detail": "reset",
+      "raw": "다시입력"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "flag",
+      "detail": "hidden",
+      "raw": "flag"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "template",
+      "detail": "hidden",
+      "raw": "template"
+    }
+  ]
+}

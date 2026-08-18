@@ -1,3 +1,8 @@
+// 문서 목록 스크립트.
+// 출처: legacy/ERFlow/src/main/webapp/js/main/documentList.js
+//
+// 동작은 레거시 그대로다. 이동 주소만 새 라우트로 바꿨다(D-005).
+//   documentRegister.jsp -> /document/register
 $(function() {
 	$('#delete-button').on('click', function() {
 		if ($('[name=docId]:checked').length == 0) {
@@ -8,7 +13,7 @@ $(function() {
 	});
 	
 	$('#register-button').on("click", function() {
-		document.location.href = 'documentRegister.jsp'; 
+		document.location.href = '/document/register'; 
 	});
 	
 	$('#chkAll').on('click', function() {
