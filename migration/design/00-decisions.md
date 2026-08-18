@@ -2613,6 +2613,45 @@ KNOWN 으로 넘기고, 내용이 다르면 그대로 FAIL 이다 — 예외가 
 
 ---
 
+## D-094 · CSRF 토큰이 form 맨 앞에 붙어 순번을 밀었다
+
+생산 설비 등록 화면에서 «관리자ID» 와 «문서ID» 의 생김새가 서로 바뀌어 있었다.
+레거시는 문서ID 칸이 좁고 그 옆에 «문서 선택» 버튼이 붙는데, 신규는 관리자ID 칸이
+좁아졌다. **마크업은 글자까지 같았다.**
+
+CSS 가 위치로 요소를 고르기 때문이다.
+
+```css
+.form-group:nth-child(3)>[type="text"] { width: 80%; }
+```
+
+`th:action` 을 쓰면 Thymeleaf 가 CSRF 토큰을 **form 의 맨 앞 자식**으로 끼워 넣는다.
+그러면 세 번째가 문서ID 가 아니라 관리자ID 가 된다 — 한 칸씩 밀린다.
+
+**결정:** 이 화면만 `th:action` 대신 `action` 을 쓰고 토큰을 손으로 **맨 뒤**에 넣는다.
+앞쪽 순번이 지켜진다.
+
+```html
+<form action="/unit/register" method="post" name="unitFrm">
+  ...
+  <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+</form>
+```
+
+이름을 `th:name="${_csrf.parameterName}"` 로 쓰면 안 된다. 추출기가 이름을 «dyn» 으로
+보아 allowlist 의 `control:hidden|_csrf|hidden` 과 어긋나고, 이미 허용해 둔 것이
+발명으로 잡힌다. Spring 의 기본 이름을 글자로 적는다.
+
+**한 화면만 고친다.** 위치로 고르는 규칙이 있는 CSS 는 `unitRegister.css` 하나뿐이다 —
+나머지는 `:last-child` 이거나(드롭다운), `:nth-child(n)` 이라 전부에 걸리거나,
+`table-striped:nth-child(1)` 처럼 점이 빠져 아무것도 고르지 못한다. 다 뒤집으면 고치는
+자리보다 건드리는 자리가 많아진다.
+
+**게이트가 이 자리를 새로 보게 됐다.** 자동으로 붙던 토큰은 템플릿 원문에 없어 대조
+대상이 아니었는데, 손으로 적으니 보인다. allowlist 에 이미 있던 항목이라 통과한다.
+
+---
+
 ## 미결 (사람 판단 필요)
 
 | ID | 안건 | 상태 |
@@ -2628,7 +2667,7 @@ KNOWN 으로 넘기고, 내용이 다르면 그대로 FAIL 이다 — 예외가 
 | O-010 | 게시글 본문이 `th:utext` 로 나간다. 레거시 `out.print(content)` 와 같다 — 저장된 HTML 이 그대로 실행된다 | 이관 후 결정 |
 | O-008 | `index.jsp` / `admin.jsp` 이관 전이라 로그인 후 갈 곳이 발판 화면이다 | ✅ **해소** — 둘 다 이관됐다. 발판(`scaffold/`)은 지웠다 |
 | O-015 | CSS 목록·순서가 87화면 중 76화면에서 달랐다 | ✅ **해소** — 조각이 화면에서 목록을 통째로 받게 바꿨다. 87화면 전부 일치(D-093) |
-| O-014 | 실화면 그림 대조에서 13화면이 다르다. 확인된 원인 둘 — 검색창이 한 덩어리로 묶이지 않는다(`post/board-list`), 사이드 메뉴의 현재 항목이 굵게·밑줄로 표시되지 않는다. 나머지는 아직 분류하지 않았다 (D-092) | 분류 필요 |
+| O-014 | 실화면 그림 대조에서 다른 화면이 **10건** 남았다. 고친 것 — CSS 순서(D-093)로 `post/board-list`·`admin/document/form-list`, `nth-child` 밀림(D-094)으로 `unit/register`, 애니메이션 오탐 제거로 `error/not-found-error`. 남은 것: `message/index`, `proposal/document`, `product/register`, `task/*` 넷, `bound/register` 둘, `admin/user/list`(D-091 동순위라 예상됨) | 분류 중 |
 | O-013 | 공정 삭제가 부르는 저장 프로시저 `DeleteProcess` 를 볼 수 없다. 복제 스키마에 없고 계정에 루틴 조회 권한도 없다. 운영 DB 에 있는지, 있다면 무엇을 하는지 확인 필요 (D-073) | 확인 필요 |
 | O-012 | 사원 리스트가 **주민등록번호를 그대로 보여준다**. 관리자만 볼 수 있지만 가리지 않는다. 레거시 그대로 옮겼다 — 마스킹은 화면에 보이는 글자를 바꾸는 일이라 이관이 아니다 | 이관 후 결정 |
 | O-011 | 비밀번호 찾기의 «send» 를 받을 곳이 없다. 메일 발송(`SendMailServlet`)은 SMTP 자격증명과 인증 토큰 발급이 딸려 있어 범위 밖으로 두었다. 성공 화면 `login/sendOk.html` 도 그래서 이관 전이다 | 범위 판단 필요 |

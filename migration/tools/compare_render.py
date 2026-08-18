@@ -63,13 +63,25 @@ def find_chrome() -> str | None:
     return shutil.which("google-chrome") or shutil.which("chromium")
 
 
-def with_base(html: str, base: str) -> str:
-    """`<base>` 를 심어 상대 경로가 원래 서버를 가리키게 한다.
+#: 애니메이션을 멈추는 스타일.
+#:
+#: 그림을 찍는 순간이 조금만 달라도 «움직이는 중» 인 요소가 다른 자리에 잡힌다.
+#: 404 화면의 브라우저 그림이 `transition: transform .5s` 로 기울어지는데, 그 때문에
+#: 한쪽은 기울고 한쪽은 반듯한 그림이 나와 «다르다» 로 보고됐다 — 오탐이다.
+_FREEZE = ("<style>*,*::before,*::after{animation:none !important;"
+           "transition:none !important;caret-color:transparent !important}</style>")
 
-    화면을 파일로 저장해 여는데, 그대로 두면 CSS 와 그림이 붙지 않아 아무것도
-    아닌 차이가 생긴다. 경로를 하나하나 고치는 것보다 `<base>` 가 확실하다.
+
+def prepare(html: str, base: str) -> str:
+    """화면을 파일로 저장하기 전에 손볼 것 둘.
+
+    `<base>` 는 상대 경로가 원래 서버를 가리키게 한다. 없으면 CSS 와 그림이 붙지 않아
+    아무것도 아닌 차이가 생긴다. 경로를 하나하나 고치는 것보다 이것이 확실하다.
+
+    그리고 애니메이션을 멈춘다. 움직이는 화면은 찍는 순간마다 달라 견줄 수 없다.
     """
-    return re.sub(r"(<head[^>]*>)", r"\1<base href=" + f'"{base}">', html, count=1)
+    return re.sub(r"(<head[^>]*>)", r"\1<base href=" + f'"{base}">' + _FREEZE,
+                  html, count=1)
 
 
 def shot(chrome: str, page: pathlib.Path, image: pathlib.Path) -> bool:
@@ -120,7 +132,7 @@ def main() -> int:
             # `<base>` 는 그 화면이 있던 폴더를 가리켜야 한다.
             folder = (root + path).split("?", 1)[0].rsplit("/", 1)[0] + "/"
             page = work / f"{side}.html"
-            page.write_text(with_base(html, folder), encoding="utf-8")
+            page.write_text(prepare(html, folder), encoding="utf-8")
             pages[side] = page
 
         if len(pages) != 2:
