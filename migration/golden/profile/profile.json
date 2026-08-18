@@ -1,0 +1,274 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 8,
+  "screen": "profile-profile",
+  "source": "legacy/ERFlow/src/main/webapp/profile.jsp",
+  "signatures": [
+    {
+      "kind": "media",
+      "role": "image",
+      "label": "admin",
+      "detail": "https://bootdey.com/img/content/avatar/avatar7.png",
+      "raw": "Admin"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "중요한 것은",
+      "detail": "",
+      "raw": "중요한 것은"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "꺾이지 않는 마음!",
+      "detail": "",
+      "raw": "꺾이지 않는 마음!"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "주소록",
+      "detail": "submit",
+      "raw": "주소록"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "쪽지",
+      "detail": "submit",
+      "raw": "쪽지"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "website",
+      "detail": "",
+      "raw": "Website"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "https://bootdey.com",
+      "detail": "",
+      "raw": "https://bootdey.com"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "github",
+      "detail": "",
+      "raw": "Github"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "bootdey",
+      "detail": "",
+      "raw": "bootdey"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "twitter",
+      "detail": "",
+      "raw": "Twitter"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "@bootdey",
+      "detail": "",
+      "raw": "@bootdey"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "instagram",
+      "detail": "",
+      "raw": "Instagram"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "bootdey",
+      "detail": "",
+      "raw": "bootdey"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "facebook",
+      "detail": "",
+      "raw": "Facebook"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "bootdey",
+      "detail": "",
+      "raw": "bootdey"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "이메일",
+      "detail": "",
+      "raw": "이메일"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "내선 전화",
+      "detail": "",
+      "raw": "내선 전화"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "개인 전화",
+      "detail": "",
+      "raw": "개인 전화"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "주소",
+      "detail": "",
+      "raw": "주소"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "edit",
+      "detail": "passwordcheck.jsp",
+      "raw": "Edit"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "이번 달 근무 현황",
+      "detail": "",
+      "raw": "이번 달 근무 현황"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "monthpicker",
+      "detail": "month",
+      "raw": "monthPicker"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "통계",
+      "detail": "",
+      "raw": "통계"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "정상",
+      "detail": "",
+      "raw": "정상"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "지각",
+      "detail": "",
+      "raw": "지각"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "조퇴",
+      "detail": "",
+      "raw": "조퇴"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "연차",
+      "detail": "",
+      "raw": "연차"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "정상 근무",
+      "detail": "",
+      "raw": "정상 근무"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "지각",
+      "detail": "",
+      "raw": "지각"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "조퇴",
+      "detail": "",
+      "raw": "조퇴"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "결근",
+      "detail": "",
+      "raw": "결근"
+    },
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "연차",
+      "detail": "",
+      "raw": "연차"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "id",
+      "detail": "hidden",
+      "raw": "id"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "date",
+      "detail": "hidden",
+      "raw": "date"
+    }
+  ]
+}

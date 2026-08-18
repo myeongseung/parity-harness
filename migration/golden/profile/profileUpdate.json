@@ -1,0 +1,85 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 8,
+  "screen": "profile-profileUpdate",
+  "source": "legacy/ERFlow/src/main/webapp/profileUpdate.jsp",
+  "signatures": [
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "사원 번호",
+      "detail": "text",
+      "raw": "사원 번호:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "이름",
+      "detail": "text",
+      "raw": "이름:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "주민 번호",
+      "detail": "text",
+      "raw": "주민 번호:"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "email",
+      "detail": "email",
+      "raw": "Email"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "동/읍/면",
+      "detail": "text",
+      "raw": "동/읍/면"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "우편 찾기",
+      "detail": "button",
+      "raw": "우편 찾기"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "«dyn»",
+      "detail": "text",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "상세주소",
+      "detail": "text",
+      "raw": "상세주소"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "휴대전화",
+      "detail": "text",
+      "raw": "휴대전화"
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "사원 수정",
+      "detail": "submit",
+      "raw": "사원 수정"
+    }
+  ]
+}

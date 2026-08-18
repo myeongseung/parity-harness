@@ -42,6 +42,19 @@ _TH_ATTR = re.compile(
 #: 링크 대상을 견줄 때 쿼리는 어차피 떼어내므로 여기서도 뗀다.
 _TH_LINK_PARAMS = re.compile(r'\b(href|src|action)="([^"(]*)\([^"]*\)"')
 
+#: 여는 태그의 **속성 자리**에 놓인 표현식. 값이 아니라 속성 자체를 뿜는다.
+#:
+#:     <th<%=isSunday ? " style=\"color: red;\"" : ""%>>
+#:
+#: 이것을 다른 표현식과 똑같이 자리표시자로 바꾸면 `<th«dyn»>` 이 되어 태그 이름이
+#: 망가진다. 파서는 `th` 가 아닌 무언가로 읽고, 뒤따르는 `</th>` 는 짝을 못 찾아
+#: 무시된다 — **그 열 머리글이 통째로 정답에서 빠지고**, 그 뒤 형제 요소들이
+#: 열린 채로 남은 그 노드 안에 말려 들어간다.
+#:
+#: 근태 달력의 날짜 머리글 넷이 그렇게 보이지 않았다. 게이트는 조용히 통과했다.
+#: 속성 하나가 붙는다는 사실만 남기고 태그 이름은 지킨다.
+_TAG_ATTR_EXPR = re.compile(r'(<[a-zA-Z][a-zA-Z0-9]*)(?:<%=.*?%>|\$\{.*?\})')
+
 # 순서가 중요하다. 포괄적인 <% ... %> 를 마지막에 둔다.
 _RULES: tuple[tuple[re.Pattern, str], ...] = (
     (re.compile(r"<%--.*?--%>", re.S), ""),        # JSP 주석
@@ -60,6 +73,9 @@ def preprocess(markup: str) -> str:
 
     `<%` 나 `${` 가 없는 순수 HTML 에는 아무 영향이 없다.
     """
+    # 태그 이름을 지키는 규칙이 먼저다. 표현식이 자리표시자로 바뀐 뒤에는
+    # 그것이 속성 자리였는지 알 수 없다.
+    markup = _TAG_ATTR_EXPR.sub(r'\1 data-dyn-attr="' + DYNAMIC + '"', markup)
     for pattern, replacement in _RULES:
         markup = pattern.sub(replacement, markup)
     # 표현식이 이미 자리표시자로 바뀐 뒤에 속성 이름을 정규화한다.

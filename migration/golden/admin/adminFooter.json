@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "admin-adminFooter",
   "source": "legacy/ERFlow/src/main/webapp/admin/adminFooter.jsp",
   "signatures": [

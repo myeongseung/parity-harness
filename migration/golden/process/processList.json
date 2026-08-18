@@ -1,8 +1,8 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "process-processList",
-  "source": "../legacy/ERFlow/src/main/webapp/process/processList.jsp",
+  "source": "legacy/ERFlow/src/main/webapp/process/processList.jsp",
   "signatures": [
     {
       "kind": "text",

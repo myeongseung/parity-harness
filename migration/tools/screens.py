@@ -238,6 +238,13 @@ SCREENS = (
     _screen("product", "productUpdate", "update", True,
             legacy="product/productUpdate.jsp"),
 
+    # 프로필 — 레거시는 최상위에 있다. 보기 화면은 남의 것도 열리고, 수정으로
+    # 들어가는 길목에만 비밀번호를 다시 묻는다
+    _screen("profile", "profile", "view", True, legacy="profile.jsp"),
+    _screen("profile", "profileUpdate", "update", True, legacy="profileUpdate.jsp"),
+    _screen("profile", "passwordCheck", "password-check", True,
+            legacy="passwordCheck.jsp"),
+
     _screen("post", "boardList", "board-list", True),
     _screen("post", "postList", "list", True),
     _screen("post", "postView", "view", True),

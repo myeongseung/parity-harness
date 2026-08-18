@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "admin-jobUpdate",
   "source": "legacy/ERFlow/src/main/webapp/admin/permission/jobUpdate.jsp",
   "signatures": [

@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "admin-deptRegister",
   "source": "legacy/ERFlow/src/main/webapp/admin/permission/deptRegister.jsp",
   "signatures": [

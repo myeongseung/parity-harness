@@ -373,3 +373,36 @@ class TestFixedInputValue(unittest.TestCase):
         self.assertEqual(keys(legacy), keys(as_is))
         self.assertNotEqual(keys(legacy), keys(improved))
         self.assertIn(f"control:input|{DYNAMIC}|text", keys(improved))
+
+
+class TestAttributeEmittingExpression(unittest.TestCase):
+    """표현식이 **값이 아니라 속성 자체**를 뿜는 자리.
+
+    레거시 근태 달력이 요일 색을 이렇게 넣는다.
+
+        <th<%=isSunday ? " style=\"color: red;\"" : ""%>>
+
+    예전에는 표현식을 그냥 자리표시자로 바꿔서 `<th«dyn»>` 이 되었다. 파서는
+    이것을 `th` 로 읽지 못하고, 뒤따르는 `</th>` 는 짝을 찾지 못해 버려졌다 —
+    **날짜 머리글 넷이 정답에서 통째로 빠진 채 게이트가 통과했다.**
+    """
+
+    def test_tag_name_survives(self) -> None:
+        found = keys('<th<%=style%>><%=day%></th>')
+        self.assertIn(f"column:header|{DYNAMIC}|", found)
+
+    def test_closing_tag_is_matched_again(self) -> None:
+        """열린 채로 남으면 뒤따르는 형제가 그 안에 말려 들어간다."""
+        found = keys('<th<%=style%>><%=day%></th><th>통계</th>')
+        self.assertEqual([f"column:header|{DYNAMIC}|", "column:header|통계|"], found)
+
+    def test_thymeleaf_side_matches(self) -> None:
+        """신규는 같은 자리를 `th:style` 로 쓴다. 같은 signature 여야 한다."""
+        legacy = '<th<%=isSunday ? " style=\\"color: red;\\"" : ""%>><%=day%></th>'
+        migrated = '<th th:style="${day.headerStyle}">[[${day.label}]]</th>'
+        self.assertEqual(keys(legacy), keys(migrated))
+
+    def test_quoted_attribute_is_untouched(self) -> None:
+        """따옴표 **안**의 표현식은 값이다. 속성 자리로 오해하면 링크가 깨진다."""
+        found = keys('<a href="profile.jsp?id=<%=id%>">Edit</a>')
+        self.assertEqual(["nav:link|edit|profile.jsp"], found)

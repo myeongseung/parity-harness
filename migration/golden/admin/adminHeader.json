@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "admin-adminHeader",
   "source": "legacy/ERFlow/src/main/webapp/admin/adminHeader.jsp",
   "signatures": [

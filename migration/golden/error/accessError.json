@@ -1,6 +1,6 @@
 {
   "schema": "parity-harness/golden-manifest@1",
-  "extractor": 7,
+  "extractor": 8,
   "screen": "error-accessError",
   "source": "legacy/ERFlow/src/main/webapp/accessError.jsp",
   "signatures": [
