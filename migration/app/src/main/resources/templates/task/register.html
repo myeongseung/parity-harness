@@ -12,6 +12,12 @@
 <head th:replace="~{fragments/head :: head(${isSell ? '수주 등록 페이지' : '발주 등록 페이지'}, ${ {'/css/bootcss/bootstrap.css', '/css/jquery-ui.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/taskRegister.css'} }, ${ {'https://code.jquery.com/jquery-latest.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js', 'https://code.jquery.com/jquery-1.12.4.js', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', '/js/main/index.js', '/js/admin/location.js', '/js/main/task.js', '/js/datepicker.js', '/js/bootjs/bootstrap.js', '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'} })}">
 </head>
 <body>
+<!--/*
+  이 점은 오타가 낳은 화면 글자다. 레거시 taskRegister.jsp:38 이 `</title>.` 로
+  끝나는데, head 안의 글자는 브라우저가 body 첫머리로 끌어내린다 — 그래서 화면
+  왼쪽 위에 점이 찍히고 전체가 그만큼 밀린다. 브라우저 DOM 이 기준이므로(D-037)
+  같은 자리에 같은 점을 둔다(D-097). 게이트는 head 를 건너뛰어 이것을 못 본다.
+*/-->.
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>
 
 <div class="content-wrap">

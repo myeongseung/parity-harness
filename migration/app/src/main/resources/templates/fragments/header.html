@@ -31,24 +31,26 @@
 
                     <ul class="nav nav-pills">
                         <li class="nav-item dropdown">
+                            <!--/*
+                              여는 태그 뒤 공백 하나까지 레거시 그대로다. 줄 첫머리
+                              공백이라 브라우저가 접어 그림에는 차이가 없지만,
+                              원문을 견주는 눈에는 차이로 보인다 — 맞춰 둔다.
+                            */-->
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-                               href="#" role="button" aria-expanded="false"
-                               th:text="${user}">사용자</a>
+                               href="#" role="button" aria-expanded="false"> [[${user}]]</a>
 
                             <ul class="dropdown-menu">
                                 <th:block th:each="item : ${menu}">
                                     <hr th:if="${item.separatorBefore}">
+                                    <!--/* <i> 와 <span> 사이 줄바꿈은 공백으로 그려진다. 레거시는 붙여 쓴다. */-->
                                     <a class="dropdown-item" th:href="@{${item.url}}">
-                                        <i th:if="${item.icon}" th:class="${item.icon}"></i>
-                                        <span th:text="${item.label}">항목</span>
-                                    </a>
+                                        <i th:if="${item.icon}" th:class="${item.icon}"></i><span th:text="${item.label}">항목</span></a>
                                 </th:block>
                             </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">
-                                <i class="fa-regular fa-bell fa-lg"></i>
-                            </a>
+                                <i class="fa-regular fa-bell fa-lg"></i></a>
                         </li>
                     </ul>
                 </div>

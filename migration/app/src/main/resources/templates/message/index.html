@@ -101,29 +101,44 @@
                             </table>
                         </div>
                     </div>
+                    <!--/*
+                      푸터(페이징)는 message-main **안**이다 — 소스만 보면 레거시도
+                      </form> 뒤에 푸터를 적지만, 레거시는 message-main 을 닫지 않은 채
+                      </form> 을 만난다. HTML 파서는 그때 form 만 스택에서 빼고 열린
+                      div 는 그대로 두므로, 뒤따르는 푸터가 message-main 의 자식이 된다.
+                      브라우저 DOM 이 기준이므로(D-037) 그 자리를 따른다(D-098).
+                      밖에 두면 message-nav-wrap 의 flex 형제가 되어 배치가 어긋난다.
+                    */-->
+                    <div class="message-footer">
+                        <!--/* 페이징 — block()/paging() 은 정의되지 않는다(D-045) */-->
+                        <div class="page-controller">
+                            <a th:if="${page.hasPreviousBlock()}" class="disabled"
+                               th:href="|javascript:block(5, ${page.nowBlock - 1})|">이전</a>
+                            <ul class="page-numbers">
+                                <a th:each="number : ${page.pageNumbers}"
+                                   th:href="|javascript:paging(${number})|"
+                                   th:classappend="${number == page.nowPage} ? 'disabled'">
+                                    <li th:text="${number}">1</li>
+                                </a>
+                            </ul>
+                            <a th:if="${page.hasNextBlock()}"
+                               th:href="|javascript:block(5, ${page.nowBlock + 1})|">다음</a>
+                        </div>
+                    </div>
                 </div>
             </form>
-            <div class="message-footer">
-                <!--/* 페이징 — block()/paging() 은 정의되지 않는다(D-045) */-->
-                <div class="page-controller">
-                    <a th:if="${page.hasPreviousBlock()}" class="disabled"
-                       th:href="|javascript:block(5, ${page.nowBlock - 1})|">이전</a>
-                    <ul class="page-numbers">
-                        <a th:each="number : ${page.pageNumbers}"
-                           th:href="|javascript:paging(${number})|"
-                           th:classappend="${number == page.nowPage} ? 'disabled'">
-                            <li th:text="${number}">1</li>
-                        </a>
-                    </ul>
-                    <a th:if="${page.hasNextBlock()}"
-                       th:href="|javascript:block(5, ${page.nowBlock + 1})|">다음</a>
-                </div>
-                <form name="classFrm" method="get" th:action="@{/message}">
-                    <input type="hidden" name="keyfield" th:value="${keyfield}">
-                    <input type="hidden" name="keyword" th:value="${keyword}">
-                    <input type="hidden" name="class" th:value="${className}">
-                </form>
-            </div>
+            <!--/*
+              레거시는 classFrm 이 푸터 안에 있다. 여기서는 바깥 form 이 아직 열려
+              있는 채로는 안 된다 — HTML 파서가 **중첩 form 을 버려서** JS 의
+              $('form[name=classFrm]') 이 빈손이 되고 받은/보낸함 전환이 죽는다.
+              레거시는 </form> 조기 닫힘 덕에 우연히 살았던 자리다. 숨은 입력뿐이라
+              화면에는 아무것도 그리지 않으므로 밖으로 뺀다(D-098).
+            */-->
+            <form name="classFrm" method="get" th:action="@{/message}">
+                <input type="hidden" name="keyfield" th:value="${keyfield}">
+                <input type="hidden" name="keyword" th:value="${keyword}">
+                <input type="hidden" name="class" th:value="${className}">
+            </form>
         </div>
     </div>
 </div>

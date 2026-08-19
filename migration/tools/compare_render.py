@@ -38,7 +38,8 @@ import tempfile
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 from compare_live import (  # noqa: E402
-    LEGACY, NEW, login, opener, screens_from_map, set_cookie, _NO_COUNT_COOKIE,
+    LEGACY, NEW, UNORDERED, login, opener, screens_from_map, set_cookie,
+    _NO_COUNT_COOKIE,
 )
 
 #: 크롬이 흔히 놓이는 자리.
@@ -117,7 +118,7 @@ def main() -> int:
         set_cookie(client, "postId", _NO_COUNT_COOKIE)
 
     work = pathlib.Path(tempfile.mkdtemp(prefix="erflow-render-"))
-    same = differ = skipped = 0
+    same = differ = skipped = known = 0
 
     for label, legacy_path, new_path, _mode in screens_from_map():
         pages = {}
@@ -126,11 +127,14 @@ def main() -> int:
             try:
                 with client.open(root + path, None, timeout=30) as response:
                     html = response.read().decode("utf-8", errors="replace")
+                    # 리다이렉트를 따라간 **최종 주소** 기준이어야 한다. 요청한 주소로
+                    # 잡으면, 안내 화면으로 튕긴 레거시의 상대경로 CSS 가 엉뚱한 폴더를
+                    # 가리켜 민짜 화면이 그려진다 — 그것을 «다르다» 로 오탐했다.
+                    landed = response.geturl()
             except OSError:
                 pages = {}
                 break
-            # `<base>` 는 그 화면이 있던 폴더를 가리켜야 한다.
-            folder = (root + path).split("?", 1)[0].rsplit("/", 1)[0] + "/"
+            folder = landed.split("?", 1)[0].rsplit("/", 1)[0] + "/"
             page = work / f"{side}.html"
             page.write_text(prepare(html, folder), encoding="utf-8")
             pages[side] = page
@@ -156,6 +160,12 @@ def main() -> int:
         if digest(images["legacy"]) == digest(images["new"]):
             same += 1
             print(f"  PASS  {label}: 화면이 같다")
+        elif new_path.split("?", 1)[0] in UNORDERED:
+            # 줄 순서가 정해지지 않은 화면(D-091)은 그림이 실행마다 달라진다.
+            # 내용이 같은지는 compare_live 가 순서 무관으로 본다 — 여기서는 그
+            # 사실만 적고 넘어간다. 이 예외는 UNORDERED 에 적힌 화면에만 열린다.
+            known += 1
+            print(f"  KNOWN {label}: 줄 순서가 정해지지 않았다({UNORDERED[new_path.split('?', 1)[0]]})")
         else:
             differ += 1
             kept = work / f"{label.replace('/', '-')}"
@@ -163,7 +173,7 @@ def main() -> int:
                 shutil.copy(image, f"{kept}-{side}.png")
             print(f"  FAIL  {label}: 화면이 다르다 — {kept}-legacy.png / -new.png")
 
-    print(f"\n같음 {same} / 다름 {differ} / 못 봄 {skipped}")
+    print(f"\n같음 {same} / 다름 {differ} / 순서 무관 {known} / 못 봄 {skipped}")
     print(f"그림: {work}")
     return 1 if differ else 0
 
