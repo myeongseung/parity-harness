@@ -98,6 +98,17 @@ class ManifestError(Exception):
     """golden manifest 를 읽을 수 없거나 형식이 어긋남."""
 
 
+def load_screen_name(path: str | Path) -> str | None:
+    """golden manifest 의 화면 이름만 읽는다. 화면 단위 allowlist 승인에 쓴다."""
+    file = Path(path)
+    if not file.is_file():
+        return None
+    try:
+        return json.loads(file.read_text(encoding="utf-8")).get("screen")
+    except json.JSONDecodeError:
+        return None
+
+
 def load_manifest(path: str | Path) -> list[Signature]:
     """golden manifest 파일에서 Signature 목록을 읽는다."""
     file = Path(path)

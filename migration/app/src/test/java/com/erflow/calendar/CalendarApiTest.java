@@ -145,9 +145,9 @@ class CalendarApiTest {
     }
 
     @Test
-    @DisplayName("일정 고치기는 주인을 보지 않는다 — 남의 일정도 고쳐진다")
+    @DisplayName("남의 일정은 고칠 수 없다 — 레거시의 구멍을 2단계에서 막았다(D-101)")
     @Transactional
-    void updateDoesNotCheckTheOwner() {
+    void updateChecksTheOwnerNow() {
         String other = jdbc.queryForObject(
                 "SELECT id FROM user_tbl WHERE id != 'admin' LIMIT 1", String.class);
         jdbc.update("INSERT INTO calendar_tbl "
@@ -157,22 +157,30 @@ class CalendarApiTest {
         int id = jdbc.queryForObject(
                 "SELECT id FROM calendar_tbl WHERE subject = '남의일정'", Integer.class);
 
+        // 레거시는 번호만 맞으면 남의 일정도 고쳐졌다(D-083). 이제 아무 일도 없다.
         boolean done = calendarService.update(TestUsers.admin(), new CalendarEvent(
                 id, "admin", 0, null, "가로챈일정", "본문",
                 "2026-08-20 09:00:00", "2026-08-20 18:00:00", 0));
 
-        assertThat(done).isTrue();
+        assertThat(done).isFalse();
         assertThat(jdbc.queryForObject(
                 "SELECT subject FROM calendar_tbl WHERE id = ?", String.class, id))
-                .isEqualTo("가로챈일정");
-        // 주인은 그대로다 — 고치는 문에는 주인 조건이 없다.
-        assertThat(jdbc.queryForObject(
-                "SELECT user_tbl_id FROM calendar_tbl WHERE id = ?", String.class, id))
-                .isEqualTo(other);
+                .isEqualTo("남의일정");
+
+        // 자기 일정은 고쳐진다.
+        jdbc.update("INSERT INTO calendar_tbl "
+                + "(user_tbl_id, subject, content, started_at, ended_at, type) "
+                + "VALUES ('admin', '내일정', '본문', '2026-08-20 09:00:00', "
+                + "'2026-08-20 18:00:00', 0)");
+        int mine = jdbc.queryForObject(
+                "SELECT id FROM calendar_tbl WHERE subject = '내일정'", Integer.class);
+        assertThat(calendarService.update(TestUsers.admin(), new CalendarEvent(
+                mine, "admin", 0, null, "고친일정", "본문",
+                "2026-08-20 09:00:00", "2026-08-20 18:00:00", 0))).isTrue();
     }
 
     @Test
-    @DisplayName("일정 지우기는 주인을 본다 — 고치기와 어긋난다")
+    @DisplayName("일정 지우기는 주인을 본다 — 레거시부터 그랬다")
     @Transactional
     void deleteChecksTheOwner() {
         String other = jdbc.queryForObject(

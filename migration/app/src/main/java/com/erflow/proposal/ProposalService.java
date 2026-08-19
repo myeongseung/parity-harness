@@ -180,39 +180,81 @@ public class ProposalService {
      * <p>레거시는 이 여러 문장을 트랜잭션 없이 던졌다. 중간에 끊기면 «내 차례는 닫혔는데
      * 다음 차례가 없는» 결재가 남는다. 한 트랜잭션으로 묶는다(D-051).
      *
-     * <p><b>누가 눌렀는지는 보지 않는다.</b> 레거시가 그렇다 — 결재번호만 맞으면 남의
-     * 차례도 승인되고 반려된다(D-049).
+     * <p><b>내 차례인지 본다.</b> 레거시는 보지 않았다 — 결재번호만 맞으면 남의 차례도
+     * 승인되고 반려됐다(D-049). 2단계에서 막았다(D-102): 결재선의 {@code step} 번째가
+     * 누른 사람이어야 하고, 그 차례가 아직 진행중이어야 한다. 판정은 결재 리스트가
+     * 이미 하던 것과 같다(D-052 의 {@code isTurnOf}).
      *
      * @param proposalId 결재번호
+     * @param userId 누른 사람의 사번
      * @param result 승인이면 {@code confirm}. 그 밖의 값은 전부 반려다
      * @param comment 결재 의견
-     * @return 화면에 띄울 안내. 대상 결재가 없으면 {@code null}
+     * @return 처리 결과. 대상이 없으면 {@code NOT_FOUND}, 남의 차례면 {@code NOT_YOUR_TURN}
      */
     @Transactional
-    public String decide(long proposalId, String result, String comment) {
+    public Decision decide(long proposalId, String userId, String result, String comment) {
         ProposalTarget target = proposalMapper.findTarget(proposalId);
         if (target == null) {
-            return null;
+            return Decision.NOT_FOUND;
+        }
+        ProposalView current = proposalMapper.findView(proposalId);
+        String[] line = current.route() == null ? new String[0] : current.route().split(";");
+        boolean myTurn = current.result() == IN_PROGRESS
+                && target.step() < line.length
+                && line[target.step()].equals(userId);
+        if (!myTurn) {
+            return Decision.NOT_YOUR_TURN;
         }
         if (!CONFIRM.equals(result)) {
             proposalMapper.reject(proposalId, comment);
             proposalMapper.rejectAll(target.documentId());
-            return "반려하였습니다.";
+            return Decision.done("반려하였습니다.");
         }
 
         ProposalLastStep last = proposalMapper.findLastStep(target.documentId());
         if (last != null && last.isFinal()) {
             proposalMapper.confirm(proposalId, comment);
             proposalMapper.confirmAll(target.documentId());
-            return "결재하였습니다.";
+            return Decision.done("결재하였습니다.");
         }
 
-        ProposalView view = proposalMapper.findView(proposalId);
         proposalMapper.confirm(proposalId, comment);
         int nextStep = target.step() + 1;
-        String[] route = view.route().split(";");
-        proposalMapper.insert(target.documentId(), route[nextStep], target.routeId(), nextStep);
-        return "결재완료하였습니다.";
+        proposalMapper.insert(target.documentId(), line[nextStep], target.routeId(), nextStep);
+        return Decision.done("결재완료하였습니다.");
+    }
+
+    /**
+     * 승인/반려의 처리 결과.
+     *
+     * <p>화면이 갈 곳이 셋이라 갈래도 셋이다 — 대상 없음(잘못된 접근), 남의 차례
+     * (권한 없음, D-102), 처리됨(안내 문구).
+     *
+     * @param status 갈래
+     * @param message 화면에 띄울 안내. 처리됐을 때만 있다
+     */
+    public record Decision(Status status, String message) {
+
+        /** 처리 갈래. */
+        public enum Status { DONE, NOT_FOUND, NOT_YOUR_TURN }
+
+        /** 대상 결재가 없다. */
+        public static final Decision NOT_FOUND = new Decision(Status.NOT_FOUND, null);
+
+        /** 내 차례가 아니다(D-102). */
+        public static final Decision NOT_YOUR_TURN =
+                new Decision(Status.NOT_YOUR_TURN, null);
+
+        private static Decision done(String message) {
+            return new Decision(Status.DONE, message);
+        }
+
+        /**
+         * @return 처리됐으면 {@code true}
+         */
+        public boolean done() {
+            return status == Status.DONE;
+        }
     }
 
     /**

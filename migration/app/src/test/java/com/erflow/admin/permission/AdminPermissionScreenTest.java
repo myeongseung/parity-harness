@@ -152,22 +152,33 @@ class AdminPermissionScreenTest {
     }
 
     @Test
-    @DisplayName("부서를 고치면 주소가 지워진다 — 레거시 그대로다")
+    @DisplayName("부서 수정 화면이 주소를 채워 준다 — D-059 를 2단계에서 고쳤다(D-105)")
     @Transactional
-    void updateWipesAddress() {
+    void updateFormCarriesTheAddress() throws Exception {
         PermissionRow self = permissionService.list(null, null).depts().get(0);
         jdbc.update("UPDATE dept_tbl SET postal_code = '48058', address1 = '부산', "
                 + "address2 = '3층' WHERE id = ?", self.classId());
 
-        // 화면이 주소칸을 채워 주지 않으므로 빈 값이 그대로 올라온다(D-059).
-        permissionService.updateDept(self.classId(), self.name(), null, null, null, List.of());
+        // 레거시는 주소칸을 언제나 비워 둬서, 이름만 고쳐도 저장하면 그 빈 값이
+        // 주소를 덮었다(D-059). 이제 화면이 현재 값을 채워 주므로 그대로 저장해도
+        // 주소가 산다.
+        String html = mockMvc.perform(get("/admin/permission/dept-update")
+                        .param("deptId", String.valueOf(self.classId()))
+                        .with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
+        assertThat(html).contains("48058").contains("부산").contains("3층");
+
+        // 화면이 채워 준 값을 그대로 제출하면 주소가 보존된다.
+        permissionService.updateDept(
+                self.classId(), self.name(), "48058", "부산", "3층", List.of());
         var row = jdbc.queryForMap(
                 "SELECT postal_code, address1, address2 FROM dept_tbl WHERE id = ?",
                 self.classId());
-        assertThat(row.get("postal_code")).isNull();
-        assertThat(row.get("address1")).isNull();
-        assertThat(row.get("address2")).isNull();
+        assertThat(row.get("postal_code")).isEqualTo("48058");
+        assertThat(row.get("address1")).isEqualTo("부산");
+        assertThat(row.get("address2")).isEqualTo("3층");
     }
 
     @Test

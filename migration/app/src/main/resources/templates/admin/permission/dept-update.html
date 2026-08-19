@@ -33,12 +33,21 @@
         </div>
 
 
+        <!--/*
+          레거시는 주소칸을 언제나 비워 뒀다. 부서 이름만 고치러 들어와도 저장하면
+          그 빈 값이 주소를 덮었다 — 라이브 데이터에 실제로 지워진 부서가 남아
+          있다(D-059). 2단계에서 현재 값을 채운다(D-105). readonly 입력의 value 는
+          화면 글자라 signature 가 바뀌므로 allowlist 에 화면을 좁혀 등록했다.
+        */-->
         <label for="input4">부서 주소:</label>
-        <input type="text" id="sample6_postcode" placeholder="우편번호" name="postalCode" readonly>
+        <input type="text" id="sample6_postcode" placeholder="우편번호" name="postalCode"
+               th:value="${form.dept.postalCode}" readonly>
         <input type="text" id="sample6_extraAddress" placeholder="동/읍/면" readonly>
         <button type="button" class="btn btn-primary btn_execDaumPostcode">우편 번호 찾기</button>
-        <input type="text" id="sample6_address" placeholder="도로명 주소" name="address1" readonly><br>
-        <input type="text" id="sample6_detailAddress" placeholder="상세주소" name="address2">
+        <input type="text" id="sample6_address" placeholder="도로명 주소" name="address1"
+               th:value="${form.dept.address1}" readonly><br>
+        <input type="text" id="sample6_detailAddress" placeholder="상세주소" name="address2"
+               th:value="${form.dept.address2}">
 
         <div class="checkbox-container">
             <label>부서 권한:</label><br>

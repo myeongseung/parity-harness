@@ -125,7 +125,7 @@ class ProposalScreenTest {
         assertThat(idsOf(chain.route()[0])).contains(first);
         assertThat(idsOf(chain.route()[1])).doesNotContain(first);
 
-        proposalService.decide(first, "confirm", "확인");
+        proposalService.decide(first, chain.route()[0], "confirm", "확인");
 
         // 승인하면 자리가 넘어간다 — 첫 사람의 목록에서 사라지고 둘째에게 생긴다.
         long next = jdbc.queryForObject(
@@ -183,9 +183,10 @@ class ProposalScreenTest {
         Chain chain = freshChain();
         long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
 
-        String message = proposalService.decide(first, "confirm", "확인했습니다.");
+        var decision = proposalService.decide(
+                first, chain.route()[0], "confirm", "확인했습니다.");
 
-        assertThat(message).isEqualTo("결재완료하였습니다.");
+        assertThat(decision.message()).isEqualTo("결재완료하였습니다.");
         // 내 차례는 닫힌다 — result 0, 승인 시각이 찍힌다.
         var mine = jdbc.queryForMap(
                 "SELECT result, approved_at, comment FROM proposal_tbl WHERE id = ?", first);
@@ -209,15 +210,16 @@ class ProposalScreenTest {
         Chain chain = freshChain();
         long id = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
         // 결재선 길이만큼 밟는다. 마지막 한 번이 문서 전체를 승인으로 바꾼다.
-        String message = null;
+        // 차례마다 그 자리의 사번으로 누른다 — 이제 남의 차례는 거절된다(D-102).
+        ProposalService.Decision decision = null;
         for (int step = 0; step < chain.route().length; ++step) {
-            message = proposalService.decide(id, "confirm", "확인");
+            decision = proposalService.decide(id, chain.route()[step], "confirm", "확인");
             id = jdbc.queryForObject(
                     "SELECT MAX(id) FROM proposal_tbl WHERE document_tbl_id = ?",
                     Long.class, chain.documentId());
         }
 
-        assertThat(message).isEqualTo("결재하였습니다.");
+        assertThat(decision.message()).isEqualTo("결재하였습니다.");
         List<Map<String, Object>> rows = jdbc.queryForList(
                 "SELECT result FROM proposal_tbl WHERE document_tbl_id = ?", chain.documentId());
         assertThat(rows).hasSize(chain.route().length);
@@ -232,7 +234,7 @@ class ProposalScreenTest {
     void approvalLeavesStamp() {
         Chain chain = freshChain();
         long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
-        proposalService.decide(first, "confirm", "확인");
+        proposalService.decide(first, chain.route()[0], "confirm", "확인");
 
         ProposalDocument document = proposalService.document(first);
 
@@ -253,9 +255,10 @@ class ProposalScreenTest {
         Chain chain = freshChain();
         long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
 
-        String message = proposalService.decide(first, "reject", "다시 올려주세요.");
+        var decision = proposalService.decide(
+                first, chain.route()[0], "reject", "다시 올려주세요.");
 
-        assertThat(message).isEqualTo("반려하였습니다.");
+        assertThat(decision.message()).isEqualTo("반려하였습니다.");
         var row = jdbc.queryForMap(
                 "SELECT result, approved_at, comment FROM proposal_tbl WHERE id = ?", first);
         assertThat(((Number) row.get("result")).intValue()).isEqualTo(ProposalService.REJECTED);
@@ -265,6 +268,43 @@ class ProposalScreenTest {
         assertThat(jdbc.queryForObject(
                 "SELECT COUNT(*) FROM proposal_tbl WHERE document_tbl_id = ?",
                 Integer.class, chain.documentId())).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("남의 차례는 승인도 반려도 못 한다 — 레거시의 구멍을 2단계에서 막았다(D-102)")
+    @Transactional
+    void someoneElsesTurnIsRejected() {
+        Chain chain = freshChain();
+        long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
+
+        // 레거시는 결재번호만 맞으면 누구든 승인·반려할 수 있었다(D-049).
+        var decision = proposalService.decide(
+                first, chain.route()[1], "confirm", "가로챈 승인");
+
+        assertThat(decision).isEqualTo(ProposalService.Decision.NOT_YOUR_TURN);
+        // 결재는 그대로 진행중이고 다음 차례도 생기지 않는다.
+        assertThat(jdbc.queryForObject(
+                "SELECT result FROM proposal_tbl WHERE id = ?", Integer.class, first))
+                .isEqualTo(ProposalService.IN_PROGRESS);
+        assertThat(jdbc.queryForObject(
+                "SELECT COUNT(*) FROM proposal_tbl WHERE document_tbl_id = ?",
+                Integer.class, chain.documentId())).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("남의 차례를 누르면 권한 화면으로 보낸다")
+    @Transactional
+    void someoneElsesTurnRedirectsToPermissionError() throws Exception {
+        Chain chain = freshChain();
+        long first = proposalService.create(chain.route()[0], chain.documentId(), chain.routeId());
+        assumeTrue(!chain.route()[0].equals("admin"), "첫 차례가 admin 이라 건너뛴다");
+
+        mockMvc.perform(post("/proposal/document-proc")
+                        .param("proposalId", String.valueOf(first))
+                        .param("result", "confirm")
+                        .with(user(TestUsers.admin())).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/permission-error"));
     }
 
     /**

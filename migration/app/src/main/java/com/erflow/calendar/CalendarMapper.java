@@ -30,11 +30,12 @@ public interface CalendarMapper {
     int insertEvent(@Param("event") CalendarEvent event);
 
     /**
-     * 일정을 고친다.
+     * 일정을 고친다. 자기 것만 고쳐진다.
      *
-     * <p>레거시는 <b>주인을 확인하지 않는다.</b> 번호만 맞으면 남의 일정도 고쳐진다(D-083).
+     * <p>레거시는 주인을 확인하지 않아 번호만 맞으면 남의 일정도 고쳐졌다(D-083).
+     * 2단계에서 지우기와 같은 모양으로 주인 조건을 붙였다(D-101).
      *
-     * @param event 고칠 일정
+     * @param event 고칠 일정. {@code userId} 가 주인과 다르면 아무 일도 없다
      * @return 반영된 행 수
      */
     int updateEvent(@Param("event") CalendarEvent event);

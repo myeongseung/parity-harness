@@ -18,10 +18,15 @@ class AllowlistError(Exception):
     """allowlist 파일을 읽을 수 없거나 사유가 부실함."""
 
 
-def load_allowlist(path: str | Path | None) -> dict[str, str]:
+def load_allowlist(path: str | Path | None, screen: str | None = None) -> dict[str, str]:
     """allowlist 파일에서 {signature key: 사유} 를 읽는다.
 
     경로가 None 이거나 파일이 없으면 빈 예외 목록으로 간주한다.
+
+    entry 에 "screen" 이 있으면 그 화면에서만 승인된다. 없으면 전역이다.
+    전역 승인은 CSRF 토큰처럼 어디에나 생기는 요소를 위한 것이고, 2단계에서
+    한 화면의 동작을 일부러 바꿀 때는 반드시 화면을 좁혀 적는다 — 넓게 열면
+    같은 모양의 진짜 회귀가 다른 화면에서 조용히 통과한다.
     """
     if path is None:
         return {}
@@ -52,5 +57,8 @@ def load_allowlist(path: str | Path | None) -> dict[str, str]:
                 f"entries[{index}] ({key}): 사유가 {MIN_REASON_LEN}자 미만이다. "
                 "예외는 근거를 남겨야 승인된다."
             )
+        scoped = entry.get("screen")
+        if scoped is not None and scoped != screen:
+            continue
         approved[key] = reason
     return approved

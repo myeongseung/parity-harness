@@ -29,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 프로필 화면이 실제 데이터로 도는지 확인한다.
  *
- * <p>이 도메인에서 게이트가 못 보는 자리가 셋이다. <b>남의 근무 기록은 조회조차
- * 하지 않는다</b>는 것, <b>수정 화면이 비밀번호 확인 없이 열린다</b>는 것, 그리고
- * <b>저장하면 전화번호가 지워진다</b>는 것이다.
+ * <p>이 도메인에서 게이트가 못 보는 자리 — 남의 근무 기록은 조회조차 하지 않는 것,
+ * 수정 화면이 비밀번호 확인 없이 열리는 것 — 을 여기서 못 박는다. 전화번호가
+ * 지워지던 결함(D-080)은 2단계에서 고쳤고(D-100), 고친 동작을 시험이 지킨다.
  */
 @SpringBootTest(properties = "server.port=0")
 @AutoConfigureMockMvc
@@ -168,18 +168,24 @@ class ProfileScreenTest {
     }
 
     @Test
-    @DisplayName("저장하면 전화번호가 지워진다 — 화면이 빈 칸을 보내기 때문이다")
+    @DisplayName("수정 화면의 개인 번호 칸에 현재 값이 채워진다 — 저장해도 안 지워진다(D-100)")
     @Transactional
-    void savingWipesThePhoneNumber() {
+    void phoneNumberSurvivesASave() throws Exception {
         jdbc.update("UPDATE user_tbl SET mobile_phone = '010-1111-2222' WHERE id = 'admin'");
+
+        // 레거시는 이 칸을 비워 뒀고(D-080) 저장할 때마다 전화번호가 지워졌다.
+        // 2단계에서 현재 값을 채웠다 — 화면이 채워 주므로 그대로 저장하면 값이 산다.
+        String html = mockMvc.perform(get("/profile/update").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(html).contains("010-1111-2222");
+
         ProfileUser before = profileService.get("admin");
-        assertThat(before.mobilePhone()).isEqualTo("010-1111-2222");
-
-        // 화면의 «개인 번호» 칸은 언제나 비어 있고, 저장은 그 빈 칸을 그대로 받는다.
         profileService.update(new ProfileUser("admin", before.name(), before.email(),
-                null, "", before.postalCode(), before.address1(), before.address2()));
+                null, before.mobilePhone(), before.postalCode(),
+                before.address1(), before.address2()));
 
-        assertThat(profileService.get("admin").mobilePhone()).isEmpty();
+        assertThat(profileService.get("admin").mobilePhone()).isEqualTo("010-1111-2222");
     }
 
     @Test

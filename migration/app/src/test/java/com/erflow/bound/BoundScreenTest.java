@@ -166,16 +166,20 @@ class BoundScreenTest {
     }
 
     @Test
-    @DisplayName("수정 조회는 사번 자리에 제품 코드를 채운다 (D-048)")
-    void updateDetailPutsProductIdIntoUserId() throws Exception {
+    @DisplayName("수정 조회의 사번 자리에 진짜 사번이 채워진다 — D-048 을 2단계에서 고쳤다(D-103)")
+    void updateDetailCarriesTheRealUserId() throws Exception {
         Integer id = jdbc.queryForObject(
                 "SELECT id FROM bound_tbl WHERE type = 0 LIMIT 1", Integer.class);
         assumeTrue(id != null, "입고 데이터가 없어 건너뛴다");
 
         BoundDetail bound = boundService.get(id, BoundService.INBOUND);
 
-        // 레거시 뷰가 user_id 자리에 product_id 를 읽는다 — userId == productId.
-        assertThat(bound.userId()).isEqualTo(bound.productId());
+        // 레거시는 이 자리에 product_id 를 읽어(D-048) 직원을 다시 고르지 않고
+        // 저장하면 담당 사번이 제품 코드로 덮였다. 이제 저장한 사번 그대로다.
+        String stored = jdbc.queryForObject(
+                "SELECT user_tbl_id FROM bound_tbl WHERE id = ?", String.class, id);
+        assertThat(bound.userId()).isEqualTo(stored);
+        assertThat(bound.userId()).isNotEqualTo(bound.productId());
     }
 
     @Test

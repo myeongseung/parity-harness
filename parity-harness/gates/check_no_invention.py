@@ -25,7 +25,7 @@ from . import EXIT_ERROR, EXIT_ESCALATE, EXIT_FAIL, EXIT_PASS
 from .allowlist import AllowlistError, load_allowlist
 from .compare import DETAIL_CHANGE, LABEL_DRIFT, NONE, classify, surplus
 from .extract import extract_file
-from .model import ManifestError, Signature, load_manifest
+from .model import ManifestError, Signature, load_manifest, load_screen_name
 
 #: 발명 시 사용자 영향이 큰 종류. 나머지는 한 단계 낮춰 보고한다.
 _HIGH_IMPACT_KINDS = {"control", "nav", "column", "option"}
@@ -142,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_ERROR
 
     try:
-        approved = load_allowlist(args.allowlist)
+        approved = load_allowlist(args.allowlist, load_screen_name(args.golden))
     except AllowlistError as exc:
         print(f"ERROR allowlist: {exc}", file=sys.stderr)
         return EXIT_ERROR

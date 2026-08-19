@@ -242,3 +242,40 @@ class TestNoInvention(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestScopedAllowlist(unittest.TestCase):
+    """화면 단위 allowlist 승인(2단계, D-105).
+
+    2단계에서 한 화면의 동작을 일부러 바꾸면 그 화면의 signature 가 정답과
+    어긋난다. 전역으로 열면 같은 모양의 진짜 회귀가 다른 화면에서 조용히
+    통과하므로, entry 의 "screen" 이 그 화면일 때만 승인된다.
+    """
+
+    def _load(self, entries, screen):
+        import json as _json
+        import tempfile, os
+        from gates.allowlist import load_allowlist
+        payload = {"schema": "parity-harness/allowlist@1", "entries": entries}
+        fd, path = tempfile.mkstemp(suffix=".json")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                _json.dump(payload, f, ensure_ascii=False)
+            return load_allowlist(path, screen)
+        finally:
+            os.unlink(path)
+
+    def test_scoped_entry_only_applies_to_its_screen(self) -> None:
+        entries = [{"key": "control:input|«dyn»|text",
+                    "screen": "admin-deptUpdate",
+                    "reason": "부서 수정 주소칸을 2단계에서 채웠다(D-105)"}]
+        self.assertIn("control:input|«dyn»|text",
+                      self._load(entries, "admin-deptUpdate"))
+        self.assertEqual({}, self._load(entries, "company-companyList"))
+
+    def test_global_entry_applies_everywhere(self) -> None:
+        entries = [{"key": "control:hidden|_csrf|hidden",
+                    "reason": "CSRF 토큰. 모든 form 에 생긴다(D-013)"}]
+        self.assertIn("control:hidden|_csrf|hidden",
+                      self._load(entries, "unit-unitList"))
+        self.assertIn("control:hidden|_csrf|hidden", self._load(entries, None))

@@ -103,18 +103,21 @@ public class AdminUserController {
      * 이메일·직급·부서)이 요청에 있어야 등록한다. 비어 있어도 된다 — «없는 것»과
      * «빈 것»을 가른다. 빈 값은 {@code null} 로 저장된다.
      *
-     * <p><b>화면이 보낸 값 셋을 버린다.</b> 레거시가 주소 두 줄을 있지도 않은 자리에서
-     * 꺼내 쓰고 휴대 전화는 아예 읽지 않는다. 그대로 옮겼다(D-057) — 그래서 여기
-     * 파라미터에도 없다.
+     * <p>레거시는 화면이 보낸 값 셋 — 주소 두 줄과 휴대 전화 — 을 버렸다(D-057).
+     * 주소는 있지도 않은 자리에서 꺼내 썼고 휴대 전화는 아예 읽지 않았다. 2단계에서
+     * 셋 다 받아 저장한다(D-104).
      *
      * @param id 사번
      * @param name 이름
      * @param socialNumber 주민등록번호
      * @param email 이메일
      * @param postalCode 우편번호
+     * @param address1 도로명 주소
+     * @param address2 상세 주소
      * @param job 직급 번호
      * @param dept 부서 번호
      * @param extensionPhone 내선 번호
+     * @param mobilePhone 휴대 전화
      * @param model 뷰 모델
      * @return 결과 템플릿
      */
@@ -125,17 +128,20 @@ public class AdminUserController {
             @RequestParam(required = false) String socialNumber,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String postalCode,
+            @RequestParam(required = false) String address1,
+            @RequestParam(required = false) String address2,
             @RequestParam(required = false) Integer job,
             @RequestParam(required = false) Integer dept,
             @RequestParam(required = false) String extensionPhone,
+            @RequestParam(required = false) String mobilePhone,
             Model model) {
 
         boolean given = id != null && name != null && socialNumber != null && email != null
                 && job != null && dept != null;
-        // 주소 두 줄과 휴대 전화 자리에 null 을 넣는 것이 레거시와 같다(D-057).
         boolean created = given && adminUserService.register(new AdminUserEdit(
                 blankToNull(id), blankToNull(name), socialNumber, blankToNull(email),
-                postalCode, null, null, job, dept, extensionPhone, null));
+                postalCode, blankToNull(address1), blankToNull(address2),
+                job, dept, extensionPhone, blankToNull(mobilePhone)));
 
         return result(model, created ? "등록에 성공했습니다." : "등록에 실패했습니다.",
                 created ? "/admin/user/list" : "/admin/user/register");
@@ -167,8 +173,9 @@ public class AdminUserController {
      *
      * <p>레거시 {@code userUpdateProc.jsp} 를 옮겼다. 아홉 값이 요청에 있어야 고친다.
      *
-     * <p><b>휴대 전화를 읽지 않는다.</b> 그런데 갱신 문장에는 그 칸이 있어, 수정할 때마다
-     * 저장된 번호가 지워진다(D-057). 주민등록번호는 갱신 문장에 없어 그대로 남는다.
+     * <p>레거시는 휴대 전화를 읽지 않으면서 갱신 문장에는 그 칸을 두어, 수정할 때마다
+     * 저장된 번호가 지워졌다(D-057). 2단계에서 받아 저장한다(D-104).
+     * 주민등록번호는 갱신 문장에 없어 그대로 남는다.
      *
      * <p>실패 문구가 «등록에 실패했습니다» 인 것도 레거시 그대로다.
      *
@@ -181,6 +188,7 @@ public class AdminUserController {
      * @param job 직급 번호
      * @param dept 부서 번호
      * @param extensionPhone 내선 번호
+     * @param mobilePhone 휴대 전화
      * @param model 뷰 모델
      * @return 결과 템플릿
      */
@@ -195,6 +203,7 @@ public class AdminUserController {
             @RequestParam(required = false) Integer job,
             @RequestParam(required = false) Integer dept,
             @RequestParam(required = false) String extensionPhone,
+            @RequestParam(required = false) String mobilePhone,
             Model model) {
 
         boolean given = id != null && name != null && email != null && postalCode != null
@@ -203,7 +212,7 @@ public class AdminUserController {
         boolean updated = given && adminUserService.update(new AdminUserEdit(
                 blankToNull(id), blankToNull(name), null, blankToNull(email),
                 postalCode, blankToNull(address1), blankToNull(address2),
-                job, dept, extensionPhone, null));
+                job, dept, extensionPhone, blankToNull(mobilePhone)));
 
         return result(model, updated ? "수정에 성공했습니다." : "등록에 실패했습니다.",
                 updated ? "/admin/user/list" : "/admin/user/update");

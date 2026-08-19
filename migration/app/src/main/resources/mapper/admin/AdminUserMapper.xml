@@ -128,8 +128,8 @@
       비밀번호는 사번을 해시한 값이다 — 최초 로그인에서 비밀번호 변경 화면으로 가는
       조건이 «비밀번호 == 사번» 이므로, 새 사원은 반드시 그 상태로 시작한다.
 
-      address1·address2·mobile_phone 은 화면이 값을 보내도 언제나 null 이 들어간다.
-      레거시 처리가 그 값을 읽지 않기 때문이다(D-057).
+      레거시 처리는 address1·address2·mobile_phone 을 읽지 않아 언제나 null 이
+      들어갔다(D-057). 2단계에서 컨트롤러가 셋을 받아 넘긴다(D-104).
     -->
     <insert id="insertUser">
         INSERT INTO user_tbl
@@ -148,8 +148,8 @@
                address2 = ?, job_tbl_id = ?, dept_tbl_id = ?, extension_phone = ?,
                mobile_phone = ? where id = ?
 
-      주민등록번호는 이 문장에 없다 — 수정으로 바뀌지 않는다. 반대로 mobile_phone 은
-      있는데 값이 언제나 null 이라, **수정할 때마다 휴대 전화가 지워진다**(D-057).
+      주민등록번호는 이 문장에 없다 — 수정으로 바뀌지 않는다. mobile_phone 은
+      레거시가 읽지 않아 수정할 때마다 지워졌다(D-057). 2단계에서 받아 저장한다(D-104).
     -->
     <update id="updateUser">
         UPDATE user_tbl

@@ -50,8 +50,8 @@
         update calendar_tbl set subject = ?, content = ?, started_at = ?,
                ended_at = ?, type = ? where id = ?
 
-      **주인을 보지 않는다.** 번호만 맞으면 남의 일정도 고쳐진다(D-083).
-      그대로 옮기되 결함으로 적어 둔다.
+      레거시는 **주인을 보지 않았다** — 번호만 맞으면 남의 일정도 고쳐졌다(D-083).
+      2단계에서 지우기와 같은 모양으로 주인 조건을 붙였다(D-101).
     -->
     <update id="updateEvent">
         UPDATE calendar_tbl
@@ -61,13 +61,14 @@
                ended_at   = #{event.end},
                type       = #{event.type}
          WHERE id = #{event.id}
+           AND user_tbl_id = #{event.userId}
     </update>
 
     <!--
       레거시:
         delete from calendar_tbl where id = ? and user_tbl_id = ?
 
-      지우는 쪽만 주인을 본다. 고치는 쪽과 어긋난다.
+      레거시부터 주인을 봤다. 고치는 쪽도 2단계에서 같은 모양이 됐다(D-101).
     -->
     <delete id="deleteEvent">
         DELETE FROM calendar_tbl

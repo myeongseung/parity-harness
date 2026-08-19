@@ -226,21 +226,20 @@ class AdminUserScreenTest {
     }
 
     @Test
-    @DisplayName("등록은 주소와 휴대 전화를 버린다 — 레거시 그대로다")
+    @DisplayName("등록이 주소와 휴대 전화까지 저장한다 — D-057 을 2단계에서 고쳤다(D-104)")
     @Transactional
-    void registerDropsAddressAndMobilePhone() {
+    void registerKeepsAddressAndMobilePhone() {
         adminUserService.register(newUser("T-9002"));
 
         var row = jdbc.queryForMap(
                 "SELECT postal_code, address1, address2, mobile_phone, extension_phone "
                         + "FROM user_tbl WHERE id = 'T-9002'");
-        // 우편번호와 내선 번호는 남는다.
         assertThat(row.get("postal_code")).isEqualTo("48058");
         assertThat(row.get("extension_phone")).isEqualTo("123");
-        // 주소 두 줄과 휴대 전화는 화면에서 입력해도 저장되지 않는다(D-057).
-        assertThat(row.get("address1")).isNull();
-        assertThat(row.get("address2")).isNull();
-        assertThat(row.get("mobile_phone")).isNull();
+        // 레거시는 이 셋을 버렸다(D-057). 이제 화면에 입력한 값이 그대로 남는다.
+        assertThat(row.get("address1")).isEqualTo("부산광역시");
+        assertThat(row.get("address2")).isEqualTo("3층");
+        assertThat(row.get("mobile_phone")).isEqualTo("010-9999-8888");
     }
 
     @Test
@@ -253,35 +252,31 @@ class AdminUserScreenTest {
     }
 
     @Test
-    @DisplayName("수정하면 휴대 전화가 지워진다 — 레거시 그대로다")
+    @DisplayName("수정해도 휴대 전화가 살아남는다 — D-057 을 2단계에서 고쳤다(D-104)")
     @Transactional
-    void updateWipesMobilePhone() {
+    void updateKeepsMobilePhone() {
         adminUserService.register(newUser("T-9004"));
-        jdbc.update("UPDATE user_tbl SET mobile_phone = '010-0000-0000' WHERE id = 'T-9004'");
 
         boolean updated = adminUserService.update(new AdminUserEdit(
                 "T-9004", "고친이름", null, "new@erflow.test", "48058",
-                "부산광역시", "3층", jobId(), deptId(), "567", null));
+                "부산광역시", "3층", jobId(), deptId(), "567", "010-0000-0000"));
 
         assertThat(updated).isTrue();
         var row = jdbc.queryForMap(
                 "SELECT name, address1, address2, mobile_phone, social_number "
                         + "FROM user_tbl WHERE id = 'T-9004'");
         assertThat(row.get("name")).isEqualTo("고친이름");
-        // 수정에서는 주소가 제대로 저장된다. 등록과 다르다.
         assertThat(row.get("address1")).isEqualTo("부산광역시");
         assertThat(row.get("address2")).isEqualTo("3층");
-        // 화면에 채워져 있던 번호가 조용히 지워진다(D-057).
-        assertThat(row.get("mobile_phone")).isNull();
+        // 레거시는 이 값을 읽지 않아 수정할 때마다 지워졌다(D-057). 이제 남는다.
+        assertThat(row.get("mobile_phone")).isEqualTo("010-0000-0000");
         // 주민등록번호는 갱신 문장에 없어 그대로 남는다.
         assertThat(row.get("social_number")).isEqualTo("990115-1234567");
     }
 
     private AdminUserEdit newUser(String id) {
-        // 레거시 처리가 주소 두 줄과 휴대 전화를 읽지 않는다. 컨트롤러가 그 자리에
-        // null 을 넣는 것까지 그대로 시험한다.
         return new AdminUserEdit(id, "시험사원", "990115-1234567", id + "@erflow.test",
-                "48058", null, null, jobId(), deptId(), "123", null);
+                "48058", "부산광역시", "3층", jobId(), deptId(), "123", "010-9999-8888");
     }
 
     private int jobId() {

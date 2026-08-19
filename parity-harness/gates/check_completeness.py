@@ -26,7 +26,7 @@ from . import EXIT_ERROR, EXIT_ESCALATE, EXIT_FAIL, EXIT_PASS
 from .allowlist import AllowlistError, load_allowlist
 from .compare import DETAIL_CHANGE, LABEL_DRIFT, NONE, classify, surplus
 from .extract import extract_file
-from .model import ManifestError, Signature, load_manifest
+from .model import ManifestError, Signature, load_manifest, load_screen_name
 
 #: 사라지면 사용자가 하던 일을 못 하게 되는 종류.
 #: 발명 게이트와 달리 근사 매칭으로 완화하지 않는다 — 사라진 저장 버튼은
@@ -143,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_ERROR
 
     try:
-        approved = load_allowlist(args.allowlist)
+        approved = load_allowlist(args.allowlist, load_screen_name(args.golden))
     except AllowlistError as exc:
         print(f"ERROR allowlist: {exc}", file=sys.stderr)
         return EXIT_ERROR

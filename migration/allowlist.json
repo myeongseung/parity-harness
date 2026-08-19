@@ -36,6 +36,27 @@
       "reason": "수·발주 등록의 화면 왼쪽 위에 찍히는 점. 레거시 taskRegister.jsp:38 이 </title>. 로 끝나는 오타인데, head 안의 글자는 브라우저가 body 첫머리로 끌어내려 화면에 보인다. 추출기는 head 를 건너뛰므로 정답 쪽에서 이것을 못 본다 — 신규가 브라우저 DOM 대로(D-037) 재현하면 발명으로 잡히는 사각지대다. 근거: migration/design/00-decisions.md D-097",
       "owner": "myeongseung",
       "added": "2026-08-19"
+    },
+    {
+      "key": "control:input|«dyn»|text",
+      "screen": "admin-deptUpdate",
+      "reason": "부서 수정 화면의 주소칸. 레거시는 언제나 비워 둬서 이름만 고쳐도 저장 시 주소가 지워졌다(D-059) — 라이브 데이터에 지워진 부서가 실제로 남아 있다. 2단계에서 현재 값을 채웠고(D-105), readonly 입력의 value 는 화면 글자라 signature 가 «우편번호»/«도로명 주소» 에서 «dyn» 으로 바뀐다. 이 화면에만 좁혀 승인한다. 근거: migration/design/00-decisions.md D-105",
+      "owner": "myeongseung",
+      "added": "2026-08-19"
+    },
+    {
+      "key": "control:input|우편번호|text",
+      "screen": "admin-deptUpdate",
+      "reason": "부서 수정 화면의 주소칸. 레거시는 언제나 비워 둬서 이름만 고쳐도 저장 시 주소가 지워졌다(D-059) — 라이브 데이터에 지워진 부서가 실제로 남아 있다. 2단계에서 현재 값을 채웠고(D-105), readonly 입력의 value 는 화면 글자라 signature 가 «우편번호»/«도로명 주소» 에서 «dyn» 으로 바뀐다. 이 화면에만 좁혀 승인한다. 근거: migration/design/00-decisions.md D-105",
+      "owner": "myeongseung",
+      "added": "2026-08-19"
+    },
+    {
+      "key": "control:input|도로명 주소|text",
+      "screen": "admin-deptUpdate",
+      "reason": "부서 수정 화면의 주소칸. 레거시는 언제나 비워 둬서 이름만 고쳐도 저장 시 주소가 지워졌다(D-059) — 라이브 데이터에 지워진 부서가 실제로 남아 있다. 2단계에서 현재 값을 채웠고(D-105), readonly 입력의 value 는 화면 글자라 signature 가 «우편번호»/«도로명 주소» 에서 «dyn» 으로 바뀐다. 이 화면에만 좁혀 승인한다. 근거: migration/design/00-decisions.md D-105",
+      "owner": "myeongseung",
+      "added": "2026-08-19"
     }
   ]
 }
