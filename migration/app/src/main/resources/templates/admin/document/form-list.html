@@ -15,7 +15,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>문서 양식 리스트</title>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script th:src="@{https://code.jquery.com/jquery-latest.min.js}"></script>
+    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
+    <script th:src="@{/js/admin/admin.js}"></script>
+    <script th:src="@{/js/admin/documentFormList.js}"></script>
     <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
@@ -24,9 +27,6 @@
     <link rel="stylesheet" th:href="@{/css/admin/adminHeader.css}">
     <link rel="stylesheet" th:href="@{/css/admin/documentFormList.css}">
     <link rel="stylesheet" th:href="@{/css/admin/documentModal.css}">
-    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
-    <script th:src="@{/js/admin/admin.js}"></script>
-    <script th:src="@{/js/admin/documentFormList.js}"></script>
 </head>
 <body>
 <div class="admin-wrap">

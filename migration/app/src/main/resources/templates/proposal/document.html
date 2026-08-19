@@ -19,7 +19,7 @@
   (게시글 본문과 같은 O-010).
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('결재 문서 보기', ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/bootcss/bootstrap2.css', '/css/common/common.css', '/css/common/page.css', '/css/proposal/proposalDocument.css', '/css/main/header.css', '/css/main/aside.css'} }, ${ {'/js/proposal/proposalDocument.js'} })}">
+<head th:replace="~{fragments/head :: head('결재 문서 보기', ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/bootcss/bootstrap2.css', '/css/common/common.css', '/css/common/page.css', '/css/proposal/proposalDocument.css', '/css/main/header.css', '/css/main/aside.css'} }, ${ {'https://code.jquery.com/jquery-latest.min.js', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js', '/js/bootjs/bootstrap.js', '/js/proposal/proposalDocument.js', '/js/main/index.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

@@ -40,6 +40,23 @@ _FRAGMENT = re.compile(r"~\{fragments/head\s*::\s*head\(([^)]*)\)\}", re.S)
 #: 목록을 통째로 받아야 한다 — 지금은 아직 그렇게 되어 있지 않다(O-015).
 _SHARED = ("bootstrap.css", "common.css", "page.css", "header.css", "aside.css")
 
+def _split_args(text: str) -> list[str]:
+    """괄호 안의 인자를 쉼표로 나눈다. 중괄호 안의 쉼표는 세지 않는다."""
+    parts, depth, cur = [], 0, ""
+    for ch in text:
+        if ch in "({[":
+            depth += 1
+        if ch in ")}]":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    parts.append(cur)
+    return parts
+
+
 def legacy_sheets(path: Path) -> list[str]:
     text = path.read_text(encoding="euc-kr", errors="replace")
     return [u.split("/")[-1] for u in _LINK.findall(text)]
@@ -49,13 +66,20 @@ def new_sheets(path: Path) -> list[str]:
     """신규 템플릿이 싣는 목록.
 
     공용 조각을 쓰면 화면이 넘긴 목록이 곧 전부다 — 조각은 고정 목록을 갖지 않는다.
+
+    조각은 인자를 셋 받는다(제목·CSS·스크립트). **두 번째만 봐야 한다** — 레거시가
+    CSS 파일을 `<script>` 로 싣는 자리가 있어서(`taskHistory.css`), 인자를 통째로
+    훑으면 그것까지 스타일시트로 세어 없던 차이가 보고된다.
     """
     text = path.read_text(encoding="utf-8", errors="replace")
     fragment = _FRAGMENT.search(text)
     if not fragment:
         return [u.split("/")[-1] for u in _LINK.findall(text)]
+    args = _split_args(fragment.group(1))
+    if len(args) != 3:
+        return []
     return [u.split("/")[-1]
-            for u in re.findall(r"'((?:/css/|https?://)[^']+\.css)'", fragment.group(1))]
+            for u in re.findall(r"'((?:/css/|https?://)[^']+\.css)'", args[1])]
 
 
 def main() -> int:

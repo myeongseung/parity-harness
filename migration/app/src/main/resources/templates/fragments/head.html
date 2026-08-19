@@ -8,14 +8,21 @@
   그래서 여기서 고정 목록을 갖지 않는다. 화면이 **자기 목록을 통째로** 넘긴다.
   CDN 도 그 목록에 들어간다 — 글꼴 아이콘(font-awesome)이 놓인 자리가 화면마다 다르다.
 
-    sheets   예: ['/css/common/common.css', 'https://.../all.min.css', ...]
-    pageJs   예: ['/js/main/unitList.js']
+    sheets    예: ['/css/common/common.css', 'https://.../all.min.css', ...]
+    scripts   예: ['https://.../jquery-ui.js', '/js/datepicker.js', ...]
+
+  **스크립트도 마찬가지다.** 고정으로 싣던 다섯 개 때문에 화면이 필요로 하는 것이
+  빠졌다 — 우편번호 찾기(postcode)·날짜 고르기(jquery-ui)·편집기(ckeditor)가 없어
+  버튼을 눌러도 아무 일이 없었다(D-096).
+
+  `csrf.js` 만 우리가 넣는다. 레거시에 없던 것이고 ajax 에 토큰을 붙이는 데 필요하다
+  (D-086). jQuery 뒤에 와야 하므로 목록 다음에 붙인다.
 
   한때 이 조각이 다섯 개를 고정으로 싣고 화면은 뒤에 덧붙이기만 했다. 87화면 중
   76화면의 순서가 어긋났고 실화면에서 배치 차이로 드러났다(D-093).
   `check_stylesheets.py` 가 화면마다 목록과 순서를 견준다.
 */-->
-<head th:fragment="head(title, sheets, pageJs)" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title, sheets, scripts)" xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--/*
@@ -26,14 +33,8 @@
     <meta name="_csrf_header" th:content="${_csrf?.headerName}">
     <title th:text="${title}">ERFlow</title>
 
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
-            integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" th:each="css : ${sheets}" th:href="@{${css}}">
 
-    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
+    <script th:each="js : ${scripts}" th:src="@{${js}}"></script>
     <script th:src="@{/js/common/csrf.js}"></script>
-    <script th:src="@{/js/main/index.js}"></script>
-    <script th:each="js : ${pageJs}" th:src="@{${js}}"></script>
 </head>

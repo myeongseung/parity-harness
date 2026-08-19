@@ -23,16 +23,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:src="@{https://code.jquery.com/jquery-latest.min.js}"></script>
+    <script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
+    <script th:src="@{/js/admin/admin.js}"></script>
+    <script th:src="@{/js/admin/location.js}"></script>
     <link rel="stylesheet" th:href="@{/css/bootcss/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
     <link rel="stylesheet" th:href="@{/css/admin/adminSidebar.css}">
     <link rel="stylesheet" th:href="@{/css/admin/adminHeader.css}">
     <link rel="stylesheet" th:href="@{/css/admin/userRegister.css}">
-    <script th:src="@{/js/admin/admin.js}"></script>
-    <script th:src="@{/js/admin/location.js}"></script>
 </head>
 <body>
 <div class="admin-wrap">

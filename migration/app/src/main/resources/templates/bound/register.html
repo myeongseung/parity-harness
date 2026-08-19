@@ -11,7 +11,7 @@
   placeholder 가 라벨이 된다. 맞추면 게이트가 어긋난다.
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:with="isInbound=${flag == 'inbound'}">
-<head th:replace="~{fragments/head :: head(${isInbound ? '입고 등록 페이지' : '출고 등록 페이지'}, ${ {'/css/bootcss/bootstrap.css', '/css/jquery-ui.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/boundRegister.css'} }, ${ {'/js/main/bound.js','/js/datepicker.js'} })}">
+<head th:replace="~{fragments/head :: head(${isInbound ? '입고 등록 페이지' : '출고 등록 페이지'}, ${ {'/css/bootcss/bootstrap.css', '/css/jquery-ui.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/aside.css', '/css/main/boundRegister.css'} }, ${ {'https://code.jquery.com/jquery-latest.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js', 'https://code.jquery.com/jquery-1.12.4.js', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', '/js/admin/admin.js', '/js/admin/location.js', '/js/main/bound.js', '/js/datepicker.js', '/js/bootjs/bootstrap.js', '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'} })}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: header(${headerMenu}, ${currentUser})}"></th:block>

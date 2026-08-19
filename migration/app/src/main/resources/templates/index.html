@@ -22,11 +22,14 @@
     <meta name="_csrf" th:content="${_csrf?.token}">
     <meta name="_csrf_header" th:content="${_csrf?.headerName}">
     <title>Welcome to ERFlow</title>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
-            integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
-            crossorigin="anonymous" referrerpolicy="no-referrer">
-    </script>
+    <script th:src="@{https://code.jquery.com/jquery-latest.min.js}"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js}" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.9/index.min.js}" type="module"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js}"></script>
+    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
+    <script th:src="@{/js/main/index.js}"></script>
+    <script th:src="@{/js/main/calendar.js}"></script>
+    <script th:src="@{/js/main/indexCalendar.js}"></script>
     <link rel="stylesheet" th:href="@{/css/main/modal.css}">
     <link rel="stylesheet" th:href="@{/css/bootcss/bootstrap.css}">
     <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css}">
@@ -36,14 +39,6 @@
     <link rel="stylesheet" th:href="@{/css/main/index.css}">
     <link rel="stylesheet" th:href="@{/css/main/footer.css}">
     <link rel="stylesheet" th:href="@{/css/main/documentList.css}">
-    <script type="module"
-            src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.9/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
-    <script th:src="@{/js/bootjs/bootstrap.js}"></script>
-    <script th:src="@{/js/common/csrf.js}"></script>
-    <script th:src="@{/js/main/index.js}"></script>
-    <script th:src="@{/js/main/calendar.js}"></script>
-    <script th:src="@{/js/main/indexCalendar.js}"></script>
 </head>
 <body>
 <div class="wrap">
