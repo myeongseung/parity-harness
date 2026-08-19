@@ -104,11 +104,11 @@
                th:href="|javascript:block(5, ${page.nowBlock - 1})|">이전</a>
 
             <ul class="page-numbers">
-                <a th:each="number : ${page.pageNumbers}"
-                   th:href="|javascript:paging(${number})|"
-                   th:classappend="${number == page.nowPage} ? 'disabled'">
-                    <li th:text="${number}">1</li>
-                </a>
+                <li th:each="number : ${page.pageNumbers}">
+                    <a th:href="|javascript:paging(${number})|"
+                       th:classappend="${number == page.nowPage} ? 'disabled'"
+                       th:text="${number}">1</a>
+                </li>
             </ul>
 
             <a th:if="${page.hasNextBlock()}"
