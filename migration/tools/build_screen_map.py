@@ -33,6 +33,7 @@ GROUPS = (
     ("login", "로그인"),
     ("index", "메인"),
     ("profile", "프로필"),
+    ("work", "근태"),
     ("post", "게시판"),
     ("message", "쪽지"),
     ("proposal", "전자결재"),

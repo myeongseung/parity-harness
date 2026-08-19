@@ -242,6 +242,9 @@ SCREENS = (
     Screen("index", "index", "index.jsp", "index.html", True),
     Screen("footer", "index", "footer.jsp", "fragments/footer.html", True),
 
+    # 근태 확인 — 전 직원의 한 달 근태를 8명씩 끊어 보여준다
+    _screen("work", "work", "work", True, legacy="work/work.jsp"),
+
     # 프로필 — 레거시는 최상위에 있다. 보기 화면은 남의 것도 열리고, 수정으로
     # 들어가는 길목에만 비밀번호를 다시 묻는다
     _screen("profile", "profile", "view", True, legacy="profile.jsp"),

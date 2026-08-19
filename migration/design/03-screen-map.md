@@ -37,6 +37,12 @@
 | profile/update | `/ERFlow/profileUpdate.jsp` | `/profile/update` |
 | profile/view | `/ERFlow/profile.jsp` | `/profile` |
 
+## 근태
+
+| 화면 | 레거시 | 신규 |
+|---|---|---|
+| work/work | `/ERFlow/work/work.jsp` | `/work` |
+
 ## 게시판
 
 | 화면 | 레거시 | 신규 |

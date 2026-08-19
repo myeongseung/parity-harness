@@ -1,0 +1,204 @@
+{
+  "schema": "parity-harness/golden-manifest@1",
+  "extractor": 8,
+  "screen": "work-work",
+  "source": "legacy/ERFlow/src/main/webapp/work/work.jsp",
+  "signatures": [
+    {
+      "kind": "text",
+      "role": "static",
+      "label": "사용자 > 근태 관리 > 근태 확인",
+      "detail": "",
+      "raw": "사용자 > 근태 관리 > 근태 확인"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "",
+      "detail": "month",
+      "raw": ""
+    },
+    {
+      "kind": "control",
+      "role": "button",
+      "label": "검색",
+      "detail": "button",
+      "raw": "검색"
+    },
+    {
+      "kind": "control",
+      "role": "select",
+      "label": "keyfield",
+      "detail": "",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "전체조회",
+      "detail": "",
+      "raw": "전체조회"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "option",
+      "role": "item",
+      "label": "이름",
+      "detail": "",
+      "raw": "이름"
+    },
+    {
+      "kind": "control",
+      "role": "input",
+      "label": "search",
+      "detail": "search",
+      "raw": "Search"
+    },
+    {
+      "kind": "text",
+      "role": "tooltip",
+      "label": "검색하기",
+      "detail": "",
+      "raw": "검색하기"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "구분",
+      "detail": "",
+      "raw": "구분"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "통계",
+      "detail": "",
+      "raw": "통계"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "성명",
+      "detail": "",
+      "raw": "성명"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "부서",
+      "detail": "",
+      "raw": "부서"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "직책",
+      "detail": "",
+      "raw": "직책"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "«dyn»",
+      "detail": "",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "",
+      "detail": "",
+      "raw": ""
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "정상",
+      "detail": "",
+      "raw": "정상"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "지각",
+      "detail": "",
+      "raw": "지각"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "조퇴",
+      "detail": "",
+      "raw": "조퇴"
+    },
+    {
+      "kind": "column",
+      "role": "header",
+      "label": "연차",
+      "detail": "",
+      "raw": "연차"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "이전",
+      "detail": "javascript:",
+      "raw": "이전"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "«dyn»",
+      "detail": "javascript:",
+      "raw": "«dyn»"
+    },
+    {
+      "kind": "nav",
+      "role": "link",
+      "label": "다음",
+      "detail": "javascript:",
+      "raw": "다음"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "nowpage",
+      "detail": "hidden",
+      "raw": "nowPage"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "date",
+      "detail": "hidden",
+      "raw": "date"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyfield",
+      "detail": "hidden",
+      "raw": "keyfield"
+    },
+    {
+      "kind": "control",
+      "role": "hidden",
+      "label": "keyword",
+      "detail": "hidden",
+      "raw": "keyword"
+    }
+  ]
+}

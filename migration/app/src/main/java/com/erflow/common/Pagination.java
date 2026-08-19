@@ -48,11 +48,25 @@ public record Pagination(
      * @return 계산된 페이징
      */
     public static Pagination of(int totalRecord, int requestedPage) {
+        return of(totalRecord, requestedPage, NUM_PER_PAGE);
+    }
+
+    /**
+     * 페이지당 건수가 15가 아닌 화면용.
+     *
+     * <p>근태 확인이 그렇다 — 한 사람이 두 줄을 차지해 레거시가 8명씩 끊는다.
+     *
+     * @param totalRecord 전체 건수
+     * @param requestedPage 요청된 페이지. 1 미만이면 1로 본다
+     * @param numPerPage 페이지당 건수
+     * @return 계산된 페이징
+     */
+    public static Pagination of(int totalRecord, int requestedPage, int numPerPage) {
         int nowPage = Math.max(requestedPage, 1);
-        int totalPage = (int) Math.ceil(1.0 * totalRecord / NUM_PER_PAGE);
+        int totalPage = (int) Math.ceil(1.0 * totalRecord / numPerPage);
         int totalBlock = (int) Math.ceil(1.0 * totalPage / PAGE_PER_BLOCK);
         int nowBlock = (int) Math.ceil(1.0 * nowPage / PAGE_PER_BLOCK);
-        int start = (nowPage - 1) * NUM_PER_PAGE;
+        int start = (nowPage - 1) * numPerPage;
 
         int pageStart = (nowBlock - 1) * PAGE_PER_BLOCK + 1;
         int pageEnd = pageStart + PAGE_PER_BLOCK;
@@ -63,7 +77,7 @@ public record Pagination(
                 : List.of();
 
         return new Pagination(nowPage, totalRecord, totalPage, totalBlock, nowBlock,
-                start, NUM_PER_PAGE, PAGE_PER_BLOCK, numbers);
+                start, numPerPage, PAGE_PER_BLOCK, numbers);
     }
 
     /**
