@@ -300,7 +300,7 @@ python migration/tools/run_gates.py
 | | |
 |---|---|
 | [parity-harness/README.md](parity-harness/README.md) | 게이트 동작 원리, 오탐 제어, 한계 |
-| [migration/README.md](migration/README.md) | 이관 현황과 슬라이스별 결과 |
+| [migration/README.md](migration/README.md) | 이관 결과(완결)와 초기 슬라이스 기록 |
 | [migration/design/00-decisions.md](migration/design/00-decisions.md) | 결정 로그 (D-001~D-115) + 미결 안건 + 종결 |
 | [migration/design/01-menu-layout.md](migration/design/01-menu-layout.md) | 레이아웃·권한 설계 |
 | [docs/변환은-쉽고-증명이-어렵다.md](docs/%EB%B3%80%ED%99%98%EC%9D%80-%EC%89%BD%EA%B3%A0-%EC%A6%9D%EB%AA%85%EC%9D%B4-%EC%96%B4%EB%A0%B5%EB%8B%A4.md) | **이 프로젝트를 왜, 어떻게 만들었는지** — 글로 읽는 버전 |

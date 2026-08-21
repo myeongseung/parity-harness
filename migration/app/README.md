@@ -97,11 +97,12 @@ com.erflow
 아니라 이관 중 실제로 문제가 되는 것만 담았다(공개 API Javadoc, 와일드카드 import,
 빈 catch). 규칙을 늘리려면 `config/checkstyle/checkstyle.xml` 에 근거를 주석으로 남긴다.
 
-## 현재 상태
+## 현재 상태 — 완결 (2026-08-21)
 
-스캐폴딩까지 완료. 기동되고 빌드·테스트·Checkstyle 이 통과한다.
-
-스캐폴딩·DB 환경·스키마 복제까지 완료. 테스트 **11건**이 실제 DB 를 상대로 통과한다.
+**89화면 전부 이관됐다.** 화면 목록의 단일 출처는 `../tools/screens.py` 의
+`SCREENS` 다. 2단계에서 레거시 결함 16건(D-100~D-115)도 해소했다 — 레거시와
+일부러 달라진 자리는 전부 [결정 로그](../design/00-decisions.md)에 있다.
+테스트 **348건**(그중 273건이 실제 DB 상대)이 통과한다.
 
 | | |
 |---|---|
@@ -129,11 +130,9 @@ templates/fragments/side-menu.html   placement=SIDE
 | 권한 | 부서·직급 비트마스크. **판정은 Java 에서** — SQL 로 옮기면 뒤집힌다 ([D-015](../design/00-decisions.md)) |
 | CSRF | 레거시에 없던 유일한 추가. allowlist 에 사유와 함께 등록 ([D-013](../design/00-decisions.md)) |
 
-로그인은 `/login`. 로그인 후 `/index`(관리자는 `/admin`)로 가는데, 두 화면은 아직
-이관 전이라 발판 안내가 뜬다.
-
-**아직 없는 것:** 도메인 화면. 옮긴 것은 `unit` 3화면뿐이고 golden 은 `../golden/unit/`
-에 있다.
+로그인은 `/login`. 로그인 후 `/index`(관리자는 `/admin`)로 간다. 유일하게 이관
+범위 밖인 화면은 `login/sendOk.html` — 메일 발송(SMTP)이 딸려 있어 일부러
+뺐다(O-011). golden 은 화면별로 `../golden/` 아래에 있다.
 
 ### 레이아웃 렌더링 확인
 
