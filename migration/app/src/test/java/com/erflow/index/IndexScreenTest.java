@@ -85,6 +85,23 @@ class IndexScreenTest {
     }
 
     @Test
+    @DisplayName("메인은 보이고, 위젯의 목적지는 문에서 막는다 (D-084·D-115)")
+    void widgetsShowButTheirTargetsBlock() throws Exception {
+        // 2단계에서 «위젯마다 권한을 본다» 안을 종결하며 이 짝을 못 박는다:
+        // 메인은 모두에게 같은 모습이고, 눌러 들어가는 화면이 권한을 막는다.
+        String html = mockMvc.perform(get("/index").with(user(TestUsers.noPermission())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(html).contains("공지사항").contains("전자결재")
+                .contains("자유게시판").contains("받은 쪽지함");
+
+        // 게시판은 권한이 없으면 권한 화면으로 되돌린다(리다이렉트).
+        mockMvc.perform(get("/post/list").param("boardId", "1")
+                        .with(user(TestUsers.noPermission())))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
     @DisplayName("자유게시판만 작성자 이름을 자른다 — 공지사항은 그대로 둔다")
     void onlyTheFreeBoardCutsTheAuthorName() {
         String longName = jdbc.queryForObject(
