@@ -307,7 +307,7 @@ python migration/tools/run_gates.py
 
 ## 라이선스와 출처
 
-하네스와 이관 코드는 이 저장소의 것이다.
+하네스와 이관 코드는 MIT — [LICENSE](LICENSE).
 
 `legacy/` 는 **이관 대상 원본**이며 이 저장소의 성과물이 아니다.
 ERFlow — 원저작자 [jUqItEr](https://github.com/jUqItEr), MIT (`legacy/LICENSE`).
