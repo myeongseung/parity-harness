@@ -196,6 +196,33 @@ class MessageScreenTest {
     }
 
     @Test
+    @DisplayName("쪽지함 페이징이 동작한다 — D-045 를 2단계에서 되살렸다(D-107)")
+    @Transactional
+    void pagingWorksNow() throws Exception {
+        // 레거시는 페이징 링크가 부르는 block()/paging() 을 어디에도 정의하지 않아
+        // 쪽지가 15건을 넘으면 1페이지 말고는 볼 수 없었다. 페이지가 나뉘도록
+        // admin 에게 16건을 만든다(페이지당 15건). 롤백된다.
+        for (int i = 0; i < 16; i++) {
+            messageService.send("admin", List.of("admin"), "페이징 시험 " + i);
+        }
+
+        var page1 = messageService.list(
+                MessageService.RECEIVER, "admin", new MessageSearch("", ""), 1);
+        var page2 = messageService.list(
+                MessageService.RECEIVER, "admin", new MessageSearch("", ""), 2);
+
+        assertThat(page1.rows()).hasSize(15);
+        assertThat(page2.rows()).isNotEmpty();
+        // 두 페이지는 겹치지 않는다.
+        List<Integer> firstIds = page1.rows().stream().map(MessageRow::id).toList();
+        assertThat(page2.rows()).noneSatisfy(row -> assertThat(firstIds).contains(row.id()));
+
+        // 화면에는 함수가 제출할 페이지 번호 칸이 있다.
+        assertThat(render("/message?class=receiver", "message-paging.html"))
+                .contains("name=\"nowPage\"");
+    }
+
+    @Test
     @DisplayName("목록 삭제는 class 가 없으면 잘못된 접근으로 보낸다")
     void listDeleteWithoutClassRedirects() throws Exception {
         mockMvc.perform(post("/message/delete").with(user(TestUsers.admin())).with(csrf()))

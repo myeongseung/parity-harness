@@ -9,8 +9,9 @@
   삭제는 «지움» 이 아니라 그 쪽에서 «안 보이게» 하는 소프트 삭제다(목록 SQL 의
   <class>_visible = 1 필터). 처리는 다음 단계에서 붙인다.
 
-  페이징 링크는 두되 block()/paging() 은 정의하지 않는다 — 레거시가 이 화면에 그 함수를
-  두지 않아 페이징이 동작하지 않았다(D-045). 그대로 옮긴다.
+  레거시는 페이징 링크가 부르는 block()/paging() 을 어디에도 정의하지 않아 페이징이
+  동작하지 않았다(D-045). 2단계에서 js/message/index.js 에 두 함수를 정의해
+  되살렸다(D-107).
 */-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:with="isReceiver=${className == 'receiver'}">
 <head th:replace="~{fragments/head :: head('쪽지 페이지', ${ {'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', '/css/common/common.css', '/css/common/page.css', '/css/main/header.css', '/css/main/index.css', '/css/bootcss/bootstrap.css', '/css/message/index.css'} }, ${ {'https://code.jquery.com/jquery-latest.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js', '/js/bootjs/bootstrap.js', '/js/main/index.js', '/js/message/index.js', '/js/main/findUser.js'} })}">
@@ -110,7 +111,7 @@
                       밖에 두면 message-nav-wrap 의 flex 형제가 되어 배치가 어긋난다.
                     */-->
                     <div class="message-footer">
-                        <!--/* 페이징 — block()/paging() 은 정의되지 않는다(D-045) */-->
+                        <!--/* 페이징 — 레거시엔 죽어 있던 것을 되살렸다(D-045→D-107) */-->
                         <div class="page-controller">
                             <a th:if="${page.hasPreviousBlock()}" class="disabled"
                                th:href="|javascript:block(5, ${page.nowBlock - 1})|">이전</a>
@@ -138,6 +139,12 @@
                 <input type="hidden" name="keyfield" th:value="${keyfield}">
                 <input type="hidden" name="keyword" th:value="${keyword}">
                 <input type="hidden" name="class" th:value="${className}">
+                <!--/* 레거시에는 없던 칸이다. 페이징 링크가 부르는 block()/paging() 이
+                       레거시에는 정의돼 있지 않아 쪽지가 15건을 넘으면 1페이지 말고는
+                       볼 수 없었다(D-045). 2단계에서 두 함수를 정의해 페이징을
+                       되살렸고(D-107), 함수가 제출할 페이지 번호를 여기 담는다.
+                       allowlist 에 이 화면으로 좁혀 등록했다. */-->
+                <input type="hidden" name="nowPage" th:value="${page.nowPage}">
             </form>
         </div>
     </div>

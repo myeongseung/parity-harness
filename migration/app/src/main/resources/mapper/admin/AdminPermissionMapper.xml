@@ -229,6 +229,16 @@
 
       번호(id)가 아니라 **프로그램 코드**로 찾는다. 레거시 그대로다.
     -->
+    <!-- 지운 부서·직급의 비트를 걷어낼 때(D-109) 전 행을 읽는다. 비트 계산은 Java 에서. -->
+    <select id="findPrograms" resultType="com.erflow.admin.permission.ProgramRow">
+        SELECT id,
+               program_id   AS programId,
+               program_name AS programName,
+               dept_level   AS deptLevel,
+               job_level    AS jobLevel
+          FROM permission_program_tbl
+    </select>
+
     <update id="updateProgramDeptLevel">
         UPDATE permission_program_tbl
            SET dept_level = #{level}

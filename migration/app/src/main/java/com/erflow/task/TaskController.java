@@ -222,9 +222,11 @@ public class TaskController {
         boolean present = taskId != null && userId != null && documentId != null
                 && taskAt != null && status != null && productId != null;
         boolean updated = present && taskService.update(
-                // type=0 은 레거시 결함을 그대로 옮긴 것이다(D-044). flag 로 바꾸지 않는다.
+                // 레거시는 type 을 넣지 않아 언제나 0 이었고 발주 수정이 늘
+                // 실패했다(D-044). 2단계에서 flag 로 채운다(D-106).
                 new TaskUpdate(taskId, blankToNull(userId), documentId,
-                        blankToNull(taskAt), status, 0),
+                        blankToNull(taskAt), status,
+                        "sell".equals(flag) ? TaskService.SELL : TaskService.PURCHASE),
                 histories(productId, count));
 
         model.addAttribute("message", updated ? "수정에 성공했습니다." : "수정에 실패했습니다.");

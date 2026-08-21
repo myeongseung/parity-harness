@@ -30,8 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
  * 프로필 화면이 실제 데이터로 도는지 확인한다.
  *
  * <p>이 도메인에서 게이트가 못 보는 자리 — 남의 근무 기록은 조회조차 하지 않는 것,
- * 수정 화면이 비밀번호 확인 없이 열리는 것 — 을 여기서 못 박는다. 전화번호가
- * 지워지던 결함(D-080)은 2단계에서 고쳤고(D-100), 고친 동작을 시험이 지킨다.
+ * 수정으로 들어가는 문 — 을 여기서 못 박는다. 전화번호가 지워지던 결함(D-080)은
+ * D-100 으로, 확인이 문이 아니던 결함(D-079)은 D-111 로 2단계에서 고쳤고, 고친
+ * 동작을 시험이 지킨다.
  */
 @SpringBootTest(properties = "server.port=0")
 @AutoConfigureMockMvc
@@ -130,19 +131,34 @@ class ProfileScreenTest {
                 "SELECT social_number FROM user_tbl WHERE id = 'admin'", String.class);
         assumeTrue(stored != null && !stored.isBlank(), "주민번호가 비어 있어 건너뛴다");
 
-        mockMvc.perform(get("/profile/update").with(user(TestUsers.admin())))
+        mockMvc.perform(get("/profile/update").sessionAttr("profilePasswordChecked", true)
+                        .with(user(TestUsers.admin())))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.not(
                         org.hamcrest.Matchers.containsString(stored))));
     }
 
     @Test
-    @DisplayName("비밀번호를 확인하지 않아도 수정 화면은 그냥 열린다")
-    void updateFormOpensWithoutThePasswordCheck() throws Exception {
+    @DisplayName("비밀번호 확인이 진짜 문이 됐다 — D-079 를 2단계에서 고쳤다(D-111)")
+    void updateFormRequiresThePasswordCheckNow() throws Exception {
+        // 레거시는 로그인만 보고 열어, 주소를 직접 치면 확인 없이 들어갔다(D-079).
         mockMvc.perform(get("/profile/update").with(user(TestUsers.admin())))
+                .andExpect(redirectedUrl("/profile/password-check"));
+
+        // 확인을 통과한 세션(표가 있다)만 들어온다.
+        mockMvc.perform(get("/profile/update").sessionAttr("profilePasswordChecked", true)
+                        .with(user(TestUsers.admin())))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         org.hamcrest.Matchers.containsString("사원 수정")));
+
+        // 처리도 같은 문이다 — 확인 없이 바로 POST 해도 막힌다.
+        mockMvc.perform(post("/profile/update-proc")
+                        .param("name", "x").param("email", "").param("postalCode", "")
+                        .param("address1", "").param("address2", "").param("mobilePhone", "")
+                        .with(user(TestUsers.admin()))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(redirectedUrl("/profile/password-check"));
     }
 
     @Test
@@ -175,7 +191,9 @@ class ProfileScreenTest {
 
         // 레거시는 이 칸을 비워 뒀고(D-080) 저장할 때마다 전화번호가 지워졌다.
         // 2단계에서 현재 값을 채웠다 — 화면이 채워 주므로 그대로 저장하면 값이 산다.
-        String html = mockMvc.perform(get("/profile/update").with(user(TestUsers.admin())))
+        String html = mockMvc.perform(get("/profile/update")
+                        .sessionAttr("profilePasswordChecked", true)
+                        .with(user(TestUsers.admin())))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         assertThat(html).contains("010-1111-2222");
@@ -199,6 +217,7 @@ class ProfileScreenTest {
                         .param("address1", "길 1")
                         .param("address2", "2층")
                         .param("mobilePhone", "")
+                        .sessionAttr("profilePasswordChecked", true)
                         .with(user(TestUsers.admin()))
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
@@ -220,6 +239,7 @@ class ProfileScreenTest {
                         .param("postalCode", "12345")
                         .param("address1", "길 1")
                         .param("address2", "2층")
+                        .sessionAttr("profilePasswordChecked", true)
                         .with(user(TestUsers.admin()))
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(redirectedUrl("/access-error"));

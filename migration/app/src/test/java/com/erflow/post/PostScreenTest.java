@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 게시판 화면이 실제 데이터로 그려지는지 확인한다.
@@ -48,6 +50,9 @@ class PostScreenTest {
     @Autowired
     private PostFileService postFileService;
 
+    @Autowired
+    private JdbcTemplate jdbc;
+
     @BeforeAll
     static void requireLocalConfig() {
         assumeTrue(
@@ -64,6 +69,31 @@ class PostScreenTest {
         Files.createDirectories(OUT);
         Files.writeString(OUT.resolve(fileName), html);
         return html;
+    }
+
+    @Test
+    @DisplayName("게시판 목록 페이징이 동작한다 — D-025 를 2단계에서 고쳤다(D-108)")
+    @Transactional
+    void boardPagingWorksNow() {
+        // 레거시는 start 를 계산해 두고 쓰지 않아 몇 페이지를 눌러도 0번부터
+        // 15건이 나왔다. 페이지가 나뉘도록 16개를 채운다(페이지당 15건). 롤백된다.
+        // 개수는 JDBC 로 센다 — 서비스로 먼저 읽으면 트랜잭션에 묶인 MyBatis 세션
+        // 캐시에 그 결과가 남아, 뒤의 JDBC 삽입이 보이지 않는다.
+        int have = jdbc.queryForObject("SELECT COUNT(*) FROM board_tbl", Integer.class);
+        for (int i = have; i < 16; i++) {
+            jdbc.update("INSERT INTO board_tbl (subject, permission_read_dept_level, "
+                    + "permission_read_job_level, permission_write_dept_level, "
+                    + "permission_write_job_level) VALUES (?, 0, 0, 0, 0)", "페이징 시험 " + i);
+        }
+
+        List<BoardRow> page1 = boardService.list(null, 1).rows();
+        List<BoardRow> page2 = boardService.list(null, 2).rows();
+
+        assertThat(page1).hasSize(15);
+        assertThat(page2).isNotEmpty();
+        // 두 페이지는 겹치지 않는다 — 레거시는 2페이지도 1페이지와 같았다.
+        List<Integer> firstIds = page1.stream().map(BoardRow::id).toList();
+        assertThat(page2).noneSatisfy(row -> assertThat(firstIds).contains(row.id()));
     }
 
     @Test

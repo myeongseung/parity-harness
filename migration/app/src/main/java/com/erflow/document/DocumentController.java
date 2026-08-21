@@ -71,8 +71,10 @@ public class DocumentController {
     /**
      * 문서 작성 화면. 추가와 수정을 겸한다.
      *
-     * <p>양식을 고르면 화면이 {@code template} 을 달고 다시 열린다. 그때 <b>편집기 내용이
-     * 그 양식으로 덮인다</b> — 쓰던 글이 있어도 사라진다. 레거시 그대로다.
+     * <p>양식을 고르면 화면이 {@code template} 을 달고 다시 열린다. 레거시는 그때
+     * 편집기 내용을 무조건 그 양식으로 덮어 쓰던 글이 사라졌다(D-076). 2단계에서
+     * «내용이 비어 있을 때만 덮는다» 로 고쳤다(D-110). 타이핑만 하고 저장하지 않은
+     * 글은 서버에 온 적이 없어 여기서 지킬 수 없다 — 지키는 것은 저장된 내용이다.
      *
      * <p>남의 문서를 고치려 하면 잘못된 접근으로 보낸다.
      *
@@ -98,8 +100,8 @@ public class DocumentController {
             return "redirect:/access-error";
         }
         String content = document == null ? "" : document.content();
-        if (template != null) {
-            // 양식을 고르면 그 내용으로 덮는다.
+        if (template != null && isBlank(content)) {
+            // 내용이 비어 있을 때만 양식으로 채운다(D-110). 레거시는 무조건 덮었다.
             content = documentService.templateContent(template);
         }
         model.addAttribute("flag", mode);

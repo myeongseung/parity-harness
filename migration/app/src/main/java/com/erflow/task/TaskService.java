@@ -112,11 +112,9 @@ public class TaskService {
      * 뒤 제출된 제품을 다시 넣는다.</b> 등록과 달리 수량 0 도 넣는다(레거시가 여기선
      * {@code if count > 0} 을 걸지 않는다).
      *
-     * <h2>본체 수정이 실패해도 이력은 바뀐다</h2>
-     *
-     * <p>레거시는 본체 수정 결과와 무관하게 이력을 지우고 다시 넣었고, 화면에는 본체
-     * 결과만 알렸다. 그래서 발주 수정(D-044 로 항상 실패)은 «실패» 라고 뜨는데도 이력은
-     * 바뀐다. 그대로 옮긴다 — 돌려주는 값은 본체 수정 결과다.
+     * <p>레거시는 본체 수정 결과와 무관하게 이력을 갈아 끼워, 발주 수정이 «실패» 라고
+     * 뜨는데도 이력은 바뀌어 있었다(D-044). 2단계에서 정리했다(D-106) — 본체가
+     * 수정됐을 때만 이력을 간다. 실패한 수정은 아무것도 바꾸지 않는다.
      *
      * @param task 수정 값
      * @param histories 제품·수량 목록(전량 교체)
@@ -125,6 +123,9 @@ public class TaskService {
     @Transactional
     public boolean update(TaskUpdate task, List<TaskHistory> histories) {
         boolean updated = taskMapper.updateTask(task) == 1;
+        if (!updated) {
+            return false;
+        }
         taskMapper.deleteHistories(task.id());
         if (histories != null) {
             for (TaskHistory history : histories) {
@@ -132,7 +133,7 @@ public class TaskService {
                         new TaskHistory(task.id(), history.productId(), history.count()));
             }
         }
-        return updated;
+        return true;
     }
 
     /**

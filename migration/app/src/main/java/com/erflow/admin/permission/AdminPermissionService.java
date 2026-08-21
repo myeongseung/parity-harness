@@ -167,8 +167,11 @@ public class AdminPermissionService {
     /**
      * 부서들을 지운다.
      *
-     * <p>권한 행을 먼저 지우고 부서를 지운다. <b>다른 부서·프로그램에 남은 그 비트는
-     * 걷어내지 않는다</b> — 레거시가 그렇다(D-062).
+     * <p>권한 행을 먼저 지우고 부서를 지운 뒤, <b>다른 부서의 {@code permission} 과
+     * 프로그램의 {@code dept_level} 에 남은 그 부서의 비트를 걷어낸다.</b> 레거시는
+     * 걷어내지 않아, 빈 자리를 찾는 규칙이 그 비트를 새 부서에 다시 주면 지운 부서의
+     * 권한을 그대로 물려받았다(D-062). 2단계에서 걷어낸다(D-109) — 계산은 여기(Java)서
+     * 한다. 레거시의 {@code revokePermission} 은 DB 비트 연산이라 쓰지 않는다.
      *
      * @param deptIds 지울 부서 번호들
      * @return 전부 지웠으면 {@code true}
@@ -177,14 +180,32 @@ public class AdminPermissionService {
     public boolean deleteDepts(List<Integer> deptIds) {
         boolean result = deptIds != null && !deptIds.isEmpty();
         for (int deptId : deptIds == null ? List.<Integer>of() : deptIds) {
+            // 비트는 권한 행에 있으니 지우기 전에 읽어 둔다.
+            long bit = levelOf(mapper.findDeptPermissions(null), deptId);
             mapper.deleteDeptPermission(deptId);
             result &= mapper.deleteDept(deptId) == 1;
+            if (bit != 0L) {
+                for (PermissionRow row : mapper.findDeptPermissions(null)) {
+                    if ((row.permission() & bit) != 0L) {
+                        mapper.updateDeptPermission(row.classId(), row.permission() & ~bit);
+                    }
+                }
+                for (ProgramRow program : mapper.findPrograms()) {
+                    if ((program.deptLevel() & bit) != 0L) {
+                        mapper.updateProgramDeptLevel(
+                                program.programId(), program.deptLevel() & ~bit);
+                    }
+                }
+            }
         }
         return result;
     }
 
     /**
      * 직급들을 지운다.
+     *
+     * <p>부서와 같은 규칙으로(D-109) 다른 직급의 {@code permission} 과 프로그램의
+     * {@code job_level} 에 남은 비트를 걷어낸다 — 결함의 모양이 D-062 와 같다.
      *
      * @param jobIds 지울 직급 번호들
      * @return 전부 지웠으면 {@code true}
@@ -193,8 +214,22 @@ public class AdminPermissionService {
     public boolean deleteJobs(List<Integer> jobIds) {
         boolean result = jobIds != null && !jobIds.isEmpty();
         for (int jobId : jobIds == null ? List.<Integer>of() : jobIds) {
+            long bit = levelOf(mapper.findJobPermissions(null), jobId);
             mapper.deleteJobPermission(jobId);
             result &= mapper.deleteJob(jobId) == 1;
+            if (bit != 0L) {
+                for (PermissionRow row : mapper.findJobPermissions(null)) {
+                    if ((row.permission() & bit) != 0L) {
+                        mapper.updateJobPermission(row.classId(), row.permission() & ~bit);
+                    }
+                }
+                for (ProgramRow program : mapper.findPrograms()) {
+                    if ((program.jobLevel() & bit) != 0L) {
+                        mapper.updateProgramJobLevel(
+                                program.programId(), program.jobLevel() & ~bit);
+                    }
+                }
+            }
         }
         return result;
     }
@@ -287,6 +322,16 @@ public class AdminPermissionService {
         }
         long level = levelsOf(mapper.findJobPermissions(null), checked);
         return mapper.updateProgramJobLevel(program.programId(), level) == 1;
+    }
+
+    /** 그 번호의 자기 비트 하나. 없으면 0. 지울 때 걷어낼 비트를 찾는다(D-109). */
+    private static long levelOf(List<PermissionRow> all, int classId) {
+        for (PermissionRow row : all) {
+            if (row.classId() == classId) {
+                return row.level();
+            }
+        }
+        return 0L;
     }
 
     /** 체크된 번호들의 비트를 관리자 비트 위에 얹는다. */

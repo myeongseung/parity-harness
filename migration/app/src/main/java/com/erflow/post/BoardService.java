@@ -31,15 +31,10 @@ public class BoardService {
     /**
      * 게시판 목록 한 페이지.
      *
-     * <h2>레거시의 페이징이 동작하지 않는다</h2>
-     *
-     * <p>{@code getBoards} 에 {@code LIMIT} 이 없고, 화면은 {@code boardList.get(i)}
-     * 를 <b>0번부터</b> 15건 자른다. {@code start} 를 계산해 두고 쓰지 않는다. 즉
-     * 2페이지를 눌러도 1페이지와 같은 목록이 나온다. 게시판이 4개뿐이라 페이지
-     * 번호 자체가 하나만 그려져 드러나지 않는다.
-     *
-     * <p>고치지 않는다. 고치면 게시판이 15개를 넘는 순간 레거시와 다른 화면이 된다.
-     * {@code migration/design/00-decisions.md} 의 D-025 참조.
+     * <p>레거시는 {@code start} 를 계산해 두고 쓰지 않아 몇 페이지를 눌러도 0번부터
+     * 15건이 나왔다(D-025 — 게시판이 4개뿐이라 드러나지 않았다). 2단계에서
+     * 고쳤다(D-108) — {@code pagination.start()} 부터 자른다. 목록 순서는 레거시
+     * 그대로 두었다({@code ORDER BY} 를 더하면 지금 화면의 순서가 달라진다).
      *
      * @param keyword 검색어
      * @param requestedPage 요청된 페이지
@@ -52,8 +47,8 @@ public class BoardService {
 
         List<Board> boards = boardMapper.findAll(keyword);
         List<BoardRow> rows = new ArrayList<>();
-        // 레거시 그대로 0번부터 자른다. pagination.start() 를 쓰지 않는 것이 의도다.
-        for (int i = 0; i < pagination.numPerPage() && i < boards.size(); ++i) {
+        for (int i = pagination.start();
+                i < pagination.start() + pagination.numPerPage() && i < boards.size(); ++i) {
             Board board = boards.get(i);
             int postCount = postMapper.countBy(board.id(), PostSearch.none());
             List<PostRow> recent =

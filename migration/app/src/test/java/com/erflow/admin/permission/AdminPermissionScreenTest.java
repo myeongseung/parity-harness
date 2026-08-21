@@ -246,6 +246,41 @@ class AdminPermissionScreenTest {
     }
 
     @Test
+    @DisplayName("부서를 지우면 남은 곳의 그 비트도 걷힌다 — D-062 를 2단계에서 고쳤다(D-109)")
+    @Transactional
+    void deleteSweepsTheBit() {
+        // 지울 부서를 만들고, 다른 부서의 permission 과 프로그램의 dept_level 에
+        // 그 부서의 비트를 심어 둔다. 레거시는 지워도 이 비트가 남아, 빈 자리를 찾는
+        // 규칙이 그 비트를 새 부서에 다시 주면 권한을 그대로 물려받았다.
+        permissionService.createDept("비트시험부서", null, null, null);
+        int deptId = jdbc.queryForObject(
+                "SELECT id FROM dept_tbl WHERE name = '비트시험부서'", Integer.class);
+        long bit = jdbc.queryForObject(
+                "SELECT level FROM permission_dept_tbl WHERE dept_tbl_id = ?", Long.class, deptId);
+
+        PermissionRow other = permissionService.list(null, null).depts().stream()
+                .filter(d -> d.classId() != deptId).findFirst().orElseThrow();
+        jdbc.update("UPDATE permission_dept_tbl SET permission = ? WHERE dept_tbl_id = ?",
+                other.permission() | bit, other.classId());
+        var program = jdbc.queryForMap(
+                "SELECT program_id, dept_level FROM permission_program_tbl LIMIT 1");
+        jdbc.update("UPDATE permission_program_tbl SET dept_level = ? WHERE program_id = ?",
+                ((Number) program.get("dept_level")).longValue() | bit,
+                program.get("program_id"));
+
+        assertThat(permissionService.deleteDepts(List.of(deptId))).isTrue();
+
+        long otherPermission = jdbc.queryForObject(
+                "SELECT permission FROM permission_dept_tbl WHERE dept_tbl_id = ?",
+                Long.class, other.classId());
+        long programLevel = jdbc.queryForObject(
+                "SELECT dept_level FROM permission_program_tbl WHERE program_id = ?",
+                Long.class, (String) program.get("program_id"));
+        assertThat(otherPermission & bit).isZero();
+        assertThat(programLevel & bit).isZero();
+    }
+
+    @Test
     @DisplayName("권한을 바꾸면 그 부서 사람의 화면 접근이 실제로 달라진다")
     @Transactional
     void permissionChangeReachesTheScreen() {

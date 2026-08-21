@@ -215,6 +215,13 @@ public interface AdminPermissionMapper {
     ProgramRow findProgram(@Param("id") int id);
 
     /**
+     * 프로그램 권한 행 전부. 지운 부서·직급의 비트를 걷어낼 때 쓴다(D-109).
+     *
+     * @return 프로그램 목록
+     */
+    List<ProgramRow> findPrograms();
+
+    /**
      * 프로그램의 부서 권한을 바꾼다.
      *
      * @param programId 프로그램 코드

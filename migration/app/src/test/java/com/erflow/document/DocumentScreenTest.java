@@ -132,6 +132,43 @@ class DocumentScreenTest {
     }
 
     @Test
+    @DisplayName("양식을 골라도 쓰던 글은 남는다 — D-076 을 2단계에서 고쳤다(D-110)")
+    @Transactional
+    void templateNoLongerWipesSavedContent() throws Exception {
+        var template = documentService.templates().stream()
+                .filter(t -> t.content() != null && !t.content().isBlank())
+                .findFirst().orElse(null);
+        assumeTrue(template != null, "내용 있는 양식이 없어 건너뛴다");
+
+        documentService.create("admin", 0, "덮기 시험", "<p>쓰던 글</p>");
+        long docId = jdbc.queryForObject(
+                "SELECT MAX(id) FROM document_tbl WHERE user_tbl_id = 'admin'", Long.class);
+
+        // 레거시는 양식을 고르면 무조건 그 내용으로 덮어 쓰던 글이 사라졌다(D-076).
+        var kept = mockMvc.perform(get("/document/register")
+                        .param("flag", "update")
+                        .param("docId", String.valueOf(docId))
+                        .param("template", String.valueOf(template.id()))
+                        .with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getModelAndView().getModel();
+        assertThat(kept.get("content")).isEqualTo("<p>쓰던 글</p>");
+
+        // 내용이 비어 있으면 양식이 채운다 — 양식을 고르는 뜻은 남는다.
+        documentService.create("admin", 0, "빈 문서 시험", "");
+        long blankId = jdbc.queryForObject(
+                "SELECT MAX(id) FROM document_tbl WHERE user_tbl_id = 'admin'", Long.class);
+        var filled = mockMvc.perform(get("/document/register")
+                        .param("flag", "update")
+                        .param("docId", String.valueOf(blankId))
+                        .param("template", String.valueOf(template.id()))
+                        .with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getModelAndView().getModel();
+        assertThat(filled.get("content")).isEqualTo(template.content());
+    }
+
+    @Test
     @DisplayName("등록하면 내 문서로 저장된다")
     @Transactional
     void createStoresMine() {

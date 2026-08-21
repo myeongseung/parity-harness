@@ -9,8 +9,21 @@
 //   deleteProc.jsp      -> /message/delete
 //   readDeleteProc.jsp  -> /message/read-delete
 //
-// block()/paging() 은 정의하지 않는다 — 레거시도 이 화면에는 두 함수를 두지 않아
-// 페이징이 동작하지 않았다(D-045). 그대로 옮긴다.
+// block()/paging() 은 레거시에 없었다 — 페이징 링크가 부르는데 어느 스크립트에도
+// 정의돼 있지 않아, 누르면 ReferenceError 만 나고 쪽지가 15건을 넘으면 1페이지
+// 말고는 볼 수 없었다(D-045). 2단계에서 되살렸다(D-107) — 다른 목록 화면들의
+// 정의(unitList.js 등)와 같은 모양이되, 쪽지의 페이징 폼은 classFrm 이라 그 폼을
+// 제출한다.
+function block(base, blk) {
+	document.classFrm.nowPage.value = base * (blk - 1) + 1;
+	document.classFrm.submit();
+}
+
+function paging(page) {
+	document.classFrm.nowPage.value = page;
+	document.classFrm.submit();
+}
+
 $(function() {
 	$('.write-message').on("click", function() { /* 쪽지쓰기 버튼 클릭 */
 		window.open('/message/register', '_blank',

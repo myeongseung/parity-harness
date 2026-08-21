@@ -57,6 +57,13 @@
       "reason": "부서 수정 화면의 주소칸. 레거시는 언제나 비워 둬서 이름만 고쳐도 저장 시 주소가 지워졌다(D-059) — 라이브 데이터에 지워진 부서가 실제로 남아 있다. 2단계에서 현재 값을 채웠고(D-105), readonly 입력의 value 는 화면 글자라 signature 가 «우편번호»/«도로명 주소» 에서 «dyn» 으로 바뀐다. 이 화면에만 좁혀 승인한다. 근거: migration/design/00-decisions.md D-105",
       "owner": "myeongseung",
       "added": "2026-08-19"
+    },
+    {
+      "key": "control:hidden|nowpage|hidden",
+      "screen": "message-index",
+      "reason": "쪽지함 페이징 폼(classFrm)의 페이지 번호 칸. 레거시는 페이징 링크가 부르는 block()/paging() 을 어디에도 정의하지 않아 쪽지가 15건을 넘으면 1페이지 말고는 볼 수 없었다(D-045). 2단계에서 두 함수를 정의해 되살렸고(D-107), 함수가 제출할 번호를 이 숨은 칸에 담는다. 근거: migration/design/00-decisions.md D-107",
+      "owner": "myeongseung",
+      "added": "2026-08-21"
     }
   ]
 }

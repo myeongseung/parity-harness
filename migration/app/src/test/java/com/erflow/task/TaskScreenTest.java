@@ -272,25 +272,51 @@ class TaskScreenTest {
     }
 
     @Test
-    @DisplayName("발주 수정은 실패하지만 이력은 바뀐다 (D-044)")
+    @DisplayName("발주 수정이 성공한다 — D-044 를 2단계에서 고쳤다(D-106)")
     @Transactional
-    void purchaseUpdateFailsButHistoriesStillChange() throws Exception {
+    void purchaseUpdateSucceedsNow() throws Exception {
         Integer id = firstTaskId(TaskService.PURCHASE);
         assumeTrue(id != null, "발주 데이터가 없어 건너뛴다");
         List<String> products = someProducts(1);
         assumeTrue(!products.isEmpty(), "제품이 없어 건너뛴다");
         TaskDetail before = taskService.get(id);
 
+        // 레거시는 type 을 안 넣어(언제나 0) 발주(type=1) 수정이 늘 실패했다(D-044).
+        // 이제 컨트롤러가 flag 로 type 을 채워 넘긴다.
         boolean updated = taskService.update(
-                new TaskUpdate(id, before.userId(), before.documentId(), "2026-02-02 00:00:00", 2, 0),
+                new TaskUpdate(id, before.userId(), before.documentId(),
+                        "2026-02-02 00:00:00", 2, TaskService.PURCHASE),
                 List.of(new TaskHistory(0, products.get(0), 7)));
 
-        // type 이 0 이라 발주(type=1)는 WHERE 에 안 걸려 본체 수정 실패.
-        assertThat(updated).isFalse();
-        // 그런데 이력은 지우고 다시 넣는다 — «실패» 인데 데이터는 바뀐다.
+        assertThat(updated).isTrue();
         assertThat(taskService.histories(id))
                 .extracting(TaskHistoryRow::productId)
                 .containsExactly(products.get(0));
+    }
+
+    @Test
+    @DisplayName("본체 수정이 실패하면 이력도 그대로다 (D-106)")
+    @Transactional
+    void failedUpdateLeavesHistoriesAlone() throws Exception {
+        Integer id = firstTaskId(TaskService.PURCHASE);
+        assumeTrue(id != null, "발주 데이터가 없어 건너뛴다");
+        List<String> products = someProducts(1);
+        assumeTrue(!products.isEmpty(), "제품이 없어 건너뛴다");
+        TaskDetail before = taskService.get(id);
+        List<String> beforeHistories = taskService.histories(id).stream()
+                .map(TaskHistoryRow::productId).toList();
+
+        // type 이 어긋나면 본체가 0 행 — 레거시는 그래도 이력을 갈아 끼웠지만(D-044),
+        // 이제 실패한 수정은 아무것도 바꾸지 않는다.
+        boolean updated = taskService.update(
+                new TaskUpdate(id, before.userId(), before.documentId(),
+                        "2026-02-02 00:00:00", 2, TaskService.SELL),
+                List.of(new TaskHistory(0, products.get(0), 7)));
+
+        assertThat(updated).isFalse();
+        assertThat(taskService.histories(id))
+                .extracting(TaskHistoryRow::productId)
+                .containsExactlyElementsOf(beforeHistories);
     }
 
     @Test
