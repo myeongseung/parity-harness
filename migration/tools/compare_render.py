@@ -38,7 +38,7 @@ import tempfile
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 from compare_live import (  # noqa: E402
-    LEGACY, NEW, UNORDERED, login, opener, screens_from_map, set_cookie,
+    DIVERGED, LEGACY, NEW, UNORDERED, login, opener, screens_from_map, set_cookie,
     _NO_COUNT_COOKIE,
 )
 
@@ -166,6 +166,12 @@ def main() -> int:
             # 사실만 적고 넘어간다. 이 예외는 UNORDERED 에 적힌 화면에만 열린다.
             known += 1
             print(f"  KNOWN {label}: 줄 순서가 정해지지 않았다({UNORDERED[new_path.split('?', 1)[0]]})")
+        elif new_path.split("?", 1)[0] in DIVERGED:
+            # 2단계에서 일부러 바뀐 칸이 있는 화면. 글자가 다르니 그림도 다르다.
+            # 바뀐 칸 말고도 다른 데가 있는지는 compare_live 가 칸 단위로 본다 —
+            # 그쪽 예외는 등록된 짝(레거시 «null» -> 빈칸)에만 열린다(D-112).
+            known += 1
+            print(f"  KNOWN {label}: {DIVERGED[new_path.split('?', 1)[0]][0][2]}")
         else:
             differ += 1
             kept = work / f"{label.replace('/', '-')}"

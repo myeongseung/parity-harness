@@ -104,6 +104,27 @@ class AdminUserScreenTest {
     }
 
     @Test
+    @DisplayName("사원 리스트의 줄 순서가 정해져 있다 — D-091 을 2단계에서 고쳤다(D-113)")
+    void listOrderIsPinnedNow() {
+        // 레거시는 부서·직급이 같은 동순위의 순서를 DB 에 맡겨 실행마다 달라질 수
+        // 있었다. 이제 id 로 못 박는다 — 같은 질의는 언제나 같은 순서다.
+        var first = adminUserService.list(AdminUserSearch.none(), 1).rows();
+        var second = adminUserService.list(AdminUserSearch.none(), 1).rows();
+        assertThat(first).isNotEmpty();
+        assertThat(second).isEqualTo(first);
+
+        // 동순위 안에서는 사번순이다.
+        for (int i = 1; i < first.size(); i++) {
+            AdminUserRow a = first.get(i - 1);
+            AdminUserRow b = first.get(i);
+            if (a.deptName().equals(b.deptName()) && a.jobName().equals(b.jobName())) {
+                // DB 정렬이 general_ci(대소문자 무시)라 비교도 그렇게 한다.
+                assertThat(a.id().compareToIgnoreCase(b.id())).isLessThan(0);
+            }
+        }
+    }
+
+    @Test
     @DisplayName("고른 칸으로만 검색한다 — 이름으로 찾으면 사번은 걸리지 않는다")
     void searchesOnlyTheChosenField() {
         List<String> names = jdbc.queryForList(

@@ -72,13 +72,34 @@ _HANDLED = {"/post/view", "/post/register", "/post/reply",
 #:
 #: 레거시 SQL 이 `order by dept_name, job_name` 인데 그 둘이 같은 사람이 여럿 있다.
 #: 동순위의 순서는 DB 가 정하지 않으므로 같은 질의도 실행마다 달라질 수 있다 —
-#: **레거시끼리도 달라진다.** 우리가 정렬을 하나 더 붙이면 레거시와 다른 SQL 이 된다.
+#: **레거시끼리도 달라진다.** 신규는 2단계에서 `id` 를 붙여 못 박았지만(D-113)
+#: 레거시 쪽이 여전히 흔들리므로 순서 무관 대조는 계속 필요하다.
 #:
 #: 그래서 «줄의 내용이 같고 순서만 다르면» 결함이 아니라고 본다. 내용이 다르면
 #: 그대로 FAIL 이다 — 이 예외가 진짜 차이를 덮지 않는다(D-091).
 UNORDERED = {
-    "/admin/user/list": "레거시 정렬 키(부서·직급)가 동순위를 가리지 못한다(D-091)",
+    "/admin/user/list": "레거시 정렬 키(부서·직급)가 동순위를 가리지 못한다(D-091·D-113)",
 }
+
+#: 2단계에서 일부러 달라진 칸. 경로 -> (레거시 칸 글자, 신규 칸 글자, 이유) 목록.
+#:
+#: 칸 글자가 **정확히** 이 짝일 때만 결함이 아니라고 본다. 부분 일치가 아니라
+#: 칸 전체 일치다 — 제목에 우연히 같은 글자가 든 진짜 차이는 덮지 않는다.
+DIVERGED = {
+    "/task/sell-task": [
+        ("null", "", "문서 없는 수·발주의 «null» 네 글자를 빈칸으로 바꿨다(D-112)")],
+    "/task/purchase-task": [
+        ("null", "", "문서 없는 수·발주의 «null» 네 글자를 빈칸으로 바꿨다(D-112)")],
+}
+
+
+def _apply_diverged(row, pairs):
+    """레거시 줄의 칸을 등록된 짝대로 바꿔 본다. 신규와 같아지면 알려진 차이다."""
+    return [
+        next((new for old, new, _ in pairs if cell == old), cell)
+        for cell in row
+    ]
+
 
 #: 대조에서 뺄 화면과 그 이유. **조용히 빼지 않는다** — 돌릴 때마다 이유를 찍는다.
 SKIPPED = {
@@ -468,6 +489,16 @@ def main() -> int:
                 print(f"               신규   {after[index] if index < len(after) else '(없음)'}")
             worst = max(worst, 1)
             continue
+
+        diverged = DIVERGED.get(new_path.split("?", 1)[0])
+        if diverged:
+            # 2단계에서 일부러 바꾼 칸을 레거시 쪽에 적용해 본다. 그래도 다르면
+            # 아래로 내려가 그대로 FAIL 이다 — 예외가 진짜 차이를 덮지 않는다.
+            adjusted = [_apply_diverged(row, diverged) for row in before]
+            if adjusted != before and adjusted == after:
+                print(f"  KNOWN {label}: {diverged[0][2]}")
+                continue
+            before = adjusted
 
         mismatched = [
             (index, a, b) for index, (a, b) in enumerate(zip(before, after)) if a != b

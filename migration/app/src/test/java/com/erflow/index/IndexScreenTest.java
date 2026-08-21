@@ -60,6 +60,17 @@ class IndexScreenTest {
     }
 
     @Test
+    @DisplayName("개발자 PC 주소가 화면에 없다 — D-085 를 2단계에서 지웠다(D-114)")
+    void developerAddressIsGone() throws Exception {
+        // 레거시 달력 위젯의 새로고침이 만든 사람 PC(localhost:5501)를 가리켰다.
+        String html = mockMvc.perform(get("/index").with(user(TestUsers.admin())))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(html).doesNotContain("localhost:5501");
+    }
+
+    @Test
     @DisplayName("«/» 로 들어가도 같은 화면이다")
     void rootIsTheSameScreen() throws Exception {
         mockMvc.perform(get("/").with(user(TestUsers.admin())))

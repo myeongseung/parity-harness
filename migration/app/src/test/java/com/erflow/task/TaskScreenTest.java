@@ -320,6 +320,16 @@ class TaskScreenTest {
     }
 
     @Test
+    @DisplayName("문서 없는 수·발주는 «null» 이 아니라 빈칸이다 — D-089 를 2단계에서 고쳤다(D-112)")
+    void missingDocumentShowsBlankNow() {
+        // 레거시는 <%=subject%> 가 null 을 «null» 네 글자로 찍었다.
+        assertThat(new TaskRow(1, "이름", "부서", "회사", null, "2023-01-01", 0)
+                .subjectLabel()).isEmpty();
+        assertThat(new TaskRow(1, "이름", "부서", "회사", "제목", "2023-01-01", 0)
+                .subjectLabel()).isEqualTo("제목");
+    }
+
+    @Test
     @DisplayName("삭제는 type 이 맞아야 지운다")
     @Transactional
     void deleteRespectsType() throws Exception {

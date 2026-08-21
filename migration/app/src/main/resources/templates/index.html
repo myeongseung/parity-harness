@@ -6,8 +6,10 @@
   위젯 넷(공지사항·전자결재·자유게시판·받은 쪽지함)과 달력 하나.
 
   위젯 머리의 아이콘 셋 중 **동작하는 것은 첫 번째뿐이다.** 새로고침과 추가는
-  `href=""` 라 지금 페이지를 다시 여는 것과 같다. 달력 위젯의 새로고침은 한술 더 떠
-  개발자 PC 주소(localhost:5501)를 가리킨다. 그대로 옮긴다(D-085).
+  `href=""` 라 지금 페이지를 다시 여는 것과 같다(D-085). 달력 위젯의 새로고침은
+  레거시에 개발자 PC 주소(localhost:5501)가 박혀 있었다 — 2단계에서 지우고 다른
+  위젯들과 같은 `href=""` 로 맞췄다(D-114). 게이트는 «같은 라벨, 다른 대상» 을
+  라우트 변경(MEDIUM)으로 보므로 allowlist 는 필요 없다.
 
   자유게시판 위젯의 `<thead>` 가 두 번 열려 있다. 브라우저가 만드는 DOM 을 기준으로
   옮기므로 한 번만 적는다(D-037).
@@ -209,7 +211,11 @@
                             </div>
                             <div class="btn-group">
                                 <a href=""> <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i>
-                                </a> <a href="http://localhost:5501/index.html"><i
+                                </a>
+                                <!--/* 레거시는 여기가 개발자 PC 주소(localhost:5501)였다.
+                                       2단계에서 지웠다(D-114) — 다른 위젯의 새로고침과
+                                       같은 빈 href 다. */-->
+                                <a href=""><i
                                     class="fa-solid fa-arrows-rotate fa-lg"></i></a> <a href="#">
                                     <i class="fa-solid fa-plus fa-lg" data-bs-toggle="modal"
                                     data-bs-target="#calendar-plus"></i>
