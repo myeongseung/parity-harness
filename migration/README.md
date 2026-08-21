@@ -11,9 +11,16 @@ tools/      ERFlow 전용 생성기·검사기 (하네스는 범용, 여기는 �
 legacy-runtime/  레거시를 WAR 로 묶어 띄운다. 실화면 대조용
 ```
 
+> **완결 (2026-08-21).** 1단계 — 89화면 전부 1:1 정합, 검증 4종 초록.
+> 2단계 — 결함 수정 16건(D-100~D-115). 최종 수치: 게이트 PASS ·
+> 스타일시트 88/88 · 실화면 그림 같음 57/다름 0/순서 무관 3 · 앱 테스트 348건.
+> 디자인 변경·기능 업그레이드는 새 저장소에서 이어진다 —
+> [결정 로그의 종결 절](design/00-decisions.md) 참조.
+> 아래의 슬라이스 표는 하네스를 만들던 초기 기록으로 남긴다.
+
 | 문서 | 내용 |
 |---|---|
-| [design/00-decisions.md](design/00-decisions.md) | 결정 로그 (D-001~020) + 미결 안건 |
+| [design/00-decisions.md](design/00-decisions.md) | 결정 로그 (D-001~D-115) + 미결 안건 + 종결 |
 | [design/01-menu-layout.md](design/01-menu-layout.md) | 레이아웃·권한 설계 (program / screen / menu) |
 | [app/README.md](app/README.md) | 스택·실행법·구성 규칙 |
 | [legacy-runtime/README.md](legacy-runtime/README.md) | 레거시 기동과 실화면 대조 |
